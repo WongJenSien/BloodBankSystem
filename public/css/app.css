@@ -1,0 +1,23 @@
+/* NAV BAR CSS */
+* {
+    font-family: 'Inter';
+}
+
+.custom-nav{
+    background-color: rgba(252,186,186,0.26);
+}
+
+.navTitle {
+    font-weight: 800;
+    font-size: 40px;
+    color: #EE1818;
+}
+
+.navSubTitle{
+    font-size: 24px;
+    opacity: 70%;
+}
+
+.navSubTitle:hover{
+    opacity: 100%;
+}
