@@ -68,11 +68,11 @@
                 </a>
                 <ul id="inventory" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                     <li class="sidebar-item ">
-                        <a href="#" class="sidebar-link">
+                        <a href="{{ url('add-inventory')}}" class="sidebar-link">
                             Stock In</a>
-                        <a href="#" class="sidebar-link">
+                        <a href="{{ url('remove-inventory')}}" class="sidebar-link">
                             Stock Out</a>
-                        <a href="#" class="sidebar-link">
+                        <a href="{{ url('view-inventory')}}" class="sidebar-link">
                             Stock Monitoring</a>
                     </li>
                 </ul>

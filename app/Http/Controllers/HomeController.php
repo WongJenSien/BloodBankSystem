@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+
 class HomeController extends Controller
 {
+ 
     public function index()
     {
-        return view("BackEnd.Home.login");
+        return view("BackEnd.Home.index");
     }
 
     public function login()
@@ -21,4 +23,8 @@ class HomeController extends Controller
     {
         return view("BackEnd.Home.profile");
     }
+
+
+
+
 }
