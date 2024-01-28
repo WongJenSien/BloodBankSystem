@@ -19,9 +19,7 @@ Route::get('/', [HomeController::class,'index']);
 Route::get('login', [HomeController::class,'login']);
 Route::post('profile', [HomeController::class,'profile']);
 Route::get('add-inventory', [InventoryController::class,'create']);
-
 Route::post('add-inventory', [InventoryController::class,'store']);
-
 Route::get('view-inventory', [InventoryController::class,'show']);
 
 // Route::get('/', function () {

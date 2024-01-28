@@ -38,6 +38,8 @@ class InventoryController extends Controller
 
     public function show(Request $request)
     {
+        $reference = $this->database->getReference('Users')->getValue();
+        return view('BackEnd.JenSien.viewStock', compact('reference'));
     }
 
     public function edit(Request $request)
