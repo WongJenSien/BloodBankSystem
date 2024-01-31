@@ -19,6 +19,7 @@ function getTodayDate(){
     }
 
     let current = y + "-" + m + "-" + d;
+
     document.getElementById("expiredDate-A-P").setAttribute('min', current);
     document.getElementById("expiredDate-A-N").setAttribute('min', current);
     
@@ -56,4 +57,21 @@ function countBlood(){
     document.getElementById('labelO').innerText = totalO;
     document.getElementById('labelAB').innerText = totalAB;
     
+}
+
+function getShipDate(){
+    const date = new Date();
+    let d = date.getDate();
+    let m = date.getMonth() + 1;
+    let y = date.getFullYear();
+
+    if(d < 10){
+        d = '0' + d;
+    }
+    if(m < 10){
+        m = '0' + m;
+    }
+
+    let current = y + "-" + m + "-" + d;
+document.getElementById("ship-date").setAttribute('min', current);
 }

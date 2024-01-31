@@ -13,6 +13,11 @@ class InventoryController extends Controller
         $this->database = $database;
     }
 
+public function shipOut(){
+
+    return view('BackEnd.JenSien.stockOut');
+}
+
     public function create()
     {
         return view("BackEnd.JenSien.stockIn");

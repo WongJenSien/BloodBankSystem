@@ -18,9 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class,'index']);
 Route::get('login', [HomeController::class,'login']);
 Route::post('profile', [HomeController::class,'profile']);
+
 Route::get('add-inventory', [InventoryController::class,'create']);
 Route::post('add-inventory', [InventoryController::class,'store']);
+
 Route::get('view-inventory', [InventoryController::class,'show']);
+Route::get('remove-inventory', [InventoryController::class, 'shipOut']);
 
 // Route::get('/', function () {
 //     return view('welcome');

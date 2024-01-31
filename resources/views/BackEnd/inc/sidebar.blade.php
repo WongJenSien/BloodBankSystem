@@ -60,6 +60,7 @@
                     </li>
                 </ul>
             </li>
+            
             <li class="sidebar-item">
                 <a href="#" class="sidebar-link has-dropdown collapsed" data-bs-toggle="collapse"
                     data-bs-target="#inventory" aria-expanded="false" aria-controls="inventory">
