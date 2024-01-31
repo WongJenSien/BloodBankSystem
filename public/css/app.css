@@ -208,3 +208,22 @@ transition: all .2s ease-out;
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
     background-color: rgba(252,186,186,0.30);
   }
+
+
+  /* Scrollable Container */
+  .inv-activity-container{
+    max-height: 800px;
+  }
+
+  .inv-activity-fixed{
+    overflow-x: scroll;
+    overflow-y: scroll;
+    height: fit-content;
+    max-height: 800px;
+  }
+
+  .header-stick-top th{
+    position: sticky;
+    top: 0px;
+    background-color: #fafbfe;
+  }
