@@ -34,6 +34,45 @@ function getTodayDate(){
     
 }
 
+function dateRange(){
+    var today = new Date();
+
+    // Set the minimum date to today
+    var minDate = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+    // Set the maximum date to one week from today
+    var nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 365);
+    var maxDate = nextWeek.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+    // Set the min 
+    document.getElementById("expiredDate-A-P").setAttribute('min', minDate);
+    document.getElementById("expiredDate-A-N").setAttribute('min', minDate);
+    
+    document.getElementById("expiredDate-B-P").setAttribute('min', minDate);
+    document.getElementById("expiredDate-B-N").setAttribute('min', minDate);
+
+    document.getElementById("expiredDate-O-P").setAttribute('min', minDate);
+    document.getElementById("expiredDate-O-N").setAttribute('min', minDate);
+
+    document.getElementById("expiredDate-AB-P").setAttribute('min', minDate);
+    document.getElementById("expiredDate-AB-N").setAttribute('min', minDate);
+
+    // Set the max
+    document.getElementById("expiredDate-A-P").setAttribute('max', maxDate);
+    document.getElementById("expiredDate-A-N").setAttribute('max', maxDate);
+    
+    document.getElementById("expiredDate-B-P").setAttribute('max', maxDate);
+    document.getElementById("expiredDate-B-N").setAttribute('max', maxDate);
+
+    document.getElementById("expiredDate-O-P").setAttribute('max', maxDate);
+    document.getElementById("expiredDate-O-N").setAttribute('max', maxDate);
+
+    document.getElementById("expiredDate-AB-P").setAttribute('max', maxDate);
+    document.getElementById("expiredDate-AB-N").setAttribute('max', maxDate);
+    
+}
+
 function countBlood(){
     var aPositive = parseInt(document.getElementById("aPositive").value);
     var aNegative = parseInt(document.getElementById("aNegative").value);
