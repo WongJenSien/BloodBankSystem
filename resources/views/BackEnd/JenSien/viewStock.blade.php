@@ -1,6 +1,10 @@
 @extends('BackEnd.app')
 
 @section('content')
+{{-- DISPLAY SESSION AFTER STOCK-IN --}}
+
+
+
     {{-- 4-IMG-VIEW --}}
     <div class="container text-center mx-auto">
         <div class="row align-items-start">

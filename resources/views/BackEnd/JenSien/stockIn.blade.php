@@ -8,9 +8,9 @@
                 <div class="col text-start">
                     <div class="col m-3">
                         <span class="m-3">Event ID: </span>
-                        <select class="selectpicker form-select-sm p-2" data-width="fit" aria-label="Default select example">
-                            <option selected>Select an Event</option>
-                            <option value="1">One</option>
+                        <select id="eventID" class="selectpicker form-select-sm p-2" data-width="fit" aria-label="Default select example">
+                            <option>Select an Event</option>
+                            <option selected value="1">One</option>
                             <option value="2">Two</option>
                             <option value="3">Three</option>
                         </select>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="col text-end">
                     <div class="col m-3 align-middle">
-                        <span class="m-3">ID: 123</span>
+                        <label for="inventoryID">Inventory ID:</label> 
                     </div>
                 </div>
             </div>
@@ -37,7 +37,7 @@
                                     <td>A+</td>
                                     <td><input type="number" name="aPositive" id="aPositive" min="0" max="10000"
                                             value="0" onchange="countBlood()" /></td>
-                                    <td><input type="date" name="expiredDate-A-P" id="expiredDate-A-P" onclick="dateRange()"
+                                    <td><input type="date" name="expiredDate_A_P" id="expiredDate_A_P" onclick="dateRange()"
                                             value="{{ date('Y-m-d') }}" /></td>
 
                                 </tr>
@@ -45,7 +45,7 @@
                                     <td>A-</td>
                                     <td><input type="number" name="aNegative" id="aNegative" min="0" max="10000"
                                             value="0" onchange="countBlood()" /></td>
-                                    <td><input type="date" name="expiredDate-A-N" id="expiredDate-A-N" onclick="dateRange()"
+                                    <td><input type="date" name="expiredDate_A_N" id="expiredDate_A_N" onclick="dateRange()"
                                             value="{{ date('Y-m-d') }}" /></td>
                                 </tr>
 
@@ -54,14 +54,14 @@
                                     <td>B+</td>
                                     <td><input type="number" name="bPositive" id="bPositive" min="0" max="10000"
                                             value="0" onchange="countBlood()" /></td>
-                                    <td><input type="date" name="expiredDate-B-P" id="expiredDate-B-P" onclick="dateRange()"
+                                    <td><input type="date" name="expiredDate_B_P" id="expiredDate_B_P" onclick="dateRange()"
                                             value="{{ date('Y-m-d') }}" /></td>
                                 </tr>
                                 <tr>
                                     <td>B-</td>
                                     <td><input type="number" name="bNegative" id="bNegative" min="0" max="10000"
                                             value="0" onchange="countBlood()" /></td>
-                                    <td><input type="date" name="expiredDate-B-N" id="expiredDate-B-N" onclick="dateRange()"
+                                    <td><input type="date" name="expiredDate_B_N" id="expiredDate_B_N" onclick="dateRange()"
                                             value="{{ date('Y-m-d') }}" /></td>
                                 </tr>
 
@@ -70,14 +70,14 @@
                                     <td>O+</td>
                                     <td><input type="number" name="oPositive" id="oPositive" min="0" max="10000"
                                             value="0" onchange="countBlood()" /></td>
-                                    <td><input type="date" name="expiredDate-O-P" id="expiredDate-O-P" onclick="dateRange()"
+                                    <td><input type="date" name="expiredDate_O_P" id="expiredDate_O_P" onclick="dateRange()"
                                             value="{{ date('Y-m-d') }}" /></td>
                                 </tr>
                                 <tr>
                                     <td>O-</td>
                                     <td><input type="number" name="oNegative" id="oNegative" min="0" max="10000"
                                             value="0" onchange="countBlood()" /></td>
-                                    <td><input type="date" name="expiredDate-O-N" id="expiredDate-O-N" onclick="dateRange()"
+                                    <td><input type="date" name="expiredDate_O_N" id="expiredDate_O_N" onclick="dateRange()"
                                             value="{{ date('Y-m-d') }}" /></td>
                                 </tr>
 
@@ -86,14 +86,14 @@
                                     <td>AB+</td>
                                     <td><input type="number" name="abPositive" id="abPositive" min="0"
                                             max="10000" value="0" onchange="countBlood()" /></td>
-                                    <td><input type="date" name="expiredDate-AB-P" id="expiredDate-AB-P"
+                                    <td><input type="date" name="expiredDate_AB_P" id="expiredDate_AB_P"
                                             onclick="dateRange()" value="{{ date('Y-m-d') }}" /></td>
                                 </tr>
                                 <tr>
                                     <td>AB-</td>
                                     <td><input type="number" name="abNegative" id="abNegative" min="0"
                                             max="10000" value="0" onchange="countBlood()" /></td>
-                                    <td><input type="date" name="expiredDate-AB-N" id="expiredDate-AB-N"
+                                    <td><input type="date" name="expiredDate_AB_N" id="expiredDate_AB_N"
                                             onclick="dateRange()" value="{{ date('Y-m-d') }}" /></td>
                                 </tr>
                             </tbody>

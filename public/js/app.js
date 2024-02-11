@@ -4,36 +4,6 @@ toogleBTN.addEventListener("click", function(){
     document.querySelector("#sidebar").classList.toggle("expand");
 });
 
-
-function getTodayDate(){
-    const date = new Date();
-    let d = date.getDate();
-    let m = date.getMonth() + 1;
-    let y = date.getFullYear();
-
-    if(d < 10){
-        d = '0' + d;
-    }
-    if(m < 10){
-        m = '0' + m;
-    }
-
-    let current = y + "-" + m + "-" + d;
-
-    document.getElementById("expiredDate-A-P").setAttribute('min', current);
-    document.getElementById("expiredDate-A-N").setAttribute('min', current);
-    
-    document.getElementById("expiredDate-B-P").setAttribute('min', current);
-    document.getElementById("expiredDate-B-N").setAttribute('min', current);
-
-    document.getElementById("expiredDate-O-P").setAttribute('min', current);
-    document.getElementById("expiredDate-O-N").setAttribute('min', current);
-
-    document.getElementById("expiredDate-AB-P").setAttribute('min', current);
-    document.getElementById("expiredDate-AB-N").setAttribute('min', current);
-    
-}
-
 function dateRange(){
     var today = new Date();
 
@@ -46,30 +16,30 @@ function dateRange(){
     var maxDate = nextWeek.toISOString().split('T')[0]; // Format: YYYY-MM-DD
 
     // Set the min 
-    document.getElementById("expiredDate-A-P").setAttribute('min', minDate);
-    document.getElementById("expiredDate-A-N").setAttribute('min', minDate);
+    document.getElementById("expiredDate_A_P").setAttribute('min', minDate);
+    document.getElementById("expiredDate_A_N").setAttribute('min', minDate);
     
-    document.getElementById("expiredDate-B-P").setAttribute('min', minDate);
-    document.getElementById("expiredDate-B-N").setAttribute('min', minDate);
+    document.getElementById("expiredDate_B_P").setAttribute('min', minDate);
+    document.getElementById("expiredDate_B_N").setAttribute('min', minDate);
 
-    document.getElementById("expiredDate-O-P").setAttribute('min', minDate);
-    document.getElementById("expiredDate-O-N").setAttribute('min', minDate);
+    document.getElementById("expiredDate_O_P").setAttribute('min', minDate);
+    document.getElementById("expiredDate_O_N").setAttribute('min', minDate);
 
-    document.getElementById("expiredDate-AB-P").setAttribute('min', minDate);
-    document.getElementById("expiredDate-AB-N").setAttribute('min', minDate);
+    document.getElementById("expiredDate_AB_P").setAttribute('min', minDate);
+    document.getElementById("expiredDate_AB_N").setAttribute('min', minDate);
 
     // Set the max
-    document.getElementById("expiredDate-A-P").setAttribute('max', maxDate);
-    document.getElementById("expiredDate-A-N").setAttribute('max', maxDate);
+    document.getElementById("expiredDate_A_P").setAttribute('max', maxDate);
+    document.getElementById("expiredDate_A_N").setAttribute('max', maxDate);
     
-    document.getElementById("expiredDate-B-P").setAttribute('max', maxDate);
-    document.getElementById("expiredDate-B-N").setAttribute('max', maxDate);
+    document.getElementById("expiredDate_B_P").setAttribute('max', maxDate);
+    document.getElementById("expiredDate_B_N").setAttribute('max', maxDate);
 
-    document.getElementById("expiredDate-O-P").setAttribute('max', maxDate);
-    document.getElementById("expiredDate-O-N").setAttribute('max', maxDate);
+    document.getElementById("expiredDate_O_P").setAttribute('max', maxDate);
+    document.getElementById("expiredDate_O_N").setAttribute('max', maxDate);
 
-    document.getElementById("expiredDate-AB-P").setAttribute('max', maxDate);
-    document.getElementById("expiredDate-AB-N").setAttribute('max', maxDate);
+    document.getElementById("expiredDate_AB_P").setAttribute('max', maxDate);
+    document.getElementById("expiredDate_AB_N").setAttribute('max', maxDate);
     
 }
 
