@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Contract\Database;
 
@@ -18,7 +19,9 @@ class InventoryController extends Controller
     public function shipOut()
     {
 
-        return view('BackEnd.JenSien.stockOut');
+        $date = $this->idGenerator();
+        return view('FrontEnd.Home.index')->with("date", $date);
+        // return view('BackEnd.JenSien.stockOut');
     }
 
     public function create()
@@ -29,7 +32,6 @@ class InventoryController extends Controller
     public function store(Request $request)
     {
         $inventoryID = $request->inventoryID;
-        $bloodType = array('aPositive', 'aNegative', 'bPositive', 'bNegative', 'oPositive', 'oNegative', 'abPositive', 'abNegative');
         $expirationDate = array(
             'exDate_A_P' => $request->expiredDate_A_P,
             'exDate_A_N' => $request->expiredDate_A_N,
@@ -61,23 +63,11 @@ class InventoryController extends Controller
 
         $eventID = $request->eventID;
 
-        // for ($i = 0; $i < count($bloodType); $i++) {
-        //     $postData = [
-        //         'inventoryID' => $inventoryID,
-        //         'expirationDate' => next($expirationDate),
-        //         'status' => $status,
-        //         'quantity' => next($quantity),
-        //         'bloodType' => next($bloodType),
-        //         'eventID' => $eventID
-        //     ];
-        // }
-
         $postData = [
             'inventoryID' => $inventoryID,
             'expirationDate' => $expirationDate,
             'status' => $status,
             'quantity' => $quantity,
-            'bloodType' => $bloodType,
             'eventID' => $eventID
         ];
 
@@ -109,5 +99,18 @@ class InventoryController extends Controller
     }
     public function restore(Request $request)
     {
+    }
+
+    public function idGenerator(){
+
+        //GET LATEST RECORD
+
+        $today = Carbon::now();
+        $year = $today->year;
+        $month = $today->month;
+
+        $newID = "I" . substr($year,-2) . sprintf("%02s", $month) . "001";
+
+        return $newID;
     }
 }

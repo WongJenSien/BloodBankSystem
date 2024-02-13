@@ -4,6 +4,7 @@
 
 
     <h1>Index.blade.php</h1>
+    <p>{{ $date }}</p>
     {{-- <h5>return view('FrontEnd.Home.index')->with('inventoryID', $inventoryID)->with('expirationDate',$expirationDate)->with('quantity',$quantity)->with('status', $status);</h5>
 
     <h5>inventoryID: {{ $inventoryID }}</h5>
