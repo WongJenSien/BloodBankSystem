@@ -2,6 +2,6 @@
 
 @section('content')
 
-<p>{{$date}}</p>
+
 
 @endsection

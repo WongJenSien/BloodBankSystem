@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'firebase'=>[
+        'api_key' => 'AIzaSyB9hCcZ3PVYPm7eljh2z8eBmScADeOYuSA',
+        'auth_domain' => 'bloodbanksystem-4db33.firebaseapp.com',
+        'database_url' => 'https://bloodbanksystem-4db33-default-rtdb.firebaseio.com',
+        'storage_bucket' => 'bloodbanksystem-4db33.appspot.com'
+    ],
+
 ];

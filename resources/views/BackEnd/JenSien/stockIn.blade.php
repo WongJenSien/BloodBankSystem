@@ -4,24 +4,61 @@
     <div class="container">
         <form action="{{ url('add-inventory') }}" method="POST">
             @csrf
-            <div class="row">
+            {{-- <div class="row">
                 <div class="col text-start">
-                    <div class="col m-3">
-                        <span class="m-3">Event ID: </span>
-                        <select id="eventID" class="selectpicker form-select-sm p-2" data-width="fit" aria-label="Default select example">
-                            <option>Select an Event</option>
-                            <option selected value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                        </select>
+
+                    <div class="mb-3 row">
+                        <label for="EventID" class="col-sm-2 col-form-label">Event ID</label>
+                        <div class="col-sm-10">
+                            <select id="eventID" class="selectpicker form-select-sm p-2" data-width="fit" aria-label="Default select example">
+                                <option>Select an Event</option>
+                                <option selected value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="col text-end">
-                    <div class="col m-3 align-middle">
-                        <label for="inventoryID">Inventory ID:</label> 
+                    <div class="mb-3 row">
+                        <label for="inventoryID" class="col-sm-2 col-form-label">Inventory ID</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" name="inventoryID" id="inventoryID" value="{{$newID}}">
+                        </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
+<div class="container">
+    <div class="row">
+        {{-- EventID COL --}}
+        <div class="col">
+            <div class="mb-3 row">
+                <label for="eventID" class="col-sm-2 col-form-label">Event ID: </label>
+                <div class="col-sm-10 text-start">
+                    <select id="eventID" class="form-select" style="width: fit-content" data-width="fit" aria-label="Default select example">
+                        <option>Select an Event</option>
+                        <option selected value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                </div>
+              </div>
+        </div>
+    
+        {{-- InventoryID COL --}}
+        <div class="col">
+            <div class="mb-3 row border border-black ">
+                <label for="inventoryID" class="col-sm-2 col-form-label border border-black"> ID: </label>
+                <div class="col-sm-10 text-start">
+                    <input type="text" readonly class="form-control-plaintext fw-bold" name="inventoryID" id="inventoryID" value="{{$newID}}">
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+
+
+
             <div class="row">
                 <div class="col border border-black">
                     <div class="row">

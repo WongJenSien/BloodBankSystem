@@ -25,6 +25,16 @@ Route::post('add-inventory', [InventoryController::class,'store']);
 Route::get('view-inventory', [InventoryController::class,'show']);
 Route::get('remove-inventory', [InventoryController::class, 'shipOut']);
 
+// Route::get('test', [InventoryController::class,'test']);
+Route::get('/test', function(){
+$stuRef = app('firebase.firestore')->database()->collection('Students')->newDocument();
+$stuRef->set([
+'firstName' => '1',
+'lastName' =>'2'
+]);
+
+});
+
 // Route::get('/', function () {
 //     return view('welcome');
 // });

@@ -26,7 +26,8 @@ class InventoryController extends Controller
 
     public function create()
     {
-        return view("BackEnd.JenSien.stockIn");
+        $newID = $this->idGenerator();
+        return view("BackEnd.JenSien.stockIn")->with("newID", $newID);;
     }
 
     public function store(Request $request)
@@ -84,7 +85,7 @@ class InventoryController extends Controller
 
     public function show(Request $request)
     {
-        $reference = $this->database->getReference('Users')->getValue();
+        $reference = $this->database->getReference($this->ref_table)->getValue();
         return view('BackEnd.JenSien.viewStock', compact('reference'));
     }
 
@@ -104,13 +105,28 @@ class InventoryController extends Controller
     public function idGenerator(){
 
         //GET LATEST RECORD
+        $reference = $this->database->getReference($this->ref_table)->getSnapshot()->numChildren();
+
 
         $today = Carbon::now();
         $year = $today->year;
         $month = $today->month;
 
-        $newID = "I" . substr($year,-2) . sprintf("%02s", $month) . "001";
+        $newID = $reference;
+        // $newID = "I" . substr($year,-2) . sprintf("%02s", $month) . "002";
 
         return $newID;
+    }
+
+    public function test(){
+        $postData = [
+            'inventoryID' => 'test',
+            'expirationDate' => 'test',
+            'status' => 'test',
+            'quantity' => 'test',
+            'eventID' => 'test'
+        ];
+        $postRef = $this->database->getReference($this->ref_table)->push($postData);
+        return redirect('view-inventory')->with('status', 'Added Successfully');
     }
 }
