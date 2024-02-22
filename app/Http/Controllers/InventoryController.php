@@ -26,6 +26,7 @@ class InventoryController extends Controller
     public function create()
     {
         $newID = $this->idGenerator();
+        $eventID = $this->getEventID();
         return view("BackEnd.JenSien.stockIn")->with("newID", $newID);;
     }
 
