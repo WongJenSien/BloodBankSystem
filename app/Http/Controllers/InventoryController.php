@@ -10,18 +10,17 @@ class InventoryController extends Controller
 {
     protected $database;
     protected $ref_table;
+    protected $ref_table_firestore;
     public function __construct(Database $database)
     {
+        $this->ref_table_firestore = app('firebase.firestore')->database()->collection('Inventories');
         $this->ref_table = "Inventories";
         $this->database = $database;
     }
 
     public function shipOut()
     {
-
-        $date = $this->idGenerator();
-        return view('FrontEnd.Home.index')->with("date", $date);
-        // return view('BackEnd.JenSien.stockOut');
+        return view('BackEnd.JenSien.stockOut');
     }
 
     public function create()
@@ -72,6 +71,7 @@ class InventoryController extends Controller
             'eventID' => $eventID
         ];
 
+        $this->ref_table_firestore->newDocument()->set($postData);
         $postRef = $this->database->getReference($this->ref_table)->push($postData);
 
         if($postRef){
@@ -85,8 +85,20 @@ class InventoryController extends Controller
 
     public function show(Request $request)
     {
-        $reference = $this->database->getReference($this->ref_table)->getValue();
-        return view('BackEnd.JenSien.viewStock', compact('reference'));
+        // $reference = $this->database->getReference($this->ref_table)->getValue();
+        // return view('BackEnd.JenSien.viewStock', compact('reference'));
+
+        $reference = $this->ref_table_firestore->documents();
+        
+        $data = collect($reference->rows());
+
+        $numOfBlood = $this->getNumOfBlood($data);
+        $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
+
+        return view('BackEnd.JenSien.viewStock')
+        ->with('numOfBlood',$numOfBlood)
+        ->with('totalNumOfBlood',$totalNumOfBlood);
+
     }
 
     public function edit(Request $request)
@@ -104,29 +116,71 @@ class InventoryController extends Controller
 
     public function idGenerator(){
 
-        //GET LATEST RECORD
-        $reference = $this->database->getReference($this->ref_table)->getSnapshot()->numChildren();
-
-
         $today = Carbon::now();
         $year = $today->year;
         $month = $today->month;
 
-        $newID = $reference;
-        // $newID = "I" . substr($year,-2) . sprintf("%02s", $month) . "002";
+        //GET LATEST RECORD
+        $reference = $this->ref_table_firestore->orderBy('inventoryID', 'DESC')->limit(1)->documents();
+        $lastRecord = collect($reference->rows());
 
+        //if no last record
+        if($lastRecord->isEmpty()){
+            $newID = "I" . substr($year,-2) . sprintf("%02s", $month) . "001";
+        }else{
+          $newID = $lastRecord->first()["inventoryID"];
+          $last = substr($newID, -3);
+          $newNum = intval($last) + 1;
+          
+          $newID = "I" . substr($year,-2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);;
+        }
         return $newID;
     }
 
-    public function test(){
-        $postData = [
-            'inventoryID' => 'test',
-            'expirationDate' => 'test',
-            'status' => 'test',
-            'quantity' => 'test',
-            'eventID' => 'test'
+    public function getNumOfBlood($data){
+        $numOfBlood=[
+            'aPositive' => 0,
+            'aNegative' => 0,
+            'bPositive' => 0,
+            'bNegative' => 0,
+            'oPositive' => 0,
+            'oNegative' => 0,
+            'abPositive' => 0,
+            'abNegative' => 0
         ];
-        $postRef = $this->database->getReference($this->ref_table)->push($postData);
-        return redirect('view-inventory')->with('status', 'Added Successfully');
+
+        foreach($data as $d){
+            $numOfBlood['aPositive'] += $d->data()['quantity']['aPositive'];
+            $numOfBlood['aNegative'] += $d->data()['quantity']['aNegative'];
+
+            $numOfBlood['bPositive'] += $d->data()['quantity']['bPositive'];
+            $numOfBlood['bNegative'] += $d->data()['quantity']['bNegative'];
+
+            $numOfBlood['oPositive'] += $d->data()['quantity']['oPositive'];
+            $numOfBlood['oNegative'] += $d->data()['quantity']['oNegative'];
+
+            $numOfBlood['abPositive'] += $d->data()['quantity']['abPositive'];
+            $numOfBlood['abNegative'] += $d->data()['quantity']['abNegative'];    
+        }
+
+        return $numOfBlood;
     }
+
+    public function getTotalNumOfBlood($numOfBlood){
+        
+        $totalNumOfBlood = [
+            'Blood_A' => 0,
+            'Blood_B' => 0,
+            'Blood_O' => 0,
+            'Blood_AB' => 0
+        ];
+
+        $totalNumOfBlood['Blood_A'] = $numOfBlood['aPositive'] + $numOfBlood['aNegative'];
+        $totalNumOfBlood['Blood_B'] = $numOfBlood['bPositive'] + $numOfBlood['bNegative'];
+        $totalNumOfBlood['Blood_O'] = $numOfBlood['oPositive'] + $numOfBlood['oNegative'];
+        $totalNumOfBlood['Blood_AB'] = $numOfBlood['abPositive'] + $numOfBlood['abNegative'];
+
+        return $totalNumOfBlood;
+    }
+
 }

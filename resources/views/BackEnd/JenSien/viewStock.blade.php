@@ -1,35 +1,37 @@
 @extends('BackEnd.app')
 
 @section('content')
-{{-- DISPLAY SESSION AFTER STOCK-IN --}}
 
-
-
+    {{-- DISPLAY SESSION AFTER STOCK-IN --}}
     {{-- 4-IMG-VIEW --}}
     <div class="container text-center mx-auto">
         <div class="row align-items-start">
-            <div class="col px-md-5">
+            <div class="col px-md-5 m-1">
                 <div class="col border border-dark cat-blood-color">
                     <img class="img-bloodType" src="{{ url('/Image/imgA.png') }}" alt="BloodType-A" />
-                    <h4 class="text-black">1000</h4>
+                    {{-- Total Number of Blood Type For A --}}
+                    <h4 class="text-black">{{ $totalNumOfBlood['Blood_A'] }}</h4>
                 </div>
             </div>
-            <div class="col px-md-5">
+            <div class="col px-md-5 m-1">
                 <div class="col border border-dark cat-blood-color">
                     <img class="img-bloodType" src="{{ url('/Image/imgB.png') }}" alt="BloodType-B" />
-                    <h4 class="text-black">1000</h4>
+                    {{-- Total Number of Blood Type For B --}}
+                    <h4 class="text-black">{{ $totalNumOfBlood['Blood_B'] }}</h4>
                 </div>
             </div>
-            <div class="col px-md-5">
+            <div class="col px-md-5 m-1">
                 <div class="col border border-dark cat-blood-color">
                     <img class="img-bloodType" src="{{ url('/Image/imgO.png') }}" alt="BloodType-O" />
-                    <h4 class="text-black">1000</h4>
+                    {{-- Total Number of Blood Type For O --}}
+                    <h4 class="text-black">{{ $totalNumOfBlood['Blood_O'] }}</h4>
                 </div>
             </div>
-            <div class="col px-md-5">
+            <div class="col px-md-5 m-1">
                 <div class="col border border-dark cat-blood-color">
                     <img class="img-bloodType" src="{{ url('/Image/imgAB.png') }}" alt="BloodType-AB" />
-                    <h4 class="text-black">1000</h4>
+                    {{-- Total Number of Blood Type For AB --}}
+                    <h4 class="text-black">{{ $totalNumOfBlood['Blood_AB'] }}</h4>
                 </div>
             </div>
         </div>
@@ -61,38 +63,9 @@
                             <td>Quantity</td>
                             <td>Action</td>
                         </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Name</td>
-                            <td>Date</td>
-                            <td>Blood</td>
-                            <td>Quantity</td>
-                            <td>Action</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Name</td>
-                            <td>Date</td>
-                            <td>Blood</td>
-                            <td>Quantity</td>
-                            <td>Action</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Name</td>
-                            <td>Date</td>
-                            <td>Blood</td>
-                            <td>Quantity</td>
-                            <td>Action</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Name</td>
-                            <td>Date</td>
-                            <td>Blood</td>
-                            <td>Quantity</td>
-                            <td>Action</td>
-                        </tr>
+                        {{-- @foreach ($last5Record as $key)
+                            <tr>{{$key}}</tr>
+                        @endforeach --}}
                     </tbody>
                 </table>
             </div>
@@ -124,17 +97,17 @@
                                 <tbody>
                                     <tr>
                                         <td>A+</td>
-                                        <td><label for="BloodType-A-Positive" id="BloodType-A-Positive">0</label></td>
+                                        <td><label for="BloodType-A-Positive" id="BloodType-A-Positive">{{$numOfBlood['aPositive']}}</label></td>
                                     </tr>
                                     <tr>
                                         <td>A-</td>
-                                        <td><label for="BloodType-A-Negative" id="BloodType-A-Negative">0</label></td>
+                                        <td><label for="BloodType-A-Negative" id="BloodType-A-Negative">{{$numOfBlood['aNegative']}}</label></td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th>Total</th>
-                                        <td><label for="BloodType-A-Total" id="BloodType-A-Total">0</label></td>
+                                        <td><label for="BloodType-A-Total" id="BloodType-A-Total">{{$totalNumOfBlood['Blood_A']}}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -154,21 +127,25 @@
                                     <tr>
                                         <td class="align-middle" rowspan="2">Available</td>
                                         <td>A+</td>
-                                        <td><label for="BloodType-A-Positive-Available" id="BloodType-A-Positive-Available">0</label></td>
+                                        <td><label for="BloodType-A-Positive-Available"
+                                                id="BloodType-A-Positive-Available">0</label></td>
                                     </tr>
                                     <tr>
                                         <td>A-</td>
-                                        <td><label for="BloodType-A-Negative-Available" id="BloodType-A-Negative-Available">0</label></td>
+                                        <td><label for="BloodType-A-Negative-Available"
+                                                id="BloodType-A-Negative-Available">0</label></td>
                                     </tr>
 
                                     <tr>
                                         <td class="align-middle" rowspan="2">Shipment</td>
                                         <td>A+</td>
-                                        <td><label for="BloodType-A-Positive-Shipment" id="BloodType-A-Positive-Shipment">0</label></td>
+                                        <td><label for="BloodType-A-Positive-Shipment"
+                                                id="BloodType-A-Positive-Shipment">0</label></td>
                                     </tr>
                                     <tr>
                                         <td>A-</td>
-                                        <td><label for="BloodType-A-Negative-Shipment" id="BloodType-A-Negative-Shipment">0</label></td>
+                                        <td><label for="BloodType-A-Negative-Shipment"
+                                                id="BloodType-A-Negative-Shipment">0</label></td>
                                     </tr>
                                 </tbody>
                             </table>
