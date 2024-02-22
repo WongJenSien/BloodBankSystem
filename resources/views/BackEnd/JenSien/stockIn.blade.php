@@ -4,30 +4,6 @@
     <div class="container">
         <form action="{{ url('add-inventory') }}" method="POST">
             @csrf
-            {{-- <div class="row">
-                <div class="col text-start">
-
-                    <div class="mb-3 row">
-                        <label for="EventID" class="col-sm-2 col-form-label">Event ID</label>
-                        <div class="col-sm-10">
-                            <select id="eventID" class="selectpicker form-select-sm p-2" data-width="fit" aria-label="Default select example">
-                                <option>Select an Event</option>
-                                <option selected value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col text-end">
-                    <div class="mb-3 row">
-                        <label for="inventoryID" class="col-sm-2 col-form-label">Inventory ID</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control-plaintext" name="inventoryID" id="inventoryID" value="{{$newID}}">
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
 <div class="container">
     <div class="row">
         {{-- EventID COL --}}
@@ -36,10 +12,10 @@
                 <label for="eventID" class="col-sm-2 col-form-label">Event ID: </label>
                 <div class="col-sm-10 text-start">
                     <select id="eventID" class="form-select" style="width: fit-content" data-width="fit" aria-label="Default select example">
-                        <option>Select an Event</option>
-                        <option selected value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                        <option selected>Select an Event</option>
+                        @foreach ($eventInfo as $key)
+                            <option value="{{$key["EventID"]}}">{{$key["Name"]}}</option>
+                        @endforeach
                     </select>
                 </div>
               </div>

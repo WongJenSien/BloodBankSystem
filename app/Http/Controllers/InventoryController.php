@@ -26,8 +26,8 @@ class InventoryController extends Controller
     public function create()
     {
         $newID = $this->idGenerator();
-        $eventID = $this->getEventID();
-        return view("BackEnd.JenSien.stockIn")->with("newID", $newID);;
+        $eventInfo = $this->getEventInfo();
+        return view("BackEnd.JenSien.stockIn")->with("newID", $newID)->with("eventInfo", $eventInfo);
     }
 
     public function store(Request $request)
@@ -184,4 +184,9 @@ class InventoryController extends Controller
         return $totalNumOfBlood;
     }
 
+    public function getEventInfo(){
+        $reference = app("firebase.firestore")->database()->collection("Events")->orderBy('EventID', 'DESC')->documents();
+        $data = collect($reference->rows());
+        return $data;
+    }
 }
