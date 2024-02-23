@@ -2,11 +2,6 @@
 
 @section('content')
 
-<p>
-    @foreach ($sortList as $key=>$item)
-        {{$key}}
-    @endforeach
-</p>
     {{-- DISPLAY SESSION AFTER STOCK-IN --}}
     {{-- 4-IMG-VIEW --}}
     <div class="container text-center mx-auto">
@@ -171,20 +166,20 @@
                                         <th>Blood Type</th>
                                         <th>Expired Date</th>
                                         <th>Status</th>
-                                        <th>Event ID</th>
                                         <th>View Details</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>SP001</td>
-                                        <td>A+</td>
-                                        <td>2023-01-01</td>
-                                        <td>Available</td>
-                                        <td>E001</td>
-                                        <td><a href="#">View Details</a></td>
-                                    </tr>
+                                <tbody>  
+                                    @foreach ($infoA as $key=>$item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td> 
+                                            <td>{{$key}}</td>
+                                            <td>{{$item['bloodType'] === 'aPositive'  ? 'A+' : 'A-'}}</td>
+                                            <td>{{$item['expirationDate']}}</td>
+                                            <td>{{$item['status']}}</td>
+                                            <td><a href="{{$key}}">View Details</a></td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>

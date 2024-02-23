@@ -71,31 +71,45 @@ class InventoryController extends Controller
         //InventoryList
         // Blood Type ID: I2402001-A001
         $bloodID = [
-            "aPositive" => $this->bloodTypeID($quantity['aPositive'],$inventoryID, "AP"),
-            "aNegative" => $this->bloodTypeID($quantity['aNegative'],$inventoryID, "AN"),
+            "aPositive" => $this->bloodTypeID($quantity['aPositive'], $inventoryID, "AP"),
+            "aNegative" => $this->bloodTypeID($quantity['aNegative'], $inventoryID, "AN"),
 
-            "bPositive" => $this->bloodTypeID($quantity['bPositive'],$inventoryID, "BP"),
-            "bNegative" => $this->bloodTypeID($quantity['bNegative'],$inventoryID, "BN"),
+            "bPositive" => $this->bloodTypeID($quantity['bPositive'], $inventoryID, "BP"),
+            "bNegative" => $this->bloodTypeID($quantity['bNegative'], $inventoryID, "BN"),
 
-            "oPositive" => $this->bloodTypeID($quantity['oPositive'],$inventoryID, "OP"),
-            "oNegative" => $this->bloodTypeID($quantity['oNegative'],$inventoryID, "ON"),
+            "oPositive" => $this->bloodTypeID($quantity['oPositive'], $inventoryID, "OP"),
+            "oNegative" => $this->bloodTypeID($quantity['oNegative'], $inventoryID, "ON"),
 
-            "abPositive" => $this->bloodTypeID($quantity['abPositive'],$inventoryID, "ABP"),
-            "abNegative" => $this->bloodTypeID($quantity['abNegative'],$inventoryID, "ABN"),
+            "abPositive" => $this->bloodTypeID($quantity['abPositive'], $inventoryID, "ABP"),
+            "abNegative" => $this->bloodTypeID($quantity['abNegative'], $inventoryID, "ABN"),
         ];
+
+        // $bloodInfo = [];
+        // foreach ($bloodID as $bloodType => $bloodTypeIDs) {
+        //     foreach ($bloodTypeIDs as $id) {
+        //         $bloodInfo[] = [
+        //             'id' => $id,
+        //             'bloodType' => $bloodType,
+        //             'status' => $status,
+        //             'inventoryID' => $inventoryID,
+        //             'expirationDate' => $expirationDate[$bloodType],
+        //         ];
+        //     }
+        // }      
 
         $bloodInfo = [];
         foreach ($bloodID as $bloodType => $bloodTypeIDs) {
             foreach ($bloodTypeIDs as $id) {
-                $bloodInfo[] = [
-                    'id' => $id,
+                $bloodInfo[$id] = [
                     'bloodType' => $bloodType,
                     'status' => $status,
                     'inventoryID' => $inventoryID,
                     'expirationDate' => $expirationDate[$bloodType],
                 ];
             }
-        }      
+        }
+
+
         //Save inventory List
         $this->ref_table_firestore_inventoriesList->newDocument()->set($bloodInfo);
         $this->database->getReference($this->ref_table_inventoriesList)->push($bloodInfo);
@@ -111,13 +125,11 @@ class InventoryController extends Controller
         $this->ref_table_firestore_inventories->newDocument()->set($postData);
         $postRef = $this->database->getReference($this->ref_table_inventories)->push($postData);
 
-        if($postRef){
+        if ($postRef) {
             return redirect('view-inventory')->with('status', 'Added Successfully');
-        }else{
+        } else {
             return redirect('view-inventory')->with('status', 'Added Failed');
         }
-
-
     }
 
     public function show(Request $request)
@@ -130,21 +142,33 @@ class InventoryController extends Controller
         $list = collect($reference->rows());
 
         $sortList = [];
-        foreach($list as $l){
-            $sortList[] = $l->data();
+        foreach ($list as $item) {
+            $test = $item->data();
+            $sortList[] = $test;
         }
-dd($sortList);
+        $info = [];
+        foreach($sortList as $key => $value){
+            foreach($value as $item => $item2){
+                $info[$item] = $item2;
+            }
+        }
+
+        $infoA = $this->filterBlood($info, 'AP', 'AN');
+        $infoB = $this->filterBlood($info, 'BP', 'BN');
+        $infoO = $this->filterBlood($info, 'OP', 'ON');
+        $infoAB = $this->filterBlood($info, 'ABP', 'ABN');
+
+        
 
         $numOfBlood = $this->getNumOfBlood($data);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
-        
+
 
 
         return view('BackEnd.JenSien.viewStock')
-        ->with('numOfBlood',$numOfBlood)
-        ->with('totalNumOfBlood',$totalNumOfBlood)
-        ->with('sortList', $sortList);
-
+            ->with('numOfBlood', $numOfBlood)
+            ->with('totalNumOfBlood', $totalNumOfBlood)
+            ->with('infoA', $infoA);
     }
 
     public function edit(Request $request)
@@ -155,13 +179,13 @@ dd($sortList);
     }
     public function destroy(Request $request)
     {
-       
     }
     public function restore(Request $request)
     {
     }
 
-    public function idGenerator($letter, $ref_collection, $item){
+    public function idGenerator($letter, $ref_collection, $item)
+    {
 
         $today = Carbon::now();
         $year = $today->year;
@@ -172,29 +196,31 @@ dd($sortList);
         $lastRecord = collect($reference->rows());
 
         //if no last record
-        if($lastRecord->isEmpty()){
-            $newID = $letter . substr($year,-2) . sprintf("%02s", $month) . "001";
-        }else{
-          $newID = $lastRecord->first()["inventoryID"];
-          $last = substr($newID, -3);
-          $newNum = intval($last) + 1;
-          
-          $newID = $letter . substr($year,-2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);
+        if ($lastRecord->isEmpty()) {
+            $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . "001";
+        } else {
+            $newID = $lastRecord->first()["inventoryID"];
+            $last = substr($newID, -3);
+            $newNum = intval($last) + 1;
+
+            $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);
         }
         return $newID;
     }
 
-    public function bloodTypeID($quantity, $inventoryID, $bloodType){
+    public function bloodTypeID($quantity, $inventoryID, $bloodType)
+    {
         $bloodID = [];
-        for($a = 0; $a < $quantity; $a++){
-            $id = $inventoryID . "-". $bloodType . sprintf("%03d", $a+1);
+        for ($a = 0; $a < $quantity; $a++) {
+            $id = $inventoryID . "-" . $bloodType . sprintf("%03d", $a + 1);
             $bloodID[] = $id;
         }
         return $bloodID;
     }
 
-    public function getNumOfBlood($data){
-        $numOfBlood=[
+    public function getNumOfBlood($data)
+    {
+        $numOfBlood = [
             'aPositive' => 0,
             'aNegative' => 0,
             'bPositive' => 0,
@@ -205,7 +231,7 @@ dd($sortList);
             'abNegative' => 0
         ];
 
-        foreach($data as $d){
+        foreach ($data as $d) {
             $numOfBlood['aPositive'] += $d->data()['quantity']['aPositive'];
             $numOfBlood['aNegative'] += $d->data()['quantity']['aNegative'];
 
@@ -216,14 +242,15 @@ dd($sortList);
             $numOfBlood['oNegative'] += $d->data()['quantity']['oNegative'];
 
             $numOfBlood['abPositive'] += $d->data()['quantity']['abPositive'];
-            $numOfBlood['abNegative'] += $d->data()['quantity']['abNegative'];    
+            $numOfBlood['abNegative'] += $d->data()['quantity']['abNegative'];
         }
 
         return $numOfBlood;
     }
 
-    public function getTotalNumOfBlood($numOfBlood){
-        
+    public function getTotalNumOfBlood($numOfBlood)
+    {
+
         $totalNumOfBlood = [
             'Blood_A' => 0,
             'Blood_B' => 0,
@@ -239,9 +266,21 @@ dd($sortList);
         return $totalNumOfBlood;
     }
 
-    public function getEventInfo(){
+    public function getEventInfo()
+    {
         $reference = app("firebase.firestore")->database()->collection("Events")->orderBy('EventID', 'DESC')->documents();
         $data = collect($reference->rows());
         return $data;
+    }
+
+    public function filterBlood($sortList, $bloodType_1, $bloodType_2){
+        $info = [];
+        foreach ($sortList as $key => $item) {
+            if (strpos($key, $bloodType_1) !== false || strpos($key, $bloodType_2) !== false) {
+                $info[$key] = $item;
+            }
+        }
+        krsort($info);
+        return $info;
     }
 }
