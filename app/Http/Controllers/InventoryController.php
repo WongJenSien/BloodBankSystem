@@ -9,46 +9,52 @@ use Kreait\Firebase\Contract\Database;
 class InventoryController extends Controller
 {
     protected $database;
-    protected $ref_table;
-    protected $ref_table_firestore;
+    protected $ref_table_inventories;
+    protected $ref_table_inventoriesList;
+    protected $ref_table_firestore_inventories;
+    protected $ref_table_firestore_inventoriesList;
     public function __construct(Database $database)
     {
-        $this->ref_table_firestore = app('firebase.firestore')->database()->collection('Inventories');
-        $this->ref_table = "Inventories";
+        $this->ref_table_firestore_inventories = app('firebase.firestore')->database()->collection('Inventories');
+        $this->ref_table_firestore_inventoriesList = app('firebase.firestore')->database()->collection('inventoryList');
+        $this->ref_table_inventories = "Inventories";
+        $this->ref_table_inventoriesList = "inventoryList";
         $this->database = $database;
     }
 
     public function shipOut()
     {
-        return view('BackEnd.JenSien.stockOut');
+        $shipmentID = $this->idGenerator('S', 'Shipment', 'shipmentID');
+        return view('BackEnd.JenSien.stockOut')->with('shipmentID', $shipmentID);
     }
 
     public function create()
     {
-        $newID = $this->idGenerator();
+        $newID = $this->idGenerator('I', $this->ref_table_inventories, 'inventoryID');
         $eventInfo = $this->getEventInfo();
         return view("BackEnd.JenSien.stockIn")->with("newID", $newID)->with("eventInfo", $eventInfo);
     }
 
     public function store(Request $request)
     {
+
         $inventoryID = $request->inventoryID;
-        $expirationDate = array(
-            'exDate_A_P' => $request->expiredDate_A_P,
-            'exDate_A_N' => $request->expiredDate_A_N,
+        $expirationDate = [
+            'aPositive' => $request->expiredDate_A_P,
+            'aNegative' => $request->expiredDate_A_N,
 
-            'exDate_B_P' => $request->expiredDate_B_P,
-            'exDate_B_N' => $request->expiredDate_B_N,
+            'bPositive' => $request->expiredDate_B_P,
+            'bNegative' => $request->expiredDate_B_N,
 
-            'exDate_O_P' => $request->expiredDate_O_P,
-            'exDate_O_N' => $request->expiredDate_O_N,
+            'oPositive' => $request->expiredDate_O_P,
+            'oNegative' => $request->expiredDate_O_N,
 
-            'exDate_AB_P' => $request->expiredDate_AB_P,
-            'exDate_AB_N' => $request->expiredDate_AB_N
-        );
+            'abPositive' => $request->expiredDate_AB_P,
+            'abNegative' => $request->expiredDate_AB_N
+        ];
 
         $status = "Available"; //By Default
-        $quantity = array(
+        $quantity = [
             'aPositive' => $request->aPositive,
             'aNegative' => $request->aNegative,
 
@@ -59,21 +65,51 @@ class InventoryController extends Controller
             'oNegative' => $request->oNegative,
 
             'abPositive' => $request->abPositive,
-            'abNegative' => $request->abNegative,
-        );
+            'abNegative' => $request->abNegative
+        ];
+
+        //InventoryList
+        // Blood Type ID: I2402001-A001
+        $bloodID = [
+            "aPositive" => $this->bloodTypeID($quantity['aPositive'],$inventoryID, "AP"),
+            "aNegative" => $this->bloodTypeID($quantity['aNegative'],$inventoryID, "AN"),
+
+            "bPositive" => $this->bloodTypeID($quantity['bPositive'],$inventoryID, "BP"),
+            "bNegative" => $this->bloodTypeID($quantity['bNegative'],$inventoryID, "BN"),
+
+            "oPositive" => $this->bloodTypeID($quantity['oPositive'],$inventoryID, "OP"),
+            "oNegative" => $this->bloodTypeID($quantity['oNegative'],$inventoryID, "ON"),
+
+            "abPositive" => $this->bloodTypeID($quantity['abPositive'],$inventoryID, "ABP"),
+            "abNegative" => $this->bloodTypeID($quantity['abNegative'],$inventoryID, "ABN"),
+        ];
+
+        $bloodInfo = [];
+        foreach ($bloodID as $bloodType => $bloodTypeIDs) {
+            foreach ($bloodTypeIDs as $id) {
+                $bloodInfo[] = [
+                    'id' => $id,
+                    'bloodType' => $bloodType,
+                    'status' => $status,
+                    'inventoryID' => $inventoryID,
+                    'expirationDate' => $expirationDate[$bloodType],
+                ];
+            }
+        }      
+        //Save inventory List
+        $this->ref_table_firestore_inventoriesList->newDocument()->set($bloodInfo);
+        $this->database->getReference($this->ref_table_inventoriesList)->push($bloodInfo);
 
         $eventID = $request->eventID;
 
         $postData = [
             'inventoryID' => $inventoryID,
-            'expirationDate' => $expirationDate,
-            'status' => $status,
             'quantity' => $quantity,
             'eventID' => $eventID
         ];
 
-        $this->ref_table_firestore->newDocument()->set($postData);
-        $postRef = $this->database->getReference($this->ref_table)->push($postData);
+        $this->ref_table_firestore_inventories->newDocument()->set($postData);
+        $postRef = $this->database->getReference($this->ref_table_inventories)->push($postData);
 
         if($postRef){
             return redirect('view-inventory')->with('status', 'Added Successfully');
@@ -86,19 +122,28 @@ class InventoryController extends Controller
 
     public function show(Request $request)
     {
-        // $reference = $this->database->getReference($this->ref_table)->getValue();
-        // return view('BackEnd.JenSien.viewStock', compact('reference'));
 
-        $reference = $this->ref_table_firestore->documents();
-        
+        $reference = $this->ref_table_firestore_inventories->documents();
         $data = collect($reference->rows());
+
+        $reference = $this->ref_table_firestore_inventoriesList->documents();
+        $list = collect($reference->rows());
+
+        $sortList = [];
+        foreach($list as $l){
+            $sortList[] = $l->data();
+        }
+dd($sortList);
 
         $numOfBlood = $this->getNumOfBlood($data);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
+        
+
 
         return view('BackEnd.JenSien.viewStock')
         ->with('numOfBlood',$numOfBlood)
-        ->with('totalNumOfBlood',$totalNumOfBlood);
+        ->with('totalNumOfBlood',$totalNumOfBlood)
+        ->with('sortList', $sortList);
 
     }
 
@@ -110,32 +155,42 @@ class InventoryController extends Controller
     }
     public function destroy(Request $request)
     {
+       
     }
     public function restore(Request $request)
     {
     }
 
-    public function idGenerator(){
+    public function idGenerator($letter, $ref_collection, $item){
 
         $today = Carbon::now();
         $year = $today->year;
         $month = $today->month;
 
         //GET LATEST RECORD
-        $reference = $this->ref_table_firestore->orderBy('inventoryID', 'DESC')->limit(1)->documents();
+        $reference = app('firebase.firestore')->database()->collection($ref_collection)->orderBy($item, 'DESC')->limit(1)->documents();
         $lastRecord = collect($reference->rows());
 
         //if no last record
         if($lastRecord->isEmpty()){
-            $newID = "I" . substr($year,-2) . sprintf("%02s", $month) . "001";
+            $newID = $letter . substr($year,-2) . sprintf("%02s", $month) . "001";
         }else{
           $newID = $lastRecord->first()["inventoryID"];
           $last = substr($newID, -3);
           $newNum = intval($last) + 1;
           
-          $newID = "I" . substr($year,-2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);;
+          $newID = $letter . substr($year,-2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);
         }
         return $newID;
+    }
+
+    public function bloodTypeID($quantity, $inventoryID, $bloodType){
+        $bloodID = [];
+        for($a = 0; $a < $quantity; $a++){
+            $id = $inventoryID . "-". $bloodType . sprintf("%03d", $a+1);
+            $bloodID[] = $id;
+        }
+        return $bloodID;
     }
 
     public function getNumOfBlood($data){

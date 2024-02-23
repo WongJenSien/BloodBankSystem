@@ -3,6 +3,7 @@
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +25,8 @@ Route::get('add-inventory', [InventoryController::class,'create']);
 Route::post('add-inventory', [InventoryController::class,'store']);
 
 Route::get('view-inventory', [InventoryController::class,'show']);
+
 Route::get('remove-inventory', [InventoryController::class, 'shipOut']);
+Route::post('remove-inventory', [ShipmentController::class, 'store']);
 
 Route::get('add-event', [EventController::class,'create']);

@@ -2,6 +2,11 @@
 
 @section('content')
 
+<p>
+    @foreach ($sortList as $key=>$item)
+        {{$key}}
+    @endforeach
+</p>
     {{-- DISPLAY SESSION AFTER STOCK-IN --}}
     {{-- 4-IMG-VIEW --}}
     <div class="container text-center mx-auto">
