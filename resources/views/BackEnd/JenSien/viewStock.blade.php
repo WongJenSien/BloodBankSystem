@@ -128,24 +128,24 @@
                                         <td class="align-middle" rowspan="2">Available</td>
                                         <td>A+</td>
                                         <td><label for="BloodType-A-Positive-Available"
-                                                id="BloodType-A-Positive-Available">0</label></td>
+                                                id="BloodType-A-Positive-Available">{{$status_info_A['Available_P']}}</label></td>
                                     </tr>
                                     <tr>
                                         <td>A-</td>
                                         <td><label for="BloodType-A-Negative-Available"
-                                                id="BloodType-A-Negative-Available">0</label></td>
+                                                id="BloodType-A-Negative-Available">{{$status_info_A['Available_N']}}</label></td>
                                     </tr>
 
                                     <tr>
                                         <td class="align-middle" rowspan="2">Shipment</td>
                                         <td>A+</td>
                                         <td><label for="BloodType-A-Positive-Shipment"
-                                                id="BloodType-A-Positive-Shipment">0</label></td>
+                                                id="BloodType-A-Positive-Shipment">{{$status_info_A['Shipment_P']}}</label></td>
                                     </tr>
                                     <tr>
                                         <td>A-</td>
                                         <td><label for="BloodType-A-Negative-Shipment"
-                                                id="BloodType-A-Negative-Shipment">0</label></td>
+                                                id="BloodType-A-Negative-Shipment">{{$status_info_A['Shipment_N']}}</label></td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -153,12 +153,17 @@ class InventoryController extends Controller
             }
         }
 
+        //FILTER BLOOD TYPE
         $infoA = $this->filterBlood($info, 'AP', 'AN');
         $infoB = $this->filterBlood($info, 'BP', 'BN');
         $infoO = $this->filterBlood($info, 'OP', 'ON');
         $infoAB = $this->filterBlood($info, 'ABP', 'ABN');
 
-        
+        //COUNT BLOOD STATUS
+        $status_info_A = $this->countBlood($info, 'aPositive', 'aNegative');
+        $status_info_B = $this->countBlood($info, 'bPositive', 'bNegative');
+        $status_info_O = $this->countBlood($info, 'oPositive', 'oNegative');
+        $status_info_AB = $this->countBlood($info, 'abPositive', 'abNegative');
 
         $numOfBlood = $this->getNumOfBlood($data);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
@@ -168,7 +173,8 @@ class InventoryController extends Controller
         return view('BackEnd.JenSien.viewStock')
             ->with('numOfBlood', $numOfBlood)
             ->with('totalNumOfBlood', $totalNumOfBlood)
-            ->with('infoA', $infoA);
+            ->with('infoA', $infoA)
+            ->with('status_info_A', $status_info_A);
     }
 
     public function edit(Request $request)
@@ -273,14 +279,40 @@ class InventoryController extends Controller
         return $data;
     }
 
-    public function filterBlood($sortList, $bloodType_1, $bloodType_2){
+    public function filterBlood($list, $bloodType_1, $bloodType_2){
         $info = [];
-        foreach ($sortList as $key => $item) {
+        foreach ($list as $key => $item) {
             if (strpos($key, $bloodType_1) !== false || strpos($key, $bloodType_2) !== false) {
                 $info[$key] = $item;
             }
         }
         krsort($info);
+        return $info;
+    }
+
+    public function countBlood($list, $bloodType_1, $bloodType_2){
+        $info = [
+            'Available_P'=> 0, 
+            'Available_N'=> 0, 
+            'Shipment_P'=> 0, 
+            'Shipment_N'=> 0, 
+        ];
+
+        foreach($list as $key => $item){
+            if($item['status'] === 'Available' && $item['bloodType']=== $bloodType_1){
+                $info['Available_P']++;
+            }
+            if($item['status'] === 'Available' && $item['bloodType']=== $bloodType_2){
+                $info['Available_N']++;
+            }
+            
+            if($item['status'] === 'Shipment' && $item['bloodType']=== $bloodType_1){
+                $info['Shipment_P']++;
+            }
+            if($item['status'] === 'Shipment' && $item['bloodType']=== $bloodType_2){
+                $info['Shipment_N']++;
+            }
+        }
         return $info;
     }
 }
