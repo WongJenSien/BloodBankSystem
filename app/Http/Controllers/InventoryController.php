@@ -141,29 +141,41 @@ class InventoryController extends Controller
         $reference = $this->ref_table_firestore_inventoriesList->documents();
         $list = collect($reference->rows());
 
-        $sortList = [];
+        // $sortList = [];
+        // foreach ($list as $item) {
+        //     $test = $item->data();
+        //     $sortList[] = $test;
+        // }
+        // $info = [];
+        // foreach($sortList as $key => $value){
+        //     foreach($value as $item => $item2){
+        //         $info[$item] = $item2;
+        //     }
+        // }
+
+        $packInfo = [];
         foreach ($list as $item) {
             $test = $item->data();
-            $sortList[] = $test;
+            $packInfo[] = $test;
         }
-        $info = [];
-        foreach($sortList as $key => $value){
+        $listInfo = [];
+        foreach($packInfo as $key => $value){
             foreach($value as $item => $item2){
-                $info[$item] = $item2;
+                $listInfo[$item] = $item2;
             }
         }
 
         //FILTER BLOOD TYPE
-        $infoA = $this->filterBlood($info, 'AP', 'AN');
-        $infoB = $this->filterBlood($info, 'BP', 'BN');
-        $infoO = $this->filterBlood($info, 'OP', 'ON');
-        $infoAB = $this->filterBlood($info, 'ABP', 'ABN');
+        $infoA = $this->filterBlood($listInfo, 'AP', 'AN');
+        $infoB = $this->filterBlood($listInfo, 'BP', 'BN');
+        $infoO = $this->filterBlood($listInfo, 'OP', 'ON');
+        $infoAB = $this->filterBlood($listInfo, 'ABP', 'ABN');
 
         //COUNT BLOOD STATUS
-        $status_info_A = $this->countBlood($info, 'aPositive', 'aNegative');
-        $status_info_B = $this->countBlood($info, 'bPositive', 'bNegative');
-        $status_info_O = $this->countBlood($info, 'oPositive', 'oNegative');
-        $status_info_AB = $this->countBlood($info, 'abPositive', 'abNegative');
+        $status_info_A = $this->countBlood($listInfo, 'aPositive', 'aNegative');
+        $status_info_B = $this->countBlood($listInfo, 'bPositive', 'bNegative');
+        $status_info_O = $this->countBlood($listInfo, 'oPositive', 'oNegative');
+        $status_info_AB = $this->countBlood($listInfo, 'abPositive', 'abNegative');
 
         $numOfBlood = $this->getNumOfBlood($data);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
