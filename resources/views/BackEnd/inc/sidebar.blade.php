@@ -82,7 +82,7 @@
 
 
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="{{url('view-shipment')}}" class="sidebar-link">
                     <i class="lni lni-delivery"></i>
                     <span>Shipment</span>
                 </a>

@@ -4,16 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Kreait\Firebase\Contract\Database;
+use Carbon\Carbon;
 
 class ShipmentController extends Controller
 {
     protected $database;
     protected $ref_table;
     protected $ref_table_firestore;
+    protected $ref_table_firestore_shipmentList;
+    protected $ref_table_shipmentList;
     public function __construct(Database $database)
     {
         $this->ref_table_firestore = app('firebase.firestore')->database()->collection('Shipment');
+        $this->ref_table_firestore_shipmentList = app('firebase.firestore')->database()->collection('shipmentList');
         $this->ref_table = "Shipment";
+        $this->ref_table_shipmentList = "Shipment";
         $this->database = $database;
     }
 
@@ -39,13 +44,15 @@ class ShipmentController extends Controller
         $shipmentDate = $request->ship_date;
         $description = $request->description;
 
+        //Status of Shipment: Pending, Arrive
         $postData = [
             "Quantity" => $quantity,
             "ShipID" => $shipmentID,
             "RequestDate" => $requestDate,
             "location" => $location,
             "ShipDate" => $shipmentDate,
-            "Description" => $description
+            "Description" => $description,
+            "Status" => "Pending"
         ];
 
         //retrive data rows for the particular blood
@@ -86,17 +93,19 @@ class ShipmentController extends Controller
         $infoABN = $this->sortBasedOnDate($infoABN);
 
         //Assign Shipment Blood
-        $bloodAP = $this->changeStatus(array_slice($infoAP, 0, $quantity['aPositive']));
-        $bloodAN = $this->changeStatus(array_slice($infoAN, 0, $quantity['aNegative']));
+        $bloodAP = $this->changeStatus(array_slice($infoAP, 0, $quantity['aPositive']), $shipmentID);
+        $bloodAN = $this->changeStatus(array_slice($infoAN, 0, $quantity['aNegative']), $shipmentID);
 
-        $bloodBP = $this->changeStatus(array_slice($infoAP, 0, $quantity['bPositive']));
-        $bloodBN = $this->changeStatus(array_slice($infoAN, 0, $quantity['bNegative']));
+        $bloodBP = $this->changeStatus(array_slice($infoAP, 0, $quantity['bPositive']), $shipmentID);
+        $bloodBN = $this->changeStatus(array_slice($infoAN, 0, $quantity['bNegative']), $shipmentID);
 
-        $bloodOP = $this->changeStatus(array_slice($infoAP, 0, $quantity['oPositive']));
-        $bloodON = $this->changeStatus(array_slice($infoAN, 0, $quantity['oNegative']));
+        $bloodOP = $this->changeStatus(array_slice($infoAP, 0, $quantity['oPositive']), $shipmentID);
+        $bloodON = $this->changeStatus(array_slice($infoAN, 0, $quantity['oNegative']), $shipmentID);
 
-        $bloodABP = $this->changeStatus(array_slice($infoAP, 0, $quantity['abPositive']));
-        $bloodABN = $this->changeStatus(array_slice($infoAN, 0, $quantity['abNegative']));
+        $bloodABP = $this->changeStatus(array_slice($infoAP, 0, $quantity['abPositive']), $shipmentID);
+        $bloodABN = $this->changeStatus(array_slice($infoAN, 0, $quantity['abNegative']), $shipmentID);
+
+
 
         $this->updateList($bloodAP);
         $this->updateList($bloodAN);
@@ -106,9 +115,25 @@ class ShipmentController extends Controller
         $this->updateList($bloodON);
         $this->updateList($bloodABP);
         $this->updateList($bloodABN);
+
         
+        //Save inventory List
+         $this->ref_table_firestore_shipmentList->newDocument()->set($postData);
+         $postRef = $this->database->getReference($this->ref_table_shipmentList)->push($postData);
 
+         if ($postRef) {
+            return redirect('view-shipment')->with('status', 'Added Successfully');
+        } else {
+             return redirect('view-shipment')->with('status', 'Added Failed');
+        }
 
+         
+
+    }
+
+    public function show(Request $request)
+    {
+        return view('BackEnd.JenSien.viewShipment');
     }
 
     public function filterBlood($list, $bloodType_1)
@@ -132,10 +157,11 @@ class ShipmentController extends Controller
         return $bloodList;
     }
 
-    public function changeStatus($list)
+    public function changeStatus($list, $shipmentID)
     {
         foreach ($list as $key => &$i) {
             $i['status'] = 'Shipment';
+            $i['ShipmentID'] = $shipmentID;
         }
         return $list;
     }
@@ -159,4 +185,6 @@ class ShipmentController extends Controller
             }
         }
     }
+
+
 }

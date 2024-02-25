@@ -82,20 +82,7 @@ class InventoryController extends Controller
 
             "abPositive" => $this->bloodTypeID($quantity['abPositive'], $inventoryID, "ABP"),
             "abNegative" => $this->bloodTypeID($quantity['abNegative'], $inventoryID, "ABN"),
-        ];
-
-        // $bloodInfo = [];
-        // foreach ($bloodID as $bloodType => $bloodTypeIDs) {
-        //     foreach ($bloodTypeIDs as $id) {
-        //         $bloodInfo[] = [
-        //             'id' => $id,
-        //             'bloodType' => $bloodType,
-        //             'status' => $status,
-        //             'inventoryID' => $inventoryID,
-        //             'expirationDate' => $expirationDate[$bloodType],
-        //         ];
-        //     }
-        // }      
+        ];  
 
         $bloodInfo = [];
         foreach ($bloodID as $bloodType => $bloodTypeIDs) {
@@ -140,18 +127,6 @@ class InventoryController extends Controller
 
         $reference = $this->ref_table_firestore_inventoriesList->documents();
         $list = collect($reference->rows());
-
-        // $sortList = [];
-        // foreach ($list as $item) {
-        //     $test = $item->data();
-        //     $sortList[] = $test;
-        // }
-        // $info = [];
-        // foreach($sortList as $key => $value){
-        //     foreach($value as $item => $item2){
-        //         $info[$item] = $item2;
-        //     }
-        // }
 
         $packInfo = [];
         foreach ($list as $item) {
@@ -214,10 +189,10 @@ class InventoryController extends Controller
         $lastRecord = collect($reference->rows());
 
         //if no last record
-        if ($lastRecord->isEmpty()) {
+        if ($lastRecord->isEmpty() || substr($lastRecord->first()[$item],strlen($letter) , 4) != substr($year, -2) . sprintf("%02s", $month)) {
             $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . "001";
         } else {
-            $newID = $lastRecord->first()["inventoryID"];
+            $newID = $lastRecord->first()[$item];
             $last = substr($newID, -3);
             $newNum = intval($last) + 1;
 

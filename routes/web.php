@@ -25,8 +25,12 @@ Route::get('add-inventory', [InventoryController::class,'create']);
 Route::post('add-inventory', [InventoryController::class,'store']);
 
 Route::get('view-inventory', [InventoryController::class,'show']);
+Route::get('view-shipment',[ShipmentController::class, 'show']);
 
 Route::get('remove-inventory', [InventoryController::class, 'shipOut']);
 Route::post('remove-inventory', [ShipmentController::class, 'store']);
+
+
+
 
 Route::get('add-event', [EventController::class,'create']);
