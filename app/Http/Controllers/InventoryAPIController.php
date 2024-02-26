@@ -54,7 +54,11 @@ class InventoryAPIController extends Controller
         $infoO = $this->filterBlood($listInfo, 'OP', 'ON');
         $infoAB = $this->filterBlood($listInfo, 'ABP', 'ABN');
 
-        $package_info = [$infoA, $infoB, $infoO, $infoAB];
+        $package_info = [
+            'infoA' => $infoA, 
+            'infoB' => $infoB, 
+            'infoO' => $infoO, 
+            'infoAB' => $infoAB];
 
         //COUNT BLOOD STATUS
         $status_info_A = $this->countBlood($listInfo, 'aPositive', 'aNegative');
@@ -62,7 +66,11 @@ class InventoryAPIController extends Controller
         $status_info_O = $this->countBlood($listInfo, 'oPositive', 'oNegative');
         $status_info_AB = $this->countBlood($listInfo, 'abPositive', 'abNegative');
 
-        $package_status_info = [$status_info_A, $status_info_B, $status_info_O, $status_info_AB];
+        $package_status_info = [
+            'status_info_A' => $status_info_A, 
+            'status_info_B' => $status_info_B, 
+            'status_info_O' => $status_info_O, 
+            'status_info_AB' => $status_info_AB];
 
         $numOfBlood = $this->getNumOfBlood($data);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
