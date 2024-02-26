@@ -11,14 +11,12 @@ class ShipmentController extends Controller
     protected $database;
     protected $ref_table;
     protected $ref_table_firestore;
-    protected $ref_table_firestore_shipmentList;
-    protected $ref_table_shipmentList;
+    
+    
     public function __construct(Database $database)
     {
         $this->ref_table_firestore = app('firebase.firestore')->database()->collection('Shipment');
-        $this->ref_table_firestore_shipmentList = app('firebase.firestore')->database()->collection('shipmentList');
         $this->ref_table = "Shipment";
-        $this->ref_table_shipmentList = "Shipment";
         $this->database = $database;
     }
 
@@ -118,8 +116,10 @@ class ShipmentController extends Controller
 
         
         //Save inventory List
-         $this->ref_table_firestore_shipmentList->newDocument()->set($postData);
-         $postRef = $this->database->getReference($this->ref_table_shipmentList)->push($postData);
+         $this->ref_table_firestore->newDocument()->set($postData);
+         $postRef = $this->database->getReference($this->ref_table)->push($postData);
+
+         //save shipment
 
          if ($postRef) {
             return redirect('view-shipment')->with('status', 'Added Successfully');
@@ -133,7 +133,26 @@ class ShipmentController extends Controller
 
     public function show(Request $request)
     {
-        return view('BackEnd.JenSien.viewShipment');
+        $reference = $this->ref_table_firestore->documents();
+        $data = collect($reference->rows());
+        $info = [];
+        foreach($data as $d){
+            $info[] = $d->data();
+        }
+        // $shipInfo = [];
+        // foreach($info as $r => $rKey){
+        //     foreach($rKey as $key => $value){
+        //         $shipInfo[$key] = $value;
+        //     }
+        // }
+        // $sumOfQuantity = 0;
+        // foreach($shipInfo['Quantity'] as $i => $value){
+        //     $sumOfQuantity += $value;
+        // }
+
+        
+        return view('BackEnd.JenSien.viewShipment')
+        ->with('shipInfo', $info);
     }
 
     public function filterBlood($list, $bloodType_1)

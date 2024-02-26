@@ -24,7 +24,7 @@ class InventoryController extends Controller
 
     public function shipOut()
     {
-        $shipmentID = $this->idGenerator('S', 'Shipment', 'shipmentID');
+        $shipmentID = $this->idGenerator('S', 'Shipment', 'ShipID');
         return view('BackEnd.JenSien.stockOut')->with('shipmentID', $shipmentID);
     }
 
@@ -130,8 +130,7 @@ class InventoryController extends Controller
 
         $packInfo = [];
         foreach ($list as $item) {
-            $test = $item->data();
-            $packInfo[] = $test;
+            $packInfo[] = $item->data();
         }
         $listInfo = [];
         foreach($packInfo as $key => $value){

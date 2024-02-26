@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\HomeAPIController;
+use App\Http\Controllers\InventoryAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+Route::resource('/view-inventory', InventoryAPIController::class);
+
+Route::resource('/', HomeAPIController::class);
+
