@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Contract\Database;
 
-
-class ShipmentController extends Controller
+class ShipmentAPIController extends Controller
 {
     protected $database;
     protected $ref_table;
@@ -22,35 +21,23 @@ class ShipmentController extends Controller
 
     public function store(Request $request)
     {
-        $quantity = [
-            'aPositive' => $request->aPositive,
-            'aNegative' => $request->aNegative,
-
-            'bPositive' => $request->bPositive,
-            'bNegative' => $request->bNegative,
-
-            'oPositive' => $request->oPositive,
-            'oNegative' => $request->oNegative,
-
-            'abPositive' => $request->abPositive,
-            'abNegative' => $request->abNegative,
-        ];
-
-        $shipmentID = $request->ship_id;
-        $requestDate = $request->ship_today;
+        $shipmentID = $request->shipmentID;
+        $reqDate = $request->requestDate;
         $location = $request->location;
-        $shipmentDate = $request->ship_date;
+        $shipDate = $request->shipDate;
         $description = $request->description;
+        $quantity = $request->quantity;
+        $status = 'Pending';
 
         //Status of Shipment: Pending, Arrive
         $postData = [
             "Quantity" => $quantity,
             "ShipID" => $shipmentID,
-            "RequestDate" => $requestDate,
+            "RequestDate" => $reqDate,
             "location" => $location,
-            "ShipDate" => $shipmentDate,
+            "ShipDate" => $shipDate,
             "Description" => $description,
-            "Status" => "Pending"
+            "Status" => $status
         ];
 
         //retrive data rows for the particular blood
@@ -58,13 +45,13 @@ class ShipmentController extends Controller
         $inventoryListData = collect($reference->rows());
         $packInfo = [];
         foreach ($inventoryListData as $item) {
-            $test = $item->data();
-            $packInfo[] = $test;
+            // $test = $item->data();
+            // $packInfo[] = $test;
+            $packInfo[] = $item->data();
         }
         //FETCH ALL ROW DATA
         $listInfo = [];
         foreach ($packInfo as $key => $value) {
-
             foreach ($value as $item => $item2) {
                 $listInfo[$item] = $item2;
             }
@@ -103,8 +90,6 @@ class ShipmentController extends Controller
         $bloodABP = $this->changeStatus(array_slice($infoABP, 0, $quantity['abPositive']), $shipmentID);
         $bloodABN = $this->changeStatus(array_slice($infoABN, 0, $quantity['abNegative']), $shipmentID);
 
-
-
         $this->updateList($bloodAP);
         $this->updateList($bloodAN);
         $this->updateList($bloodBP);
@@ -114,18 +99,15 @@ class ShipmentController extends Controller
         $this->updateList($bloodABP);
         $this->updateList($bloodABN);
 
-        
+
+
         //Save inventory List
          $this->ref_table_firestore->newDocument()->set($postData);
          $postRef = $this->database->getReference($this->ref_table)->push($postData);
 
          //save shipment
 
-         if ($postRef) {
-            return redirect('view-shipment')->with('status', 'Added Successfully');
-        } else {
-             return redirect('view-shipment')->with('status', 'Added Failed');
-        }
+        return;
 
          
 
@@ -154,6 +136,7 @@ class ShipmentController extends Controller
         return view('BackEnd.JenSien.viewShipment')
         ->with('shipInfo', $info);
     }
+
     public function filterBlood($list, $bloodType_1){
         $info = [];
         foreach ($list as $key => $item) {
@@ -166,18 +149,6 @@ class ShipmentController extends Controller
         krsort($info);
         return $info;
     }
-    // public function filterBlood($list, $bloodType_1)
-    // {
-    //     $info = [];
-    //     foreach ($list as $key => $item) {
-    //         if (strpos($key, $bloodType_1) !== false) {
-    //             if ($item['status'] === 'Available')
-    //                 $info[$key] = $item;
-    //         }
-    //     }
-    //     krsort($info);
-    //     return $info;
-    // }
 
     public function sortBasedOnDate($bloodList)
     {
@@ -215,6 +186,4 @@ class ShipmentController extends Controller
             }
         }
     }
-
-
 }

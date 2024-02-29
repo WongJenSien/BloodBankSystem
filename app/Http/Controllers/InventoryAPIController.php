@@ -41,10 +41,10 @@ class InventoryAPIController extends Controller
         }
 
         //FILTER BLOOD TYPE
-        $infoA = $this->filterBlood($listInfo, 'AP', 'AN');
-        $infoB = $this->filterBlood($listInfo, 'BP', 'BN');
-        $infoO = $this->filterBlood($listInfo, 'OP', 'ON');
-        $infoAB = $this->filterBlood($listInfo, 'ABP', 'ABN');
+        $infoA = $this->filterBlood($listInfo, 'aPositive', 'aNegative');
+        $infoB = $this->filterBlood($listInfo, 'bPositive', 'bNegative');
+        $infoO = $this->filterBlood($listInfo, 'oPositive', 'oNegative');
+        $infoAB = $this->filterBlood($listInfo, 'abPositive', 'abNegative');
 
         $package_info = [
             'infoA' => $infoA,
@@ -144,6 +144,12 @@ class InventoryAPIController extends Controller
     {
     }
 
+    public function shipOut()
+    {
+        
+        return [$this->idGenerator('S', 'Shipment', 'ShipID')];
+    }
+
     public function getNewId(){
         return [$this->idGenerator('I', $this->ref_table_inventories, 'inventoryID')];
     }
@@ -152,10 +158,12 @@ class InventoryAPIController extends Controller
     {
         $info = [];
         foreach ($list as $key => $item) {
-            if (strpos($key, $bloodType_1) !== false || strpos($key, $bloodType_2) !== false) {
+            if($item['bloodType'] === $bloodType_1 || $item['bloodType'] === $bloodType_2){
                 $info[$key] = $item;
             }
         }
+
+
         krsort($info);
         return $info;
     }

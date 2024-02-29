@@ -140,16 +140,33 @@ class InventoryController extends Controller
         }
 
         //FILTER BLOOD TYPE
-        $infoA = $this->filterBlood($listInfo, 'AP', 'AN');
-        $infoB = $this->filterBlood($listInfo, 'BP', 'BN');
-        $infoO = $this->filterBlood($listInfo, 'OP', 'ON');
-        $infoAB = $this->filterBlood($listInfo, 'ABP', 'ABN');
+        $info = [];
+        $infoA = $this->filterBlood($listInfo, 'aPositive', 'aNegative');
+        $infoB = $this->filterBlood($listInfo, 'bPositive', 'bNegative');
+        $infoO = $this->filterBlood($listInfo, 'oPositive', 'oNegative');
+        $infoAB = $this->filterBlood($listInfo, 'abPositive', 'abNegative');
+
+        $info = [
+            'bloodTypeA' => $infoA, 
+            'bloodTypeB'=>$infoB,
+            'bloodTypeO'=>$infoO,
+            'bloodTypeAB'=>$infoAB
+        ];
 
         //COUNT BLOOD STATUS
+        $status_info = [];
         $status_info_A = $this->countBlood($listInfo, 'aPositive', 'aNegative');
         $status_info_B = $this->countBlood($listInfo, 'bPositive', 'bNegative');
         $status_info_O = $this->countBlood($listInfo, 'oPositive', 'oNegative');
         $status_info_AB = $this->countBlood($listInfo, 'abPositive', 'abNegative');
+
+        $status_info = [
+            'bloodTypeA' => $status_info_A, 
+            'bloodTypeB'=>$status_info_B,
+            'bloodTypeO'=>$status_info_O,
+            'bloodTypeAB'=>$status_info_AB
+        ];
+
 
         $numOfBlood = $this->getNumOfBlood($data);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
@@ -159,8 +176,8 @@ class InventoryController extends Controller
         return view('BackEnd.JenSien.viewStock')
             ->with('numOfBlood', $numOfBlood)
             ->with('totalNumOfBlood', $totalNumOfBlood)
-            ->with('infoA', $infoA)
-            ->with('status_info_A', $status_info_A);
+            ->with('info', $info)
+            ->with('status_info', $status_info);
     }
 
     public function edit(Request $request)
@@ -267,8 +284,10 @@ class InventoryController extends Controller
 
     public function filterBlood($list, $bloodType_1, $bloodType_2){
         $info = [];
+        $test = [];
         foreach ($list as $key => $item) {
-            if (strpos($key, $bloodType_1) !== false || strpos($key, $bloodType_2) !== false) {
+            
+            if($item['bloodType'] === $bloodType_1 || $item['bloodType'] === $bloodType_2){
                 $info[$key] = $item;
             }
         }

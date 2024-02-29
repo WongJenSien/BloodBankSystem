@@ -3,6 +3,7 @@
 use App\Http\Controllers\EventAPIController;
 use App\Http\Controllers\HomeAPIController;
 use App\Http\Controllers\InventoryAPIController;
+use App\Http\Controllers\ShipmentAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,8 +24,10 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/view/inventory/getNewId', [InventoryAPIController::class, 'getNewId']);
+Route::get('/view/inventory/getShipmentID', [InventoryAPIController::class, 'shipOut']);
 
 Route::resource('/view/inventory/', InventoryAPIController::class);
 Route::resource('/view/event/', EventAPIController::class);
+Route::resource('/view/shipment/', ShipmentAPIController::class);
 Route::resource('/', HomeAPIController::class);
 
