@@ -11,8 +11,8 @@ class ShipmentController extends Controller
     protected $database;
     protected $ref_table;
     protected $ref_table_firestore;
-    
-    
+
+
     public function __construct(Database $database)
     {
         $this->ref_table_firestore = app('firebase.firestore')->database()->collection('Shipment');
@@ -41,7 +41,7 @@ class ShipmentController extends Controller
         $location = $request->location;
         $shipmentDate = $request->ship_date;
         $description = $request->description;
-
+        $status = 'Pending';
         //Status of Shipment: Pending, Arrive
         $postData = [
             "Quantity" => $quantity,
@@ -50,7 +50,7 @@ class ShipmentController extends Controller
             "location" => $location,
             "ShipDate" => $shipmentDate,
             "Description" => $description,
-            "Status" => "Pending"
+            "Status" => $status
         ];
 
         //retrive data rows for the particular blood
@@ -71,14 +71,15 @@ class ShipmentController extends Controller
         }
 
         //Filter Blood and Status is Available
-        $infoAP = $this->filterBlood($listInfo, 'aPositive');
-        $infoAN = $this->filterBlood($listInfo, 'aNegative');
-        $infoBP = $this->filterBlood($listInfo, 'bPositive');
-        $infoBN = $this->filterBlood($listInfo, 'bNegative');
-        $infoOP = $this->filterBlood($listInfo, 'oPositive');
-        $infoON = $this->filterBlood($listInfo, 'oNegative');
-        $infoABP = $this->filterBlood($listInfo, 'abPositive');
-        $infoABN = $this->filterBlood($listInfo, 'abNegative');
+        $keyStatus = 'Available';
+        $infoAP = $this->filterBlood($listInfo, 'aPositive', $keyStatus);
+        $infoAN = $this->filterBlood($listInfo, 'aNegative', $keyStatus);
+        $infoBP = $this->filterBlood($listInfo, 'bPositive', $keyStatus);
+        $infoBN = $this->filterBlood($listInfo, 'bNegative', $keyStatus);
+        $infoOP = $this->filterBlood($listInfo, 'oPositive', $keyStatus);
+        $infoON = $this->filterBlood($listInfo, 'oNegative', $keyStatus);
+        $infoABP = $this->filterBlood($listInfo, 'abPositive', $keyStatus);
+        $infoABN = $this->filterBlood($listInfo, 'abNegative', $keyStatus);
 
         //Sort based on the expiration date
         $infoAP = $this->sortBasedOnDate($infoAP);
@@ -114,70 +115,132 @@ class ShipmentController extends Controller
         $this->updateList($bloodABP);
         $this->updateList($bloodABN);
 
-        
+
         //Save inventory List
-         $this->ref_table_firestore->newDocument()->set($postData);
-         $postRef = $this->database->getReference($this->ref_table)->push($postData);
+        $this->ref_table_firestore->newDocument()->set($postData);
+        $postRef = $this->database->getReference($this->ref_table)->push($postData);
 
-         //save shipment
+        //save shipment
 
-         if ($postRef) {
+        if ($postRef) {
             return redirect('view-shipment')->with('status', 'Added Successfully');
         } else {
-             return redirect('view-shipment')->with('status', 'Added Failed');
+            return redirect('view-shipment')->with('status', 'Added Failed');
         }
-
-         
-
     }
 
-    public function show(Request $request)
+    public function index(Request $request)
     {
         $reference = $this->ref_table_firestore->documents();
         $data = collect($reference->rows());
         $info = [];
-        foreach($data as $d){
+        foreach ($data as $d) {
             $info[] = $d->data();
         }
-        // $shipInfo = [];
-        // foreach($info as $r => $rKey){
-        //     foreach($rKey as $key => $value){
-        //         $shipInfo[$key] = $value;
-        //     }
-        // }
-        // $sumOfQuantity = 0;
-        // foreach($shipInfo['Quantity'] as $i => $value){
-        //     $sumOfQuantity += $value;
-        // }
-
-        
         return view('BackEnd.JenSien.viewShipment')
-        ->with('shipInfo', $info);
+            ->with('shipInfo', $info);
     }
-    public function filterBlood($list, $bloodType_1){
+
+    public function show($id)
+    {
+        //Retreive Shipment Infomation
+        $reference = app('firebase.firestore')->database()->collection('Shipment')->documents();
+        $dataList = collect($reference->rows());
+        foreach($dataList as $d){
+            $test = $d->data();
+            if($d->data()['ShipID'] == $id){
+                $shipmentInfo = $d->data();
+            }
+
+        }
+
+
+        //Retreive All Data FROM INVENTORY LIST
+        $reference = app('firebase.firestore')->database()->collection('inventoryList')->documents();
+        $dataList = collect($reference->rows());
+
+        //FilterBlood
+        $inventoryID = [];
+        foreach ($dataList as $d) {
+            foreach ($d->data() as $key => $value)
+                if ($value['ShipmentID'] !== null && $value['ShipmentID'] === $id) {
+                    $listInfo[$key] = $value;
+                    if (!in_array($value['inventoryID'], $inventoryID)) {
+                        $inventoryID[] = $value['inventoryID'];
+                    }
+                }
+        }
+   
+
+
+        //Retreive inventory info
+        $reference = app('firebase.firestore')->database()->collection('Inventories')->documents();
+        $dataList = collect($reference->rows());
+
+        $data = [];
+        foreach ($dataList as $d) {
+            $data[] = $d->data();
+        }
+$eventID = [];
+        foreach ($data as $key) {
+            foreach ($inventoryID as $k => $value) {
+                if ($key['inventoryID'] == $value) {
+                    $inventoryInfo[$key['inventoryID']] = [
+                        'eventID' => $key['eventID'],
+                        'quantity' => $key['quantity']
+                    ];
+                    if (!in_array($key['eventID'], $eventID)) {
+                        $eventID[] = $key['eventID'];
+                    }
+                }
+            }
+        }
+
+
+        //Retreive Event Info
+        $reference = app('firebase.firestore')->database()->collection('Events')->documents();
+        $dataList = collect($reference->rows());
+        $data = [];
+        foreach ($dataList as $d) {
+            $data[] = $d->data();
+        }
+        $eventInfo = [];
+        foreach ($data as $key) {
+            foreach ($eventID as $k => $value) {
+                if ($key['EventID'] == $value) {
+                    $eventInfo[$key['EventID']] = [
+                        'Name' => $key['Name']
+                    ];
+                }
+            }
+        }
+
+        // dd($listInfo, $inventoryID, $inventoryInfo,$eventID, $eventInfo);
+
+        ksort($shipmentInfo['Quantity']);
+        ksort($listInfo);
+        ksort($inventoryInfo);
+        ksort($eventInfo);
+
+        return view('BackEnd.JenSien.viewShipmentDetails')
+            ->with('shipInfo', $shipmentInfo)
+            ->with('listInfo', $listInfo)
+            ->with('inventoryInfo', $inventoryInfo)
+            ->with('eventInfo', $eventInfo);
+    }
+    public function filterBlood($list, $bloodType_1, $status)
+    {
         $info = [];
         foreach ($list as $key => $item) {
 
-            if($item['bloodType'] === $bloodType_1){
-                if ($item['status'] === 'Available')
+            if ($item['bloodType'] === $bloodType_1) {
+                if ($item['status'] === $status)
                     $info[$key] = $item;
             }
         }
         krsort($info);
         return $info;
     }
-    // public function filterBlood($list, $bloodType_1)
-    // {
-    //     $info = [];
-    //     foreach ($list as $key => $item) {
-    //         if (strpos($key, $bloodType_1) !== false) {
-    //             if ($item['status'] === 'Available')
-    //                 $info[$key] = $item;
-    //         }
-    //     }
-    //     krsort($info);
-    //     return $info;
-    // }
 
     public function sortBasedOnDate($bloodList)
     {
@@ -216,5 +279,7 @@ class ShipmentController extends Controller
         }
     }
 
-
+    public function getInventoryList()
+    {
+    }
 }

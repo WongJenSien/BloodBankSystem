@@ -92,6 +92,7 @@ class InventoryController extends Controller
                     'status' => $status,
                     'inventoryID' => $inventoryID,
                     'expirationDate' => $expirationDate[$bloodType],
+                    'ShipmentID' => null
                 ];
             }
         }
@@ -119,7 +120,7 @@ class InventoryController extends Controller
         }
     }
 
-    public function show(Request $request)
+    public function index(Request $request)
     {
 
         $reference = $this->ref_table_firestore_inventories->documents();
