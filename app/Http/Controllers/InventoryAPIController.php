@@ -114,6 +114,7 @@ class InventoryAPIController extends Controller
                     'status' => $status,
                     'inventoryID' => $inventoryID,
                     'expirationDate' => $epxDate[$bloodType],
+                    'ShipmentID' => null
                 ];
             }
         }
