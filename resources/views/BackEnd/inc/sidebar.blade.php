@@ -60,7 +60,7 @@
                     </li>
                 </ul>
             </li>
-            
+
             <li class="sidebar-item">
                 <a href="#" class="sidebar-link has-dropdown collapsed" data-bs-toggle="collapse"
                     data-bs-target="#inventory" aria-expanded="false" aria-controls="inventory">
@@ -69,11 +69,11 @@
                 </a>
                 <ul id="inventory" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                     <li class="sidebar-item ">
-                        <a href="{{ url('add-inventory')}}" class="sidebar-link">
+                        <a href="{{ url('add-inventory') }}" class="sidebar-link">
                             Stock In</a>
-                        <a href="{{ url('remove-inventory')}}" class="sidebar-link">
+                        <a href="{{ url('remove-inventory') }}" class="sidebar-link">
                             Stock Out</a>
-                        <a href="{{ url('view-inventory')}}" class="sidebar-link">
+                        <a href="{{ url('view-inventory') }}" class="sidebar-link">
                             Stock Monitoring</a>
                     </li>
                 </ul>
@@ -82,7 +82,7 @@
 
 
             <li class="sidebar-item">
-                <a href="{{url('view-shipment')}}" class="sidebar-link">
+                <a href="{{ url('view-shipment') }}" class="sidebar-link">
                     <i class="lni lni-delivery"></i>
                     <span>Shipment</span>
                 </a>
@@ -92,6 +92,15 @@
                 <a href="#" class="sidebar-link">
                     <i class="lni lni-shield"></i>
                     <span>RBAC</span>
+                </a>
+            </li>
+
+
+            {{-- REPORT --}}
+            <li class="sidebar-item">
+                <a href="{{ url('inventory-report')}}" class="sidebar-link">
+                    <i class="bi bi-file-zip"></i>  
+                    <span>Report</span>
                 </a>
             </li>
         </ul>

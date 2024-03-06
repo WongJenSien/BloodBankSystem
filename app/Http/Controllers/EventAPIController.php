@@ -17,12 +17,13 @@ class EventAPIController extends Controller
     }
 
     public function index(){
-        $reference = $this->ref_table_firestore->documents();
-        $data = collect($reference->rows());
-        $returnData = [];
-        foreach($data as $d){
-            $returnData[] = $d->data();
-        }
-        return $returnData;
+        return $this->database->getReference($this->ref_table)->getValue();
+        // $reference = $this->ref_table_firestore->documents();
+        // $data = collect($reference->rows());
+        // $returnData = [];
+        // foreach($data as $d){
+        //     $returnData[] = $d->data();
+        // }
+        // return $returnData;
     }
 }

@@ -5,28 +5,28 @@
     {{-- 4-IMG-VIEW --}}
     <div class="container text-center mx-auto">
         <div class="row align-items-start">
-            <div class="col px-md-5 m-1">
+            <div class="col px-md-3 m-1">
                 <div class="col border border-dark cat-blood-color">
                     <img class="img-bloodType" src="{{ url('/Image/imgA.png') }}" alt="BloodType-A" />
                     {{-- Total Number of Blood Type For A --}}
                     <h4 class="text-black">{{ $totalNumOfBlood['Blood_A'] }}</h4>
                 </div>
             </div>
-            <div class="col px-md-5 m-1">
+            <div class="col px-md-3 m-1">
                 <div class="col border border-dark cat-blood-color">
                     <img class="img-bloodType" src="{{ url('/Image/imgB.png') }}" alt="BloodType-B" />
                     {{-- Total Number of Blood Type For B --}}
                     <h4 class="text-black">{{ $totalNumOfBlood['Blood_B'] }}</h4>
                 </div>
             </div>
-            <div class="col px-md-5 m-1">
+            <div class="col px-md-3 m-1">
                 <div class="col border border-dark cat-blood-color">
                     <img class="img-bloodType" src="{{ url('/Image/imgO.png') }}" alt="BloodType-O" />
                     {{-- Total Number of Blood Type For O --}}
                     <h4 class="text-black">{{ $totalNumOfBlood['Blood_O'] }}</h4>
                 </div>
             </div>
-            <div class="col px-md-5 m-1">
+            <div class="col px-md-3 m-1">
                 <div class="col border border-dark cat-blood-color">
                     <img class="img-bloodType" src="{{ url('/Image/imgAB.png') }}" alt="BloodType-AB" />
                     {{-- Total Number of Blood Type For AB --}}

@@ -10,28 +10,30 @@ class InventoryController extends Controller
 {
     protected $database;
     protected $ref_table_inventories;
-    protected $ref_table_inventoriesList;
-    protected $ref_table_firestore_inventories;
-    protected $ref_table_firestore_inventoriesList;
+    // protected $ref_table_inventoriesList;
+    // protected $ref_table_firestore_inventories;
+    // protected $ref_table_firestore_inventoriesList;
     public function __construct(Database $database)
     {
-        $this->ref_table_firestore_inventories = app('firebase.firestore')->database()->collection('Inventories');
-        $this->ref_table_firestore_inventoriesList = app('firebase.firestore')->database()->collection('inventoryList');
+        // $this->ref_table_firestore_inventories = app('firebase.firestore')->database()->collection('Inventories');
+        // $this->ref_table_firestore_inventoriesList = app('firebase.firestore')->database()->collection('inventoryList');
         $this->ref_table_inventories = "Inventories";
-        $this->ref_table_inventoriesList = "inventoryList";
+        // $this->ref_table_inventoriesList = "inventoryList";
         $this->database = $database;
     }
 
     public function shipOut()
     {
-        $shipmentID = $this->idGenerator('S', 'Shipment', 'ShipID');
+        $shipmentID = $this->idGenerator('S', 'Shipment');
         return view('BackEnd.JenSien.stockOut')->with('shipmentID', $shipmentID);
     }
 
     public function create()
     {
-        $newID = $this->idGenerator('I', $this->ref_table_inventories, 'inventoryID');
-        $eventInfo = $this->getEventInfo();
+        $newID = $this->idGenerator('I', $this->ref_table_inventories);
+        // dd($this->idGenerator('I', $this->ref_table_inventories, 'inventoryID'));
+        // $newID = $this->database->getReference($this->ref_table_inventories)->orderByKey()->limitToLast(1)->getValue();
+        $eventInfo = $this->database->getReference('Events')->getValue();
         return view("BackEnd.JenSien.stockIn")->with("newID", $newID)->with("eventInfo", $eventInfo);
     }
 
@@ -82,7 +84,7 @@ class InventoryController extends Controller
 
             "abPositive" => $this->bloodTypeID($quantity['abPositive'], $inventoryID, "ABP"),
             "abNegative" => $this->bloodTypeID($quantity['abNegative'], $inventoryID, "ABN"),
-        ];  
+        ];
 
         $bloodInfo = [];
         foreach ($bloodID as $bloodType => $bloodTypeIDs) {
@@ -90,28 +92,28 @@ class InventoryController extends Controller
                 $bloodInfo[$id] = [
                     'bloodType' => $bloodType,
                     'status' => $status,
-                    'inventoryID' => $inventoryID,
                     'expirationDate' => $expirationDate[$bloodType],
-                    'ShipmentID' => null
+                    'ShipmentID' => ''
                 ];
             }
         }
 
 
         //Save inventory List
-        $this->ref_table_firestore_inventoriesList->newDocument()->set($bloodInfo);
-        $this->database->getReference($this->ref_table_inventoriesList)->push($bloodInfo);
+        // $this->ref_table_firestore_inventoriesList->newDocument()->set($bloodInfo);
+        // $this->database->getReference($this->ref_table_inventoriesList)->push($bloodInfo);
 
         $eventID = $request->eventID;
 
         $postData = [
-            'inventoryID' => $inventoryID,
             'quantity' => $quantity,
-            'eventID' => $eventID
+            'eventID' => $eventID,
+            'bloodInfo' => $bloodInfo
         ];
 
-        $this->ref_table_firestore_inventories->newDocument()->set($postData);
-        $postRef = $this->database->getReference($this->ref_table_inventories)->push($postData);
+        // $this->ref_table_firestore_inventories->newDocument()->set($postData);
+        $postRef = $this->database->getReference($this->ref_table_inventories . '/' . $inventoryID)->set($postData);
+
 
         if ($postRef) {
             return redirect('view-inventory')->with('status', 'Added Successfully');
@@ -123,22 +125,36 @@ class InventoryController extends Controller
     public function index(Request $request)
     {
 
-        $reference = $this->ref_table_firestore_inventories->documents();
-        $data = collect($reference->rows());
+        // $reference = $this->ref_table_firestore_inventories->documents();
+        // $data = collect($reference->rows());
 
-        $reference = $this->ref_table_firestore_inventoriesList->documents();
-        $list = collect($reference->rows());
+        // $reference = $this->ref_table_firestore_inventoriesList->documents();
+        // $list = collect($reference->rows());
 
-        $packInfo = [];
-        foreach ($list as $item) {
-            $packInfo[] = $item->data();
+        // $packInfo = [];
+        // foreach ($list as $item) {
+        //     $packInfo[] = $item->data();
+        // }
+
+        // $listInfo = [];
+        // foreach ($packInfo as $key => $value) {
+        //     foreach ($value as $item => $item2) {
+        //         $listInfo[$item] = $item2;
+        //     }
+        // }
+
+        $data = $this->database->getReference($this->ref_table_inventories)->getValue();
+
+        //SHOW NO RECORD PAGE --- TODO
+        if ($data == null) {
+            return view('BackEnd.JenSien.viewStock');
         }
-        $listInfo = [];
-        foreach($packInfo as $key => $value){
-            foreach($value as $item => $item2){
-                $listInfo[$item] = $item2;
-            }
+
+        foreach ($data as $key => $value) {
+            foreach ($value['bloodInfo'] as $bKey => $bValue)
+                $listInfo[$bKey] = $bValue;
         }
+
 
         //FILTER BLOOD TYPE
         $info = [];
@@ -148,10 +164,10 @@ class InventoryController extends Controller
         $infoAB = $this->filterBlood($listInfo, 'abPositive', 'abNegative');
 
         $info = [
-            'bloodTypeA' => $infoA, 
-            'bloodTypeB'=>$infoB,
-            'bloodTypeO'=>$infoO,
-            'bloodTypeAB'=>$infoAB
+            'bloodTypeA' => $infoA,
+            'bloodTypeB' => $infoB,
+            'bloodTypeO' => $infoO,
+            'bloodTypeAB' => $infoAB
         ];
 
         //COUNT BLOOD STATUS
@@ -162,17 +178,16 @@ class InventoryController extends Controller
         $status_info_AB = $this->countBlood($listInfo, 'abPositive', 'abNegative');
 
         $status_info = [
-            'bloodTypeA' => $status_info_A, 
-            'bloodTypeB'=>$status_info_B,
-            'bloodTypeO'=>$status_info_O,
-            'bloodTypeAB'=>$status_info_AB
+            'bloodTypeA' => $status_info_A,
+            'bloodTypeB' => $status_info_B,
+            'bloodTypeO' => $status_info_O,
+            'bloodTypeAB' => $status_info_AB
         ];
 
 
-        $numOfBlood = $this->getNumOfBlood($data);
+
+        $numOfBlood = $this->getNumOfBlood($info);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
-
-
 
         return view('BackEnd.JenSien.viewStock')
             ->with('numOfBlood', $numOfBlood)
@@ -181,20 +196,7 @@ class InventoryController extends Controller
             ->with('status_info', $status_info);
     }
 
-    public function edit(Request $request)
-    {
-    }
-    public function update(Request $request)
-    {
-    }
-    public function destroy(Request $request)
-    {
-    }
-    public function restore(Request $request)
-    {
-    }
-
-    public function idGenerator($letter, $ref_collection, $item)
+    public function idGenerator($letter, $ref_collection)
     {
 
         $today = Carbon::now();
@@ -202,14 +204,19 @@ class InventoryController extends Controller
         $month = $today->month;
 
         //GET LATEST RECORD
-        $reference = app('firebase.firestore')->database()->collection($ref_collection)->orderBy($item, 'DESC')->limit(1)->documents();
-        $lastRecord = collect($reference->rows());
+        // $reference = app('firebase.firestore')->database()->collection($ref_collection)->orderBy($item, 'DESC')->limit(1)->documents();
+        // $lastRecord = collect($reference->rows());
+        $lastID = $this->database->getReference($ref_collection)->orderByKey()->limitToLast(1)->getValue();
+        if ($lastID != null) {
+            $lastID = array_keys($lastID)[0];
+        }
+
 
         //if no last record
-        if ($lastRecord->isEmpty() || substr($lastRecord->first()[$item],strlen($letter) , 4) != substr($year, -2) . sprintf("%02s", $month)) {
+        if ($lastID === null || substr($lastID, strlen($letter), 4) != substr($year, -2) . sprintf("%02s", $month)) {
             $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . "001";
         } else {
-            $newID = $lastRecord->first()[$item];
+            $newID = $lastID;
             $last = substr($newID, -3);
             $newNum = intval($last) + 1;
 
@@ -242,17 +249,34 @@ class InventoryController extends Controller
         ];
 
         foreach ($data as $d) {
-            $numOfBlood['aPositive'] += $d->data()['quantity']['aPositive'];
-            $numOfBlood['aNegative'] += $d->data()['quantity']['aNegative'];
-
-            $numOfBlood['bPositive'] += $d->data()['quantity']['bPositive'];
-            $numOfBlood['bNegative'] += $d->data()['quantity']['bNegative'];
-
-            $numOfBlood['oPositive'] += $d->data()['quantity']['oPositive'];
-            $numOfBlood['oNegative'] += $d->data()['quantity']['oNegative'];
-
-            $numOfBlood['abPositive'] += $d->data()['quantity']['abPositive'];
-            $numOfBlood['abNegative'] += $d->data()['quantity']['abNegative'];
+            foreach ($d as $key => $value) {
+                switch ($value['bloodType']) {
+                    case 'aPositive':
+                        $numOfBlood['aPositive']++;
+                        break;
+                    case 'aNegative':
+                        $numOfBlood['aNegative']++;
+                        break;
+                    case 'bPositive':
+                        $numOfBlood['bPositive']++;
+                        break;
+                    case 'bNegative':
+                        $numOfBlood['bNegative']++;
+                        break;
+                    case 'oPositive':
+                        $numOfBlood['oPositive']++;
+                        break;
+                    case 'oNegative':
+                        $numOfBlood['oNegative']++;
+                        break;
+                    case 'abPositive':
+                        $numOfBlood['abPositive']++;
+                        break;
+                    case 'abNegative':
+                        $numOfBlood['abNegative']++;
+                        break;
+                }
+            }
         }
 
         return $numOfBlood;
@@ -276,19 +300,12 @@ class InventoryController extends Controller
         return $totalNumOfBlood;
     }
 
-    public function getEventInfo()
+    public function filterBlood($list, $bloodType_1, $bloodType_2)
     {
-        $reference = app("firebase.firestore")->database()->collection("Events")->orderBy('EventID', 'DESC')->documents();
-        $data = collect($reference->rows());
-        return $data;
-    }
-
-    public function filterBlood($list, $bloodType_1, $bloodType_2){
         $info = [];
-        $test = [];
         foreach ($list as $key => $item) {
-            
-            if($item['bloodType'] === $bloodType_1 || $item['bloodType'] === $bloodType_2){
+
+            if ($item['bloodType'] === $bloodType_1 || $item['bloodType'] === $bloodType_2) {
                 $info[$key] = $item;
             }
         }
@@ -296,26 +313,27 @@ class InventoryController extends Controller
         return $info;
     }
 
-    public function countBlood($list, $bloodType_1, $bloodType_2){
+    public function countBlood($list, $bloodType_1, $bloodType_2)
+    {
         $info = [
-            'Available_P'=> 0, 
-            'Available_N'=> 0, 
-            'Shipment_P'=> 0, 
-            'Shipment_N'=> 0, 
+            'Available_P' => 0,
+            'Available_N' => 0,
+            'Shipment_P' => 0,
+            'Shipment_N' => 0,
         ];
 
-        foreach($list as $key => $item){
-            if($item['status'] === 'Available' && $item['bloodType']=== $bloodType_1){
+        foreach ($list as $key => $item) {
+            if ($item['status'] === 'Available' && $item['bloodType'] === $bloodType_1) {
                 $info['Available_P']++;
             }
-            if($item['status'] === 'Available' && $item['bloodType']=== $bloodType_2){
+            if ($item['status'] === 'Available' && $item['bloodType'] === $bloodType_2) {
                 $info['Available_N']++;
             }
-            
-            if($item['status'] === 'Shipment' && $item['bloodType']=== $bloodType_1){
+
+            if ($item['status'] === 'Shipment' && $item['bloodType'] === $bloodType_1) {
                 $info['Shipment_P']++;
             }
-            if($item['status'] === 'Shipment' && $item['bloodType']=== $bloodType_2){
+            if ($item['status'] === 'Shipment' && $item['bloodType'] === $bloodType_2) {
                 $info['Shipment_N']++;
             }
         }

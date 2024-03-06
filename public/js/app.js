@@ -84,3 +84,7 @@ function getShipDate(){
     let current = y + "-" + m + "-" + d;
 document.getElementById("ship-date").setAttribute('min', current);
 }
+
+function updateShipment(){
+    
+}

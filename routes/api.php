@@ -26,8 +26,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/view/inventory/getNewId', [InventoryAPIController::class, 'getNewId']);
 Route::get('/view/inventory/getShipmentID', [InventoryAPIController::class, 'shipOut']);
 
-Route::resource('/view/inventory/', InventoryAPIController::class);
-Route::resource('/view/event/', EventAPIController::class);
-Route::resource('/view/shipment/', ShipmentAPIController::class);
+Route::put('/view/shipment/editStatus/{id}', [ShipmentAPIController::class, 'editStatus']);
+
+Route::resource('/view/inventory', InventoryAPIController::class);
+Route::resource('/view/event', EventAPIController::class);
+Route::resource('/view/shipment', ShipmentAPIController::class);
 Route::resource('/', HomeAPIController::class);
 

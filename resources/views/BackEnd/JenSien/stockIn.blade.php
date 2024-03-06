@@ -14,8 +14,8 @@
                                 <select name="eventID" id="eventID" class="form-select" style="width: fit-content" data-width="fit"
                                     aria-label="Default select example">
                                     <option selected>Select an Event</option>
-                                    @foreach ($eventInfo as $key)
-                                        <option value="{{ $key['EventID'] }}">{{ $key['Name'] }}</option>
+                                    @foreach ($eventInfo as $key => $value)
+                                        <option value="{{ $key }}">{{ $value['Name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>
