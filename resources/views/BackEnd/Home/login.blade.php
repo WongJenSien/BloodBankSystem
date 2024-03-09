@@ -12,16 +12,25 @@
                             <path fill-rule="evenodd"
                                 d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
                         </svg>
-                        <form action="profile" method="POST">
+
+                        <h2>Login</h2>
+
+                        <form action="{{ route('login') }}" method="POST">
                             @csrf
-                            <input type="text" name="" id="" class="form-control my-4 py-2"
-                                placeholder="Staff ID">
-                            <input type="password" name="" id="" class="form-control my-4 py-2"
-                                placeholder="Password">
+                            <input type="email" name="emailAddress" id="" class="form-control my-4 py-2"
+                                placeholder="Email" required>
+                            <input type="password" name="password" id="" class="form-control my-4 py-2"
+                                placeholder="Password" required>
                             <div class="text-center mt-3">
                                 <button class="btn btn-primary">Login</button>
                             </div>
                         </form>
+
+                        <div>&nbsp;</div>
+                        <a href="{{ route('forgotPasswordForm') }}">Forgot Password?</a>
+
+                        <div>&nbsp;</div>
+                        Don't have account? <a href="{{ route('registerForm') }}">Register here</a>.
                     </div>
                 </div>
             </div>

@@ -26,7 +26,7 @@
             </button>
             <div class="sidebar-logo">
                 <a href="#">
-                    JenSien</a>
+                    {{session('user.name')}}</a>
             </div>
         </div>
         <ul class="sidebar-nav">
@@ -94,7 +94,12 @@
                     <span>RBAC</span>
                 </a>
             </li>
-
+            <li class="sidebar-item">
+                <a href="{{ url('appointment-list')}}" class="sidebar-link">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Appointment</span>
+                </a>
+            </li>
 
             {{-- REPORT --}}
             <li class="sidebar-item">

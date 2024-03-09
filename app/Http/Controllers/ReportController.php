@@ -80,6 +80,7 @@ class ReportController extends Controller
     public function filterMonth($list, $letter)
     {
         $returnList = [];
+
         foreach ($list as $key => $value) {
             if (substr($key, strlen($letter), 4) == $this->getMonthCode) {
                 $returnList[$key] = $value;
@@ -178,7 +179,7 @@ class ReportController extends Controller
 
         //ADD EVENT NAME INTO THE ARRAY
         foreach ($stockInList as $key => $item) {
-            $data = $this->database->getReference($this->ref_table_event)->getChild($item['eventID'])->getChild('Name')->getValue();
+            $data = $this->database->getReference($this->ref_table_event)->getChild($item['eventID'])->getChild('eventName')->getValue();
             $stockInList[$key]['EventName'] = $data;
         }
 

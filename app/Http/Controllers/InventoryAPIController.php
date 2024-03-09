@@ -11,14 +11,16 @@ class InventoryAPIController extends Controller
     protected $database;
     protected $ref_table_inventories;
     protected $ref_table_inventoriesList;
-    protected $ref_table_firestore_inventories;
-    protected $ref_table_firestore_inventoriesList;
+    // protected $ref_table_firestore_inventories;
+    // protected $ref_table_firestore_inventoriesList;
+    protected $ref_table_hospital;
     public function __construct(Database $database)
     {
-        $this->ref_table_firestore_inventories = app('firebase.firestore')->database()->collection('Inventories');
-        $this->ref_table_firestore_inventoriesList = app('firebase.firestore')->database()->collection('inventoryList');
+        // $this->ref_table_firestore_inventories = app('firebase.firestore')->database()->collection('Inventories');
+        // $this->ref_table_firestore_inventoriesList = app('firebase.firestore')->database()->collection('inventoryList');
         $this->ref_table_inventories = "Inventories";
         $this->ref_table_inventoriesList = "inventoryList";
+        $this->ref_table_hospital = 'Hospital';
         $this->database = $database;
     }
 
@@ -153,8 +155,11 @@ class InventoryAPIController extends Controller
 
     public function shipOut()
     {
-
-        return [$this->idGenerator('S', 'Shipment')];
+        $returnData = [
+            'shipmentID' => $this->idGenerator('S', 'Shipment'),
+            'hospitalList' => $this->database->getReference($this->ref_table_hospital)->getValue()
+        ];
+        return $returnData;
     }
 
     public function getNewId()

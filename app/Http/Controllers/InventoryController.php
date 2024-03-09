@@ -10,6 +10,7 @@ class InventoryController extends Controller
 {
     protected $database;
     protected $ref_table_inventories;
+    protected $ref_table_hospital;
     // protected $ref_table_inventoriesList;
     // protected $ref_table_firestore_inventories;
     // protected $ref_table_firestore_inventoriesList;
@@ -18,6 +19,7 @@ class InventoryController extends Controller
         // $this->ref_table_firestore_inventories = app('firebase.firestore')->database()->collection('Inventories');
         // $this->ref_table_firestore_inventoriesList = app('firebase.firestore')->database()->collection('inventoryList');
         $this->ref_table_inventories = "Inventories";
+        $this->ref_table_hospital = "Hospital";
         // $this->ref_table_inventoriesList = "inventoryList";
         $this->database = $database;
     }
@@ -25,7 +27,8 @@ class InventoryController extends Controller
     public function shipOut()
     {
         $shipmentID = $this->idGenerator('S', 'Shipment');
-        return view('BackEnd.JenSien.stockOut')->with('shipmentID', $shipmentID);
+        $hospitalList = $this->database->getReference($this->ref_table_hospital)->getValue();
+        return view('BackEnd.JenSien.stockOut')->with('shipmentID', $shipmentID)->with('hospitalList', $hospitalList);
     }
 
     public function create()

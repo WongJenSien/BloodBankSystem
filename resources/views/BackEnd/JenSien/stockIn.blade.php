@@ -15,7 +15,7 @@
                                     aria-label="Default select example">
                                     <option selected>Select an Event</option>
                                     @foreach ($eventInfo as $key => $value)
-                                        <option value="{{ $key }}">{{ $value['Name'] }}</option>
+                                        <option value="{{ $key }}">{{ $value['eventName'] }}</option>
                                     @endforeach
                                 </select>
                             </div>

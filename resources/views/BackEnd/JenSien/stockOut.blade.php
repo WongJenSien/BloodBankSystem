@@ -29,9 +29,9 @@
                         <div class="col-sm-8 border border-black">
                             <select name="location" class="form-select" aria-label="Default select example">
                                 <option selected>Select an Location</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
+                                @foreach ($hospitalList as $key => $value)
+                                    <option value="{{$key}}">{{$value['Name']}}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -97,19 +97,22 @@
                                     <tr>
                                         <td>O-</td>
                                         <td><input class="form-control" type="number" name="oNegative" id="oNegative"
-                                                min="0" max="10000" value="0" onchange="countBlood()" /></td>
+                                                min="0" max="10000" value="0" onchange="countBlood()" />
+                                        </td>
                                     </tr>
 
                                     <tr>
                                         <td rowspan="2">AB</td>
                                         <td>AB+</td>
                                         <td><input class="form-control" type="number" name="abPositive" id="abPositive"
-                                                min="0" max="10000" value="0" onchange="countBlood()" /></td>
+                                                min="0" max="10000" value="0" onchange="countBlood()" />
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>AB-</td>
                                         <td><input class="form-control" type="number" name="abNegative" id="abNegative"
-                                                min="0" max="10000" value="0" onchange="countBlood()" /></td>
+                                                min="0" max="10000" value="0" onchange="countBlood()" />
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -117,7 +120,7 @@
 
                     </div>
                 </div>
-            
+
                 {{-- COL - 3 --}}
                 <div class="col-4 col-sm-4 border border-black">
                     <div class="row">
