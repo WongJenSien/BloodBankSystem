@@ -1,17 +1,5 @@
 @extends('BackEnd.app')
 @section('content')
-    {{-- TOP VIEW --}}
-    <div class="container m-4">
-        <div class="row">
-            <div class="col ">
-                <a class="btn p-2 m-3 {{ Request::is('inventory-report') ? 'selected-btn' : 'non-selected-btn' }}"
-                    href="{{ url('inventory-report') }}" role="button">Inventory Report</a>
-                <a class="btn  p-2 m-3 {{ Request::is('shipment-report') ? 'selected-btn' : 'non-selected-btn' }}"
-                    href="{{ url('shipment-report') }}" role="button">Shipment Report</a>
-            </div>
-        </div>
-    </div>
-
     {{-- TOP 5 STOCK IN --}}
     <div class="container  align-items-center">
         <div class="container">
@@ -20,8 +8,9 @@
                     <span class="h3 text-dark text-start font-weight-bold">TOP 5 STOCK IN - FOR {{$month}}</span>
                 </div>
                 <div class="col-2 text-center">
-                    <a class="btn h3" href="{{ url('download-inventory-report') }}" role="button"><i
-                            class="bi bi-box-arrow-in-down h3"></i>Download </a>
+                    <a class="btn h3" href="{{ url('download-inventory-report') }}" role="button">
+                        <i class="bi bi-box-arrow-in-down h3"></i>Download 
+                    </a>
                 </div>
             </div>
 

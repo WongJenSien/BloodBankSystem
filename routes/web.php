@@ -20,9 +20,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', [HomeController::class,'index']);
-// Route::get('user-login', [HomeController::class,'login']);
-// Route::post('profile', [HomeController::class,'profile']);
+
+Route::get('/index-backend', function () {
+    return view('BackEnd.Home.index');
+});
 
 // ------------------------------------------
 //            INVENTORY CONTROLLER
@@ -58,6 +59,7 @@ Route::post('store-appointment',[AppointmentController::class,'store']);
 Route::get('appointment-list',[AppointmentController::class,'index']);
 Route::post('insert-bloodtest-result',[AppointmentController::class,'editResult']);
 Route::get('download-result',[AppointmentController::class,'downloadResult']);
+Route::get('cancel-appointment/{id}',[AppointmentController::class,'destroy']);
 
 // Route::get('add-event', [EventController::class,'create']);
 

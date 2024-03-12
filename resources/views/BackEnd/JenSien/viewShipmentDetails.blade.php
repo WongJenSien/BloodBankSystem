@@ -13,33 +13,33 @@
             <h4>Shipment Information</h4>
         </div>
         <div class="row">
-            <div class="col col-sm-3 p-2 border border-black">Shipment ID</div>
-            <div class="col p-2 border border-black text-start"><span class="m-2">{{ $shipmentID }}</span></div>
+            <div class="col col-sm-3 p-2 border">Shipment ID</div>
+            <div class="col p-2 border text-start"><span class="m-2">{{ $shipmentID }}</span></div>
         </div>
         <div class="row">
-            <div class="col col-sm-3 p-2 border border-black">Request Date</div>
-            <div class="col p-2 border border-black text-start"><span class="m-2">{{ $shipInfo['RequestDate'] }}</span>
+            <div class="col col-sm-3 p-2 border ">Request Date</div>
+            <div class="col p-2 border text-start"><span class="m-2">{{ $shipInfo['RequestDate'] }}</span>
             </div>
         </div>
         <div class="row">
-            <div class="col col-sm-3 p-2 border border-black">Shipment Date</div>
-            <div class="col p-2 border border-black text-start"><span class="m-2">{{ $shipInfo['ShipDate'] }}</span>
+            <div class="col col-sm-3 p-2 border ">Shipment Date</div>
+            <div class="col p-2 border text-start"><span class="m-2">{{ $shipInfo['ShipDate'] }}</span>
             </div>
         </div>
         <div class="row">
-            <div class="col col-sm-3 p-2 border border-black">Location</div>
-            <div class="col p-2 border border-black text-start"><span class="m-2">{{ $shipInfo['location'] }}</span>
+            <div class="col col-sm-3 p-2 border ">Location</div>
+            <div class="col p-2 border text-start"><span class="m-2">{{ $shipInfo['location'] }}</span>
             </div>
         </div>
         <div class="row">
-            <div class="col col-sm-3 p-2 border border-black">Description</div>
-            <div class="col p-2 border border-black text-start"><span class="m-2">{{ $shipInfo['Description'] }}</span>
+            <div class="col col-sm-3 p-2 border">Description</div>
+            <div class="col p-2 border text-start"><span class="m-2">{{ $shipInfo['Description'] }}</span>
             </div>
         </div>
         <div class="row">
-            <div class="col col-sm-3 p-2 border border-black">Products</div>
-            <div class="col p-2 border border-black text-start">
-                <table class="table table-border table-hover text-center">
+            <div class="col col-sm-3 p-2 border ">Products</div>
+            <div class="col p-2 border text-start">
+                <table class="table table-bordered table-hover text-center">
                     <thead>
                         <tr>
                             <th>Blood Type</th>
@@ -91,20 +91,20 @@
             </div>
         </div>
         <div class="row">
-            <div class="col col-sm-3 p-2 border border-black">Status</div>
-            <div class="col p-2 border border-black text-start">
+            <div class="col col-sm-3 p-2 border ">Status</div>
+            <div class="col p-2 border text-start">
                 <span class="m-2">{{ $shipInfo['Status'] }}</span>
                 <a data-toggle="modal" data-target="#updateShipment"
                     style="text-decoration: underline; cursor:pointer">Update</a>
             </div>
         </div>
     </div>
-    <div class="container m-3">
+    <div class="container mt-3">
         <div class="row">
             <h4>Package Information</h4>
         </div>
-        <div class="row">
-            <table class="table border border-black table-hover">
+        <div class="row mt-2">
+            <table class="table table-bordered table-hover">
                 <thead>
                     <th>No</th>
                     <th>Blood ID</th>

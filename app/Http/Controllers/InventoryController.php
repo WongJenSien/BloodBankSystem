@@ -3,26 +3,12 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Contract\Database;
 
 class InventoryController extends Controller
 {
-    protected $database;
-    protected $ref_table_inventories;
-    protected $ref_table_hospital;
-    // protected $ref_table_inventoriesList;
-    // protected $ref_table_firestore_inventories;
-    // protected $ref_table_firestore_inventoriesList;
-    public function __construct(Database $database)
-    {
-        // $this->ref_table_firestore_inventories = app('firebase.firestore')->database()->collection('Inventories');
-        // $this->ref_table_firestore_inventoriesList = app('firebase.firestore')->database()->collection('inventoryList');
-        $this->ref_table_inventories = "Inventories";
-        $this->ref_table_hospital = "Hospital";
-        // $this->ref_table_inventoriesList = "inventoryList";
-        $this->database = $database;
-    }
 
     public function shipOut()
     {
@@ -34,8 +20,6 @@ class InventoryController extends Controller
     public function create()
     {
         $newID = $this->idGenerator('I', $this->ref_table_inventories);
-        // dd($this->idGenerator('I', $this->ref_table_inventories, 'inventoryID'));
-        // $newID = $this->database->getReference($this->ref_table_inventories)->orderByKey()->limitToLast(1)->getValue();
         $eventInfo = $this->database->getReference('Events')->getValue();
         return view("BackEnd.JenSien.stockIn")->with("newID", $newID)->with("eventInfo", $eventInfo);
     }
@@ -73,6 +57,12 @@ class InventoryController extends Controller
             'abNegative' => $request->abNegative
         ];
 
+        $err = $this->getErrMessage($quantity, $expirationDate);
+        if(!empty($err)){
+            return redirect('add-inventory')->with('err', $err);
+        }
+
+
         //InventoryList
         // Blood Type ID: I2402001-A001
         $bloodID = [
@@ -89,6 +79,7 @@ class InventoryController extends Controller
             "abNegative" => $this->bloodTypeID($quantity['abNegative'], $inventoryID, "ABN"),
         ];
 
+
         $bloodInfo = [];
         foreach ($bloodID as $bloodType => $bloodTypeIDs) {
             foreach ($bloodTypeIDs as $id) {
@@ -100,11 +91,6 @@ class InventoryController extends Controller
                 ];
             }
         }
-
-
-        //Save inventory List
-        // $this->ref_table_firestore_inventoriesList->newDocument()->set($bloodInfo);
-        // $this->database->getReference($this->ref_table_inventoriesList)->push($bloodInfo);
 
         $eventID = $request->eventID;
 
@@ -127,25 +113,6 @@ class InventoryController extends Controller
 
     public function index(Request $request)
     {
-
-        // $reference = $this->ref_table_firestore_inventories->documents();
-        // $data = collect($reference->rows());
-
-        // $reference = $this->ref_table_firestore_inventoriesList->documents();
-        // $list = collect($reference->rows());
-
-        // $packInfo = [];
-        // foreach ($list as $item) {
-        //     $packInfo[] = $item->data();
-        // }
-
-        // $listInfo = [];
-        // foreach ($packInfo as $key => $value) {
-        //     foreach ($value as $item => $item2) {
-        //         $listInfo[$item] = $item2;
-        //     }
-        // }
-
         $data = $this->database->getReference($this->ref_table_inventories)->getValue();
 
         //SHOW NO RECORD PAGE --- TODO
@@ -157,7 +124,6 @@ class InventoryController extends Controller
             foreach ($value['bloodInfo'] as $bKey => $bValue)
                 $listInfo[$bKey] = $bValue;
         }
-
 
         //FILTER BLOOD TYPE
         $info = [];
@@ -187,8 +153,6 @@ class InventoryController extends Controller
             'bloodTypeAB' => $status_info_AB
         ];
 
-
-
         $numOfBlood = $this->getNumOfBlood($info);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
 
@@ -197,35 +161,6 @@ class InventoryController extends Controller
             ->with('totalNumOfBlood', $totalNumOfBlood)
             ->with('info', $info)
             ->with('status_info', $status_info);
-    }
-
-    public function idGenerator($letter, $ref_collection)
-    {
-
-        $today = Carbon::now();
-        $year = $today->year;
-        $month = $today->month;
-
-        //GET LATEST RECORD
-        // $reference = app('firebase.firestore')->database()->collection($ref_collection)->orderBy($item, 'DESC')->limit(1)->documents();
-        // $lastRecord = collect($reference->rows());
-        $lastID = $this->database->getReference($ref_collection)->orderByKey()->limitToLast(1)->getValue();
-        if ($lastID != null) {
-            $lastID = array_keys($lastID)[0];
-        }
-
-
-        //if no last record
-        if ($lastID === null || substr($lastID, strlen($letter), 4) != substr($year, -2) . sprintf("%02s", $month)) {
-            $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . "001";
-        } else {
-            $newID = $lastID;
-            $last = substr($newID, -3);
-            $newNum = intval($last) + 1;
-
-            $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);
-        }
-        return $newID;
     }
 
     public function bloodTypeID($quantity, $inventoryID, $bloodType)
@@ -341,5 +276,64 @@ class InventoryController extends Controller
             }
         }
         return $info;
+    }
+
+    //-----------------------------------------
+    //              Validation  
+    //-----------------------------------------
+    public function getErrMessage($quantity, $expiredDate)
+    {
+        $err = [];
+
+        if (!$this->validQuantity($quantity))
+            $err[] = 'Quantity cannot be Negative Value and only can be number';
+
+        if (!$this->validDate($expiredDate))
+            $err[] = 'Date range cannot exist 2 weeks';
+
+        return $err;
+    }
+
+    public function validQuantity($quantity)
+    {
+        foreach ($quantity as $key => $value) {
+            if (!$this->isDigit($value)) {
+                return false;
+            }
+            if (!$this->isNegative($value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function validDate($value)
+    {
+        $today = Carbon::now();
+
+        foreach ($value as $key => $date) {
+
+            $parsedDate = DateTime::createFromFormat('Y-m-d', $date);
+
+            if (!$parsedDate || $parsedDate->format('Y-m-d') !== $date) {
+                return false;
+            }
+
+            $inputDate = Carbon::parse($date)->startOfDay();
+            if (!($inputDate->isCurrentDay() || $inputDate->isAfter($today) && $inputDate->diffInDays($today) <= 14)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function isDigit($value)
+    {
+        return ctype_digit($value);
+    }
+
+    public function isNegative($value)
+    {
+        return $value >= 0;
     }
 }

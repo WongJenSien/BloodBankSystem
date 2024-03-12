@@ -3,46 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Kreait\Firebase\Contract\Database;
-use Carbon\Carbon;
 
 class InventoryAPIController extends Controller
 {
-    protected $database;
-    protected $ref_table_inventories;
-    protected $ref_table_inventoriesList;
-    // protected $ref_table_firestore_inventories;
-    // protected $ref_table_firestore_inventoriesList;
-    protected $ref_table_hospital;
-    public function __construct(Database $database)
-    {
-        // $this->ref_table_firestore_inventories = app('firebase.firestore')->database()->collection('Inventories');
-        // $this->ref_table_firestore_inventoriesList = app('firebase.firestore')->database()->collection('inventoryList');
-        $this->ref_table_inventories = "Inventories";
-        $this->ref_table_inventoriesList = "inventoryList";
-        $this->ref_table_hospital = 'Hospital';
-        $this->database = $database;
-    }
-
     public function index()
     {
-        // $reference = $this->ref_table_firestore_inventories->documents();
-        // $data = collect($reference->rows());
-
-        // $reference = $this->ref_table_firestore_inventoriesList->documents();
-        // $list = collect($reference->rows());
-
-        // $temp = [];
-        // foreach ($list as $item) {
-        //     $temp[] = $item->data();
-        // }
-        // $listInfo = [];
-        // foreach ($temp as $key => $value) {
-        //     foreach ($value as $item => $item2) {
-        //         $listInfo[$item] = $item2;
-        //     }
-        // }
-
         $data = $this->database->getReference($this->ref_table_inventories)->getValue();
         //SHOW NO RECORD PAGE --- TODO
         if ($data == null) {
@@ -284,34 +249,34 @@ class InventoryAPIController extends Controller
 
         return $totalNumOfBlood;
     }
-    public function idGenerator($letter, $ref_collection)
-    {
+    // public function idGenerator($letter, $ref_collection)
+    // {
 
-        $today = Carbon::now();
-        $year = $today->year;
-        $month = $today->month;
+    //     $today = Carbon::now();
+    //     $year = $today->year;
+    //     $month = $today->month;
 
-        //GET LATEST RECORD
-        // $reference = app('firebase.firestore')->database()->collection($ref_collection)->orderBy($item, 'DESC')->limit(1)->documents();
-        // $lastRecord = collect($reference->rows());
-        $lastID = $this->database->getReference($ref_collection)->orderByKey()->limitToLast(1)->getValue();
-        if ($lastID != null) {
-            $lastID = array_keys($lastID)[0];
-        }
+    //     //GET LATEST RECORD
+    //     // $reference = app('firebase.firestore')->database()->collection($ref_collection)->orderBy($item, 'DESC')->limit(1)->documents();
+    //     // $lastRecord = collect($reference->rows());
+    //     $lastID = $this->database->getReference($ref_collection)->orderByKey()->limitToLast(1)->getValue();
+    //     if ($lastID != null) {
+    //         $lastID = array_keys($lastID)[0];
+    //     }
 
 
-        //if no last record
-        if ($lastID === null || substr($lastID, strlen($letter), 4) != substr($year, -2) . sprintf("%02s", $month)) {
-            $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . "001";
-        } else {
-            $newID = $lastID;
-            $last = substr($newID, -3);
-            $newNum = intval($last) + 1;
+    //     //if no last record
+    //     if ($lastID === null || substr($lastID, strlen($letter), 4) != substr($year, -2) . sprintf("%02s", $month)) {
+    //         $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . "001";
+    //     } else {
+    //         $newID = $lastID;
+    //         $last = substr($newID, -3);
+    //         $newNum = intval($last) + 1;
 
-            $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);
-        }
-        return $newID;
-    }
+    //         $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);
+    //     }
+    //     return $newID;
+    // }
 
     public function bloodTypeID($quantity, $inventoryID, $bloodType)
     {

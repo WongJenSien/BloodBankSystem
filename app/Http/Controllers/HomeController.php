@@ -20,7 +20,8 @@ class HomeController extends Controller
     {
         $this->database = $database;
     }
- 
+
+
     public function index()
     {
         return view("FrontEnd.Home.index");

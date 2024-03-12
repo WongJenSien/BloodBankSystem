@@ -7,26 +7,26 @@
             <div class="row">
 
                 {{-- COL - 1 --}}
-                <div class="col border border-danger text-middle align-middle mx-auto">
-                    <div class="form-group row border border-black">
-                        <label for="ship-id" class="col-sm-4 col-form-label border border-black">Shipment ID:</label>
-                        <div class="col-sm-8 border border-black">
+                <div class="col text-middle align-middle mx-auto">
+                    <div class="form-group row">
+                        <label for="ship-id" class="col-sm-4 col-form-label ">Shipment ID:</label>
+                        <div class="col-sm-8">
                             <input type="text" name="ship_id" id="ship_id" class="form-control-plaintext"
                                 value="{{ $shipmentID }}" readonly>
                         </div>
                     </div>
 
-                    <div class="form-group row border border-black">
-                        <label for="ship-today" class="col-sm-4 col-form-label border border-black">Request Date:</label>
-                        <div class="col-sm-8 border border-black">
+                    <div class="form-group row">
+                        <label for="ship-today" class="col-sm-4 col-form-label">Request Date:</label>
+                        <div class="col-sm-8">
                             <input type="date" name="ship_today" id="ship_today" class="form-control-plaintext"
                                 value="{{ date('Y-m-d') }}" readonly>
                         </div>
                     </div>
 
-                    <div class="form-group row border border-black">
-                        <label for="ship-location" class="col-sm-4 col-form-label border border-black">Location:</label>
-                        <div class="col-sm-8 border border-black">
+                    <div class="form-group row">
+                        <label for="ship-location" class="col-sm-4 col-form-label">Location:</label>
+                        <div class="col-sm-8">
                             <select name="location" class="form-select" aria-label="Default select example">
                                 <option selected>Select an Location</option>
                                 @foreach ($hospitalList as $key => $value)
@@ -36,18 +36,18 @@
                         </div>
                     </div>
 
-                    <div class="form-group row border border-black">
-                        <label for="ship-date" class="col-sm-4 col-form-label border border-black">Shipment Date:</label>
-                        <div class="col-sm-8 border border-black">
+                    <div class="form-group row">
+                        <label for="ship-date" class="col-sm-4 col-form-label">Shipment Date:</label>
+                        <div class="col-sm-8">
                             <input class="form-control" type="date" name="ship_date" id="ship_date"
                                 onclick="getShipDate()" value="{{ date('Y-m-d') }}" />
                         </div>
                     </div>
 
-                    <div class="form-group row border border-black">
+                    <div class="form-group row">
                         <label for="ship-description"
-                            class="col-sm-4 col-form-label border border-black">Description:</label>
-                        <div class="col-sm-8 border border-black">
+                            class="col-sm-4 col-form-label">Description:</label>
+                        <div class="col-sm-8">
                             <textarea class="form-control" id="description" name="description" rows="7" placeholder="Type here..."></textarea>
                         </div>
                     </div>
@@ -55,10 +55,10 @@
                 </div>
 
                 {{-- COL - 2 --}}
-                <div class="col-4 col-sm-4 border border-black">
+                <div class="col-4 col-sm-4">
                     <div class="row">
                         <div class="col m-3 p-2">
-                            <table class="table table-border align-middle">
+                            <table class="table table-bordered align-middle">
                                 <thead>
                                     <th colspan="2">Blood Type</th>
                                     <th>Quantity</th>
@@ -122,10 +122,10 @@
                 </div>
 
                 {{-- COL - 3 --}}
-                <div class="col-4 col-sm-4 border border-black">
+                <div class="col-4 col-sm-4">
                     <div class="row">
                         <div class="col m-3 p-2">
-                            <table class="table table-bordered border-black mx-auto table-hover">
+                            <table class="table table-bordered mx-auto table-hover">
                                 <thead>
                                     <tr>
                                         <th>Blood Type</th>
@@ -156,7 +156,7 @@
                     </div>
 
                 </div>
-                <button type="submit">Submit</button>
+                <button class="btn btn-primary" type="submit">Submit</button>
             </div>
         </form>
     </div>

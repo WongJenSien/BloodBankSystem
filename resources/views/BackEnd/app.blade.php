@@ -8,7 +8,7 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        
+
     <link rel="stylesheet" type="text/css" href="/css/app.css">
 
 
@@ -25,7 +25,13 @@
 </head>
 
 <body>
-    @include('backend.inc.sidebar')
+    {{-- Admin ROLE --}}
+    @if (session('user.roleID') == '1')
+        @include('backend.inc.sidebar')
+    @else{{-- Customer ROLE --}}
+        @include('FrontEnd.inc.navbar')
+    @endif
+
 
     <div class="main p-3">
         <div class="text-center">

@@ -1,10 +1,25 @@
 const toogleBTN = document.querySelector("#toggle-btn");
 
-toogleBTN.addEventListener("click", function(){
+toogleBTN.addEventListener("click", function () {
     document.querySelector("#sidebar").classList.toggle("expand");
 });
 
-function dateRange(){
+function toastBtn() {
+    const toastTrigger = document.getElementById('liveToastBtn')
+    const toastLiveExample = document.getElementById('liveToast')
+
+    if (toastTrigger) {
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+        toastTrigger.addEventListener('click', () => {
+            toastBootstrap.show()
+        })
+
+    }
+
+}
+
+
+function dateRange() {
     var today = new Date();
 
     // Set the minimum date to today
@@ -18,7 +33,7 @@ function dateRange(){
     // Set the min 
     document.getElementById("expiredDate_A_P").setAttribute('min', minDate);
     document.getElementById("expiredDate_A_N").setAttribute('min', minDate);
-    
+
     document.getElementById("expiredDate_B_P").setAttribute('min', minDate);
     document.getElementById("expiredDate_B_N").setAttribute('min', minDate);
 
@@ -31,7 +46,7 @@ function dateRange(){
     // Set the max
     document.getElementById("expiredDate_A_P").setAttribute('max', maxDate);
     document.getElementById("expiredDate_A_N").setAttribute('max', maxDate);
-    
+
     document.getElementById("expiredDate_B_P").setAttribute('max', maxDate);
     document.getElementById("expiredDate_B_N").setAttribute('max', maxDate);
 
@@ -40,10 +55,10 @@ function dateRange(){
 
     document.getElementById("expiredDate_AB_P").setAttribute('max', maxDate);
     document.getElementById("expiredDate_AB_N").setAttribute('max', maxDate);
-    
+
 }
 
-function countBlood(){
+function countBlood() {
     var aPositive = parseInt(document.getElementById("aPositive").value);
     var aNegative = parseInt(document.getElementById("aNegative").value);
 
@@ -65,26 +80,22 @@ function countBlood(){
     document.getElementById('labelB').innerText = totalB;
     document.getElementById('labelO').innerText = totalO;
     document.getElementById('labelAB').innerText = totalAB;
-    
+
 }
 
-function getShipDate(){
+function getShipDate() {
     const date = new Date();
     let d = date.getDate();
     let m = date.getMonth() + 1;
     let y = date.getFullYear();
 
-    if(d < 10){
+    if (d < 10) {
         d = '0' + d;
     }
-    if(m < 10){
+    if (m < 10) {
         m = '0' + m;
     }
 
     let current = y + "-" + m + "-" + d;
-document.getElementById("ship-date").setAttribute('min', current);
-}
-
-function updateShipment(){
-    
+    document.getElementById("ship-date").setAttribute('min', current);
 }

@@ -11,25 +11,6 @@ use Dompdf\Dompdf;
 
 class ReportController extends Controller
 {
-    protected $database;
-    protected $ref_table_firestore;
-    protected $ref_table_shipment;
-    protected $ref_table_inventories;
-    protected $ref_table_event;
-    protected $getMonthCode;
-
-    public function __construct(Database $database)
-    {
-        $this->ref_table_firestore = app('firebase.firestore')->database()->collection('Shipment');
-        $this->ref_table_shipment = "Shipment";
-        $this->ref_table_inventories = "Inventories";
-        $this->ref_table_event = 'Events';
-
-        $today = Carbon::now();
-        $this->getMonthCode = substr($today->year, -2) . sprintf("%02s", $today->month);
-
-        $this->database = $database;
-    }
     public function showInventoryReport()
     {
         $data = $this->getInventoryReport();
@@ -80,9 +61,10 @@ class ReportController extends Controller
     public function filterMonth($list, $letter)
     {
         $returnList = [];
-
+        $today = Carbon::now();
+        $getMonthCode = substr($today->year, -2) . sprintf("%02s", $today->month);
         foreach ($list as $key => $value) {
-            if (substr($key, strlen($letter), 4) == $this->getMonthCode) {
+            if (substr($key, strlen($letter), 4) == $getMonthCode) {
                 $returnList[$key] = $value;
             }
         }

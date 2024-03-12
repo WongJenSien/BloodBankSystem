@@ -1,6 +1,7 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary custom-nav">
     <div class="container-fluid custom-nav">
-        <a class="navbar-brand navTitle" href="#"> <img src="{{ url('/Image/Icon.png') }}" alt="icon" /> Blood
+        <a class="navbar-brand navTitle" href="{{ route('landing') }}"> <img src="{{ url('/Image/Icon.png') }}"
+                alt="icon" /> Blood
             Bank System </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,6 +19,9 @@
     </div>
 </nav>
 
+@if(!session()->has('user'))
+<a href="{{ route('loginForm') }}" style="display: inline-block;color:black;font-weight:bold;">Click Here</a>
+@endif
 <div class="wrapper">
     <aside id="sidebar">
         <div class="d-flex">
@@ -25,13 +29,13 @@
                 <i class="lni lni-grid-alt"></i>
             </button>
             <div class="sidebar-logo">
-                <a href="#">
-                    {{session('user.name')}}</a>
+                <a href="{{ route('profileForm') }}">
+                    {{ session('user.name') }}</a>
             </div>
         </div>
         <ul class="sidebar-nav">
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="{{ route('profileForm') }}" class="sidebar-link">
                     <i class="lni lni-user"></i>
                     <span>Profile</span>
                 </a>
@@ -39,27 +43,19 @@
 
             {{-- EventManagement --}}
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link has-dropdown collapsed" data-bs-toggle="collapse"
-                    data-bs-target="#event" aria-expanded="false" aria-controls="event">
+                <a href="{{ route('eventList') }}" class="sidebar-link">
                     <i class="lni lni-clipboard"></i>
-                    <span>Event Management</span>
+                    <span>Event List</span>
                 </a>
-                <ul id="event" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                    <li class="sidebar-item ">
-                        <a href="#" class="sidebar-link ">
-                            UserList
-                        </a>
-                        <a href="#" class="sidebar-link">
-                            Add Event</a>
-                        <a href="#" class="sidebar-link">
-                            View Event</a>
-                        <a href="#" class="sidebar-link">
-                            Modify Event</a>
-                        <a href="#" class="sidebar-link">
-                            Delete Event</a>
-                    </li>
-                </ul>
             </li>
+
+            <li class="sidebar-item">
+                <a href="{{ route('userList') }}" class="sidebar-link">
+                    <i class="lni lni-users"></i>
+                    <span>User List</span>
+                </a>
+            </li>
+
 
             <li class="sidebar-item">
                 <a href="#" class="sidebar-link has-dropdown collapsed" data-bs-toggle="collapse"
@@ -95,7 +91,7 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{{ url('appointment-list')}}" class="sidebar-link">
+                <a href="{{ url('appointment-list') }}" class="sidebar-link">
                     <i class="bi bi-calendar-check"></i>
                     <span>Appointment</span>
                 </a>
@@ -103,16 +99,20 @@
 
             {{-- REPORT --}}
             <li class="sidebar-item">
-                <a href="{{ url('inventory-report')}}" class="sidebar-link">
-                    <i class="bi bi-file-zip"></i>  
+                <a href="{{ url('inventory-report') }}" class="sidebar-link">
+                    <i class="bi bi-file-zip"></i>
                     <span>Report</span>
                 </a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="#" class="sidebar-link"> <i class="lni lni-exit"></i><span>Logout</span></a>
+            <a href="{{ route('logout') }}" class="sidebar-link"> <i class="lni lni-exit"></i><span>Logout</span></a>
         </div>
     </aside>
+
+   
+
+
     {{-- <div class="main p-3">
         <div class="text-center">
             <h1>Sidebar</h1>

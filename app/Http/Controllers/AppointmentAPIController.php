@@ -3,28 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Kreait\Firebase\Contract\Database;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-// use chillerlan\QRCode\QRCode;
-// use chillerlan\QRCode\Output\QRImage;
-use Dompdf\Options;
-use Dompdf\Dompdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 
-class AppointmentController extends Controller
+
+class AppointmentAPIController extends Controller
 {
     //
-    // protected $database;
-    // protected $ref_table_hospital;
-    // protected $ref_table_user;
-    // protected $ref_table_appointment;
-    // public function __construct(Database $database)
-    // {
-    //     $this->ref_table_hospital = "Hospital";
-    //     $this->ref_table_user = "Users";
-    //     $this->ref_table_appointment = "Appointment";
-    //     $this->database = $database;
-    // }
+    public function getHospitalList()
+    {
+        return $this->database->getReference($this->ref_table_hospital)->getValue();
+    }
+
+    public function appointmentForm(Request $req)
+    {
+        $locationID = $req->location;
+        $userID = $req->key;
+
+        $location = $this->database->getReference($this->ref_table_hospital)->getChild($locationID)->getChild('Name')->getValue();
+        $user = $this->database->getReference($this->ref_table_user)->getChild($userID)->getValue();
+
+        $returnDate = [
+            'location' => $location,
+            'user' => $user
+        ];
+        return $returnDate;
+    }
 
     public function index()
     {
@@ -36,13 +41,14 @@ class AppointmentController extends Controller
             }
         }
 
-        return view('BackEnd.JenSien.appointmentList')->with('record', $record);
+        return $record;
     }
     public function show($id)
     {
-        $appList = $this->database->getReference($this->ref_table_appointment)->getValue();
         $record = null;
         $status = null;
+
+        $appList = $this->database->getReference($this->ref_table_appointment)->getValue();
         if ($appList != null) {
             foreach ($appList as $key => $item) {
                 if ($item['userID'] == $id) {
@@ -54,20 +60,42 @@ class AppointmentController extends Controller
         }
 
         if ($record != null) {
-            // return redirect('make-appointment');
             $location = $this->database->getReference($this->ref_table_hospital)->getChild($record['location'])->getChild('Name')->getValue();
             $record['location'] = $location;
             $userInfo = $this->database->getReference($this->ref_table_user)->getChild($record['userID'])->getValue();
             $record['userName'] = $userInfo['name'];
             $record['userIc'] = $userInfo['identityCard'];
+            $record['image'] = $this->getImage($record['fileName']);
         }
-        return view('FrontEnd.Home.viewCertificate')->with('record', $record)->with('status', $status);
+        $returnData = [
+            'record' => $record,
+            'status' => $status
+        ];
+        return $returnData;
     }
 
     public function destroy($id)
     {
         $this->database->getReference($this->ref_table_appointment)->getChild($id)->remove();
-        return redirect('profile');
+    }
+
+    public function getImage($imageName)
+    {
+        // Get the path to the image file
+        $path = public_path('appQR/' . $imageName);
+
+        // Check if the file exists
+        if (file_exists($path)) {
+            // Load the image file
+            $imageData = file_get_contents($path);
+
+            // Combine image data and information into a single array
+            $responseData = [
+                'imageData' => base64_encode($imageData) // Encode image data if needed
+            ];
+        }
+        // Return the response as JSON
+        return $responseData;
     }
 
     public function editResult(Request $req)
@@ -103,11 +131,10 @@ class AppointmentController extends Controller
             'testResult' => '',
             'testDate' => ''
         ];
-        $location = $req->hospitalID;
-        $currentUser = session('user.key');
-        $pre_date = $req->preferred_date;
-        $pre_time = $req->preferred_time;
-
+        $location = $req->location;
+        $currentUser = $req->userKey;
+        $pre_date = $req->pre_date;
+        $pre_time = $req->pre_time;
 
         // Validate All information
         $err = $this->getErrMessage($location, $currentUser, $pre_date, $pre_time);
@@ -132,22 +159,14 @@ class AppointmentController extends Controller
         ];
         $filename = $this->generateQrCode($postData);
         $postData['fileName'] = $filename;
-    
+
         $record = $this->database->getReference($this->ref_table_appointment . '/' . $appID)->set($postData);
 
-        return redirect('view-certificate/' . $currentUser);
+        return $record;
         // return view('FrontEnd.Home.viewCertificate')->with('filename', $filename)->with('record', $record)->with('status', $status);
     }
 
-    public function appointmentForm($id)
-    {
-        $currentUser = session('user.key');
 
-        $location = $this->database->getReference($this->ref_table_hospital)->getChild($id)->getChild('Name')->getValue();
-        $user = $this->database->getReference($this->ref_table_user)->getChild($currentUser)->getValue();
-
-        return view('FrontEnd.Home.appointmentForm')->with('location', $location)->with('user', $user)->with('hospitalID', $id);
-    }
 
     // public function idGenerator($letter, $ref_collection)
     // {
@@ -177,36 +196,18 @@ class AppointmentController extends Controller
     // ----------------------------------
     //        REPORT GENERATOR
     // ----------------------------------
-    public function downloadResult()
+    public function downloadResult($id)
     {
-        $userKey = session('user.key');
+        $userKey = $id;
         $data = $this->getResult($userKey);
-        $fileName = 'Blood Test Result - ' . session('user.name');
+        $fileName = 'Blood Test Result - ' . $data['userName'] . '.pdf';
 
         // Load the view and get the HTML content
-        $html = view('FrontEnd.Report.report', $data)->render();
-
-        // Set DOMPDF options
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-
-        // Set the paper size to match the web page size
-        $options->set('defaultPaperSize', 'A4');
-
-        // Instantiate the DOMPDF class
-        $dompdf = new Dompdf($options);
-
-        // Load HTML content into DOMPDF
-        $dompdf->loadHtml($html);
-
-        // Render the PDF
-        $dompdf->render();
+        $pdf = PDF::loadView('FrontEnd.Report.report', $data);
 
         // Output the generated PDF (download)
-        return $dompdf->stream($fileName . '.pdf');
+        return $pdf->download($fileName.'.pdf');
     }
-
 
     public function getResult($userKey)
     {
@@ -293,27 +294,6 @@ class AppointmentController extends Controller
 
         return $filename;
     }
-
-    // public function generateQrCode($validatedData)
-    // {
-    //     // Generate the QR code
-    //     $data = $validatedData;// Your QR code data
-    //     $options = [
-    //         'eccLevel' => QRCode::ECC_L,
-    //         'scale'    => 10,
-    //     ];
-    //     $qrCode = new QRCode($options);
-    //     $image = new QRImage($qrCode);
-
-    //     // Output the QR code image
-    //     ob_start();
-    //     $image->output($data);
-    //     $imageData = ob_get_contents();
-    //     ob_end_clean();
-
-    //     // Return the QR code image as a response
-    //     return response($imageData)->header('Content-type', 'image/png');
-    // }
 
     protected function generateData(array $validatedData): string
     {

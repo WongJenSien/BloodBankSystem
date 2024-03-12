@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Storage;
 
 class ReportAPIController extends Controller
 {
-    protected $database;
-    protected $ref_table_firestore;
+
+
     protected $ref_table_shipment;
     protected $ref_table_inventories;
     protected $ref_table_event;
@@ -21,7 +21,6 @@ class ReportAPIController extends Controller
 
     public function __construct(Database $database)
     {
-        $this->ref_table_firestore = app('firebase.firestore')->database()->collection('Shipment');
         $this->ref_table_shipment = "Shipment";
         $this->ref_table_inventories = "Inventories";
         $this->ref_table_event = 'Events';
@@ -29,7 +28,6 @@ class ReportAPIController extends Controller
         $today = Carbon::now();
         $this->getMonthCode = substr($today->year, -2) . sprintf("%02s", $today->month);
 
-        $this->database = $database;
     }
     public function showInventoryReport()
     {
@@ -333,38 +331,6 @@ class ReportAPIController extends Controller
         $pdf = PDF::loadView('BackEnd.Report.inventoryReport', $data);
         return $pdf->download($fileName.'.pdf');
     }
-    // public function downloadPDF()
-    // {
-        // $data = $this->getInventoryReport();
-        // $today = Carbon::now();
-        // $year = $today->year;
-        // $month = $today->month;
-        // $fileName = 'InventoryReport-' . substr($year, -2) . sprintf("%02s", $month);
-
-        // // Load the view and get the HTML content
-        // $html = view('BackEnd.Report.inventoryReport', $data)->render();
-        
-        // // Set DOMPDF options
-        // $options = new Options();
-        // $options->set('isHtml5ParserEnabled', true);
-        // $options->set('isPhpEnabled', true);
-        // $options->set('defaultPaperSize', 'A4');
-
-        // // Instantiate DOMPDF
-        // $dompdf = new Dompdf($options);
-        // $dompdf->loadHtml($html);
-
-        // // Render PDF content
-        // $dompdf->render();
-
-        // // Generate file name
-        // $fileName = 'InventoryReport-' . substr($year, -2) . sprintf("%02s", $month);
-
-        // // Return PDF as a download
-        // return response($dompdf->output(), 200, [
-        //     'Content-Type' => 'application/pdf',
-        //     'Content-Disposition' => 'attachment; filename="generated_pdf123.pdf"'
-        // ]);
-    // }
+    
 
 }

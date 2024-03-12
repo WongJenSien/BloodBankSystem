@@ -42,87 +42,41 @@
 
         {{-- VIEW -- ROW 2 --}}
         <div class="row">
-            <div class="container text-center mx-auto border border-black mt-3">
+            <div class="container text-center mx-auto mt-3">
                 <div class="row text-start">
                     <h2 class="text-black">Shipment List</h2>
                 </div>
                 <div class="row">
                     <div class="container">
                         <div class="row">
-                            {{-- LEFT SIDE VIEW --}}
-                            <div class="col-3 ml-1">
-                                <div class="row">
-                                    <div class="container">
-                                        {{-- COL-1 --}}
-                                        <div class="row p-1 m-1">
-                                            <table class="table border border-black p-1 m-1 text-black">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Status</th>
-                                                        <th>Quantity</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Pending</td>
-                                                        <td>123</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Shipment</td>
-                                                        <td>123</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Delivered</td>
-                                                        <td>123</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Total</th>
-                                                        <td>123</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {{-- RIGHT SIDE VIEW --}}
-                            <div class="col border border-black ml-2 ">
-                                <div class="row">
-                                    <div class="container inv-activity-container">
-                                        <div class="row inv-activity-fixed">
-                                            <table class="border border-black p-3 m-3">
-                                                <thead>
-                                                    <tr>
-                                                        <th>No</th>
-                                                        <th>Shipment ID</th>
-                                                        <th>Request Date</th>
-                                                        <th>Location</th>
-                                                        <th>Shipment Date</th>
-                                                        <th>Status</th>
-                                                        <th>Total Quantity</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($shipInfo as $key => $value)
-                                                        <tr>
-                                                            <td>{{ $loop->iteration }}</td>
-                                                            <td>{{ $key}}</td>
-                                                            <td>{{ $value['RequestDate'] }}</td>
-                                                            <td>{{ $value['location'] }}</td>
-                                                            <td>{{ $value['ShipDate'] }}</td>
-                                                            <td>{{ $value['Status'] }}</td>
-                                                            <td><a href="shipment-view-detials/{{$key}}">View Details</a></td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Shipment ID</th>
+                                        <th>Request Date</th>
+                                        <th>Location</th>
+                                        <th>Shipment Date</th>
+                                        <th>Status</th>
+                                        <th>Total Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($shipInfo as $key => $value)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $key }}</td>
+                                            <td>{{ $value['RequestDate'] }}</td>
+                                            <td>{{ $value['location'] }}</td>
+                                            <td>{{ $value['ShipDate'] }}</td>
+                                            <td>{{ $value['Status'] }}</td>
+                                            <td><a href="shipment-view-detials/{{ $key }}">View
+                                                    Details</a></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-
                     </div>
                 </div>
             </div>

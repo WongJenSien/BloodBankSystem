@@ -1,5 +1,4 @@
 @extends('BackEnd.app')
-
 @section('content')
     <div class="container">
         <form action="{{ url('add-inventory') }}" method="POST">
@@ -24,8 +23,8 @@
 
                     {{-- InventoryID COL --}}
                     <div class="col">
-                        <div class="mb-3 row border border-black ">
-                            <label for="inventoryID" class="col-sm-2 col-form-label border border-black"> ID: </label>
+                        <div class="mb-3 row">
+                            <label for="inventoryID" class="col-sm-2 col-form-label"> ID: </label>
                             <div class="col-sm-10 text-start">
                                 <input type="text" readonly class="form-control-plaintext fw-bold" name="inventoryID"
                                     id="inventoryID" value="{{ $newID }}">
@@ -34,11 +33,8 @@
                     </div>
                 </div>
             </div>
-
-
-
             <div class="row">
-                <div class="col border border-black">
+                <div class="col">
                     <div class="row">
                         <table class="table table-bordered align-middle">
                             <thead>
@@ -115,9 +111,8 @@
                         </table>
                     </div>
                 </div>
-
-                <div class="col col-lg-2 border border-danger">
-                    <table class="table table-bordered border-black mx-auto table-hover">
+                <div class="col col-lg-2">
+                    <table class="table table-bordered mx-auto table-hover">
                         <thead>
                             <tr>
                                 <th>Blood Type</th>
