@@ -85,7 +85,7 @@
             </li>
 
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="{{url('role-base-control')}}" class="sidebar-link">
                     <i class="lni lni-shield"></i>
                     <span>RBAC</span>
                 </a>

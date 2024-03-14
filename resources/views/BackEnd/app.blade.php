@@ -35,6 +35,12 @@
 
     <div class="main p-3">
         <div class="text-center">
+            <div class="py-3">
+                @if (session('status')) 
+                    <span class="h5 font-weight-bold text-center text-dark">{{session('status')}}</span>
+                @endif
+            </div>
+
             @yield('content')
         </div>
     </div>

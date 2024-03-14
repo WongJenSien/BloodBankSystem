@@ -17,6 +17,7 @@ class ShipmentAPIController extends Controller
 
     public function store(Request $request)
     {
+
         $shipmentID = $request->shipmentID;
         $reqDate = $request->requestDate;
         $location = $request->location;
@@ -42,7 +43,7 @@ class ShipmentAPIController extends Controller
                 $listInfo[$bKey] = $bValue;
         }
 
-       
+
 
         //Filter Blood and Status is Available
         $keyStatus = 'Available';
@@ -93,7 +94,7 @@ class ShipmentAPIController extends Controller
         return;
     }
 
-    public function show($id)
+    public function show($id,Request $request)
     {
         //Retreive Shipment Infomation
         $shipmentInfo = $this->database->getReference($this->ref_table_shipment)->getChild($id)->getValue();
@@ -103,9 +104,9 @@ class ShipmentAPIController extends Controller
 
         foreach ($inventoryInfo as $info => $details) {
             foreach ($details['bloodInfo'] as $key => $value) {
-                if($value['ShipmentID']== $id){
+                if ($value['ShipmentID'] == $id) {
                     $bloodList[$key] = $value;
-                    $inventoryID = ['inventoryID'=>$info];
+                    $inventoryID = ['inventoryID' => $info];
                     $eventName = ['eventName' => $details['eventID']];
                     $bloodList[$key] = array_merge($bloodList[$key], $inventoryID);
                     $bloodList[$key] = array_merge($bloodList[$key], $eventName);
@@ -113,12 +114,11 @@ class ShipmentAPIController extends Controller
             }
         }
 
-        foreach($bloodList as $key => $value){
-            $eventName = $this->database->getReference($this->ref_table_event)->getChild($value['eventName'])->getChild('Name')->getValue();
+        foreach ($bloodList as $key => $value) {
+            $eventName = $this->database->getReference($this->ref_table_event)->getChild($value['eventName'])->getChild('eventName')->getValue();
             $bloodList[$key]['eventName'] = $eventName;
-
         }
-      
+
 
         ksort($bloodList);
 
@@ -136,7 +136,7 @@ class ShipmentAPIController extends Controller
     {
         $status = $request->status;
         $childKey = 'Status';
-        $this->database->getReference($this->ref_table_shipment)->getChild($id)->update([$childKey=>$status]);
+        $this->database->getReference($this->ref_table_shipment)->getChild($id)->update([$childKey => $status]);
     }
 
     public function filterBlood($list, $bloodType_1, $status)
@@ -161,7 +161,7 @@ class ShipmentAPIController extends Controller
         return $bloodList;
     }
 
-  
+
     public function updateList($list, $shipmentID)
     {
         $updateKey = 'status';

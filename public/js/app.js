@@ -99,3 +99,38 @@ function getShipDate() {
     let current = y + "-" + m + "-" + d;
     document.getElementById("ship-date").setAttribute('min', current);
 }
+
+
+
+// RBAC JAVA SCRIPT
+document.addEventListener('DOMContentLoaded', function () {
+    initializePermissionCheckboxes();
+});
+
+function initializePermissionCheckboxes() {
+    const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+
+    allCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            const parentContainer = this.closest('.container');
+
+            // Check if the checkbox is one of the "all_" checkboxes
+            if (this.name.startsWith("all_")) {
+                const controlCheckboxes = parentContainer.querySelectorAll('input[type="checkbox"]:not([name^="all_"])');
+
+                // Set all control checkboxes based on the state of the "all_" checkbox
+                controlCheckboxes.forEach(function(controlCheckbox) {
+                    controlCheckbox.checked = checkbox.checked;
+                });
+            } else {
+                // If one of the control checkboxes is unchecked, uncheck the corresponding "all_" checkbox
+                const allCheckbox = parentContainer.querySelector('input[type="checkbox"][name^="all_"]');
+                if (!this.checked && allCheckbox) {
+                    allCheckbox.checked = false;
+                }
+            }
+
+            
+        });
+    });
+}

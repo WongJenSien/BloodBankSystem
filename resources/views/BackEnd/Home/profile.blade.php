@@ -23,7 +23,9 @@
             <div>&nbsp;</div>
 
             <div style="text-align: center;">
+                
                 <img src="{{ asset('storage/' . $user['path']) }}" class="profile-image" />
+                
             </div>
 
             <div>&nbsp;</div>

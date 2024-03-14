@@ -3,29 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Kreait\Firebase\Contract\Database;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-// use chillerlan\QRCode\QRCode;
-// use chillerlan\QRCode\Output\QRImage;
+
 use Dompdf\Options;
 use Dompdf\Dompdf;
 
 class AppointmentController extends Controller
 {
-    //
-    // protected $database;
-    // protected $ref_table_hospital;
-    // protected $ref_table_user;
-    // protected $ref_table_appointment;
-    // public function __construct(Database $database)
-    // {
-    //     $this->ref_table_hospital = "Hospital";
-    //     $this->ref_table_user = "Users";
-    //     $this->ref_table_appointment = "Appointment";
-    //     $this->database = $database;
-    // }
-
     public function index()
     {
         $record = null;
@@ -35,7 +20,6 @@ class AppointmentController extends Controller
                 $record[$key]['userName'] = $this->database->getReference($this->ref_table_user)->getChild($item['userID'])->getChild('name')->getValue();
             }
         }
-
         return view('BackEnd.JenSien.appointmentList')->with('record', $record);
     }
     public function show($id)
@@ -55,13 +39,18 @@ class AppointmentController extends Controller
 
         if ($record != null) {
             // return redirect('make-appointment');
+            $qrCodeData = "Location: newBbi\nFileName";
             $location = $this->database->getReference($this->ref_table_hospital)->getChild($record['location'])->getChild('Name')->getValue();
             $record['location'] = $location;
             $userInfo = $this->database->getReference($this->ref_table_user)->getChild($record['userID'])->getValue();
             $record['userName'] = $userInfo['name'];
             $record['userIc'] = $userInfo['identityCard'];
+            $record['qrCode'] = $this->generateQrCode($record);
         }
-        return view('FrontEnd.Home.viewCertificate')->with('record', $record)->with('status', $status);
+        // dd($record);
+        return view('FrontEnd.Home.viewCertificate')
+            ->with('record', $record)
+            ->with('status', $status);
     }
 
     public function destroy($id)
@@ -130,9 +119,10 @@ class AppointmentController extends Controller
             'status' => $status,
             'result' => $result
         ];
-        $filename = $this->generateQrCode($postData);
-        $postData['fileName'] = $filename;
-    
+        $data = $this->generateQrCode($postData);
+
+        $postData['fileName'] = $this->saveFile($data);
+
         $record = $this->database->getReference($this->ref_table_appointment . '/' . $appID)->set($postData);
 
         return redirect('view-certificate/' . $currentUser);
@@ -148,31 +138,6 @@ class AppointmentController extends Controller
 
         return view('FrontEnd.Home.appointmentForm')->with('location', $location)->with('user', $user)->with('hospitalID', $id);
     }
-
-    // public function idGenerator($letter, $ref_collection)
-    // {
-
-    //     $today = Carbon::now();
-    //     $year = $today->year;
-    //     $month = $today->month;
-
-    //     $lastID = $this->database->getReference($ref_collection)->orderByKey()->limitToLast(1)->getValue();
-    //     if ($lastID != null) {
-    //         $lastID = array_keys($lastID)[0];
-    //     }
-
-    //     //if no last record
-    //     if ($lastID === null || substr($lastID, strlen($letter), 4) != substr($year, -2) . sprintf("%02s", $month)) {
-    //         $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . "001";
-    //     } else {
-    //         $newID = $lastID;
-    //         $last = substr($newID, -3);
-    //         $newNum = intval($last) + 1;
-
-    //         $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);
-    //     }
-    //     return $newID;
-    // }
 
     // ----------------------------------
     //        REPORT GENERATOR
@@ -269,13 +234,14 @@ class AppointmentController extends Controller
     {
         // Generate the  data
         $data = $this->generateData($validatedData);
-
         // Generate QR code with UTF-8 character set
         $qrCode = QrCode::size(300)->generate($data);
 
+        return $qrCode;
+    }
 
-        //dd($qrCode);
-
+    public function saveFile($qrCode)
+    {
         // Define the directory where QR code images will be stored
         $qrCodeDirectory = public_path('appQR/');
 
@@ -290,38 +256,26 @@ class AppointmentController extends Controller
         // Save the QR code image to the file system
         $qrCodePath = $qrCodeDirectory . $filename;
         file_put_contents($qrCodePath, $qrCode);
-
         return $filename;
     }
 
-    // public function generateQrCode($validatedData)
-    // {
-    //     // Generate the QR code
-    //     $data = $validatedData;// Your QR code data
-    //     $options = [
-    //         'eccLevel' => QRCode::ECC_L,
-    //         'scale'    => 10,
-    //     ];
-    //     $qrCode = new QRCode($options);
-    //     $image = new QRImage($qrCode);
-
-    //     // Output the QR code image
-    //     ob_start();
-    //     $image->output($data);
-    //     $imageData = ob_get_contents();
-    //     ob_end_clean();
-
-    //     // Return the QR code image as a response
-    //     return response($imageData)->header('Content-type', 'image/png');
-    // }
-
-    protected function generateData(array $validatedData): string
+    protected function generateData($array): string
     {
-        // Serialize the validated data
-        $data = serialize($validatedData);
-        return $data;
-    }
+ 
+        $formattedString = '';
 
+        // Iterate through the array and format each key-value pair
+        foreach ($array as $key => $value) {
+            // Check if $value is an array
+            if (is_array($value)) {
+                // If it's an array, convert it to JSON format
+                $value = json_encode($value);
+            }
+            // Append the key and value to the formatted string
+            $formattedString .= ucfirst($key) . ': ' . $value . "\n &emsp;"; // Capitalize the key
+        }
+        return $formattedString;
+    }
     // ----------------------------------
     //        Validation Data
     // ----------------------------------

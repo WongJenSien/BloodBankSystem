@@ -85,9 +85,14 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col p-2 m-2 align-item-middle">
-                                                        <img src="{{ url('/appQR/' . $record['fileName'] . '.jpg') }}"
+
+                                                        <div id="qr" class="border border-black" style="min-width: 300px; min-height:300px;">
+                                                            {!! $record['qrCode'] !!}
+                                                        </div>
+
+                                                        {{-- <img src="{{ url('/appQR/' . $record['fileName'] . '.jpg') }}"
                                                             alt="qrCode" class="border border-black"
-                                                            style="min-width: 300px; min-height:300px;">
+                                                            style="min-width: 300px; min-height:300px;"> --}}
                                                     </div>
 
                                                 </div>

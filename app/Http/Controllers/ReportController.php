@@ -15,20 +15,19 @@ class ReportController extends Controller
     {
         $data = $this->getInventoryReport();
 
-        $month = $data['month'];
-        $stockInList = $data['stockInList'];
-        $numOfBlood = $data['numOfBlood'];
-        $numOfBlood_available = $data['numOfBlood_available'];
-        $stockOutList = $data['stockOutList'];
-        $numOfBlood_Shipped = $data['numOfBlood_Shipped'];
-
-        return view('BackEnd.JenSien.reportInventory')
-            ->with('month', $month)
-            ->with('stockInList', $stockInList)
-            ->with('numOfBlood', $numOfBlood)
-            ->with('numOfBlood_available', $numOfBlood_available)
-            ->with('stockOutList', $stockOutList)
-            ->with('numOfBlood_Shipped', $numOfBlood_Shipped);
+        // $month = $data['month'];
+        // $stockInList = $data['stockInList'];
+        // $numOfBlood = $data['numOfBlood'];
+        // $numOfBlood_available = $data['numOfBlood_available'];
+        // $stockOutList = $data['stockOutList'];
+        // $numOfBlood_Shipped = $data['numOfBlood_Shipped'];
+        return view('BackEnd.JenSien.reportInventory')->with('data', $data);
+            // ->with('month', $month)
+            // ->with('stockInList', $stockInList)
+            // ->with('numOfBlood', $numOfBlood)
+            // ->with('numOfBlood_available', $numOfBlood_available)
+            // ->with('stockOutList', $stockOutList)
+            // ->with('numOfBlood_Shipped', $numOfBlood_Shipped);
     }
     public function shipmentReport()
     {
@@ -44,18 +43,28 @@ class ReportController extends Controller
     {
         $letter = 'I';
         $inventoryInfo = $this->database->getReference($this->ref_table_inventories)->getValue();
-        $inventoryInfo = $this->filterMonth($inventoryInfo, $letter);
-        $key = 'quantity';
-        return $this->getLargest($inventoryInfo, $this->ref_table_inventories, $key, $numOfRecord);
+
+        if ($inventoryInfo != null) {
+            $inventoryInfo = $this->filterMonth($inventoryInfo, $letter);
+            $key = 'quantity';
+            return $this->getLargest($inventoryInfo, $this->ref_table_inventories, $key, $numOfRecord);
+        } else {
+            return null;
+        }
     }
 
     public function getLargestStockOut($numOfRecord)
     {
         $letter = 'S';
         $stockOutList = $this->database->getReference($this->ref_table_shipment)->getValue();
-        $stockOutList = $this->filterMonth($stockOutList, $letter);
-        $key = 'Quantity';
-        return $this->getLargest($stockOutList, $this->ref_table_shipment, $key, $numOfRecord);
+
+        if ($stockOutList != null) {
+            $stockOutList = $this->filterMonth($stockOutList, $letter);
+            $key = 'Quantity';
+            return $this->getLargest($stockOutList, $this->ref_table_shipment, $key, $numOfRecord);
+        } else {
+            return null;
+        }
     }
 
     public function filterMonth($list, $letter)
@@ -63,9 +72,12 @@ class ReportController extends Controller
         $returnList = [];
         $today = Carbon::now();
         $getMonthCode = substr($today->year, -2) . sprintf("%02s", $today->month);
-        foreach ($list as $key => $value) {
-            if (substr($key, strlen($letter), 4) == $getMonthCode) {
-                $returnList[$key] = $value;
+
+        if ($list != null) {
+            foreach ($list as $key => $value) {
+                if (substr($key, strlen($letter), 4) == $getMonthCode) {
+                    $returnList[$key] = $value;
+                }
             }
         }
         return $returnList;
@@ -157,28 +169,27 @@ class ReportController extends Controller
 
         $stockInList = $this->getLargestStockIn($numOfRecord);
         $stockOutList = $this->getLargestStockOut($numOfRecord);
-        // dd($stockInList, $stockOutList);
 
         //ADD EVENT NAME INTO THE ARRAY
-        foreach ($stockInList as $key => $item) {
-            $data = $this->database->getReference($this->ref_table_event)->getChild($item['eventID'])->getChild('eventName')->getValue();
-            $stockInList[$key]['EventName'] = $data;
-        }
+        if ($stockInList != null) {
+            foreach ($stockInList as $key => $item) {
+                $data = $this->database->getReference($this->ref_table_event)->getChild($item['eventID'])->getChild('eventName')->getValue();
+                $stockInList[$key]['EventName'] = $data;
+            }
+            //CHANGE SOTCK IN LIST QUANTITY
+            foreach ($stockInList as $key => $value) {
+                $quantity = $this->countBlood_BloodType($value['quantity']);
+                $stockInList[$key]['quantity'] = $quantity;
+            }
 
-        //CHANGE SOTCK IN LIST QUANTITY
-        foreach ($stockInList as $key => $value) {
-            $quantity = $this->countBlood_BloodType($value['quantity']);
-            $stockInList[$key]['quantity'] = $quantity;
-        }
-
-        //COUNT PARTICULAR STATUS
-        foreach ($stockInList as $key => $value) {
-            $total = $this->countBlood_Status($value['bloodInfo']);
-            $stockInList[$key]['StatusQuantity'] = $total;
+            //COUNT PARTICULAR STATUS
+            foreach ($stockInList as $key => $value) {
+                $total = $this->countBlood_Status($value['bloodInfo']);
+                $stockInList[$key]['StatusQuantity'] = $total;
+            }
         }
 
         //SUMMARY
-
         // TOTAL NUMBER OF BLOOD RECEIVE
         $receiveList = $this->filterMonth($this->database->getReference($this->ref_table_inventories)->getValue(), 'I');
         $numOfBlood = [
@@ -201,6 +212,7 @@ class ReportController extends Controller
             'abPositive' => 0,
             'abNegative' => 0
         ];
+
         foreach ($receiveList as $key => $value) {
             foreach ($value['quantity'] as $bloodType => $quantity) {
                 switch ($bloodType) {
@@ -263,10 +275,14 @@ class ReportController extends Controller
                 }
             }
         }
+
         //CHANGE SOTCK OUT LIST QUANTITY
-        foreach ($stockOutList as $key => $value) {
-            $quantity = $this->countBlood_BloodType($value['Quantity']);
-            $stockOutList[$key]['Quantity'] = $quantity;
+        if ($stockOutList != null) {
+
+            foreach ($stockOutList as $key => $value) {
+                $quantity = $this->countBlood_BloodType($value['Quantity']);
+                $stockOutList[$key]['Quantity'] = $quantity;
+            }
         }
 
         $numOfBlood_Shipped = [
@@ -280,37 +296,39 @@ class ReportController extends Controller
             'abNegative' => 0
         ];
         $shippedList = $this->database->getReference($this->ref_table_shipment)->getValue();
-        foreach ($shippedList as $key => $value) {
-            foreach ($value['Quantity'] as $bloodType => $quantity) {
-                switch ($bloodType) {
-                    case 'aPositive':
-                        $numOfBlood_Shipped['aPositive'] += $quantity;
-                        break;
-                    case 'aNegative':
-                        $numOfBlood_Shipped['aNegative'] += $quantity;
-                        break;
-                    case 'bPositive':
-                        $numOfBlood_Shipped['bPositive'] += $quantity;
-                        break;
-                    case 'bNegative':
-                        $numOfBlood_Shipped['bNegative'] += $quantity;
-                        break;
-                    case 'oPositive':
-                        $numOfBlood_Shipped['oPositive'] += $quantity;
-                        break;
-                    case 'oNegative':
-                        $numOfBlood_Shipped['oNegative'] += $quantity;
-                        break;
-                    case 'abPositive':
-                        $numOfBlood_Shipped['abPositive'] += $quantity;
-                        break;
-                    case 'abNegative':
-                        $numOfBlood_Shipped['abNegative'] += $quantity;
-                        break;
+        if ($shippedList != null) {
+
+            foreach ($shippedList as $key => $value) {
+                foreach ($value['Quantity'] as $bloodType => $quantity) {
+                    switch ($bloodType) {
+                        case 'aPositive':
+                            $numOfBlood_Shipped['aPositive'] += $quantity;
+                            break;
+                        case 'aNegative':
+                            $numOfBlood_Shipped['aNegative'] += $quantity;
+                            break;
+                        case 'bPositive':
+                            $numOfBlood_Shipped['bPositive'] += $quantity;
+                            break;
+                        case 'bNegative':
+                            $numOfBlood_Shipped['bNegative'] += $quantity;
+                            break;
+                        case 'oPositive':
+                            $numOfBlood_Shipped['oPositive'] += $quantity;
+                            break;
+                        case 'oNegative':
+                            $numOfBlood_Shipped['oNegative'] += $quantity;
+                            break;
+                        case 'abPositive':
+                            $numOfBlood_Shipped['abPositive'] += $quantity;
+                            break;
+                        case 'abNegative':
+                            $numOfBlood_Shipped['abNegative'] += $quantity;
+                            break;
+                    }
                 }
             }
         }
-
         $data = [
             'month' => $month,
             'stockInList' => $stockInList,

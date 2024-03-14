@@ -7,8 +7,7 @@ use App\Http\Controllers\UserAPIController;
 use App\Http\Controllers\ReportAPIController;
 use App\Http\Controllers\ShipmentAPIController;
 use App\Http\Controllers\EventAPIController;
-
-
+use App\Http\Controllers\RoleBaseAPIController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,23 +26,46 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
+// -------------------------------------------
+//         Inventory API Controller
+// -------------------------------------------
 Route::get('/view/inventory/getNewId', [InventoryAPIController::class, 'getNewId']);
 Route::get('/view/inventory/getShipmentID', [InventoryAPIController::class, 'shipOut']);
+
+// -------------------------------------------
+//         Shipment API Controller
+// -------------------------------------------
+Route::put('/view/shipment/editStatus/{id}', [ShipmentAPIController::class, 'editStatus']);
+
+// -------------------------------------------
+//         Report API Controller
+// -------------------------------------------
 Route::get('view/report', [ReportAPIController::class, 'showInventoryReport']);
 Route::get('/view/report/downloadPDF', [ReportAPIController::class, 'downloadPDF']);
-Route::put('/view/shipment/editStatus/{id}', [ShipmentAPIController::class, 'editStatus']);
+
+// -------------------------------------------
+//         Appointment API Controller
+// -------------------------------------------
 Route::get('/view/appointment/displayHospital', [AppointmentAPIController::class, 'getHospitalList']);
 Route::get('/view/appointment/appointmentForm', [AppointmentAPIController::class, 'appointmentForm']);
-
-
+Route::post('/view/appointment/editResult',[AppointmentAPIController::class,'editResult']);
 Route::get('/view/result/{id}',[AppointmentAPIController::class,'downloadResult']);
 
-Route::get('/view/test', [InventoryAPIController::class, 'index']);
+// -------------------------------------------
+//         User API Controller
+// -------------------------------------------
 Route::post('/view/login', [UserAPIController::class, 'login']);
 
 
+Route::post('/view/rbac/editPermission',[RoleBaseAPIController::class,'editPermission']);
+Route::get('/view/rbac/validatePermission',[RoleBaseAPIController::class,'validatePermission']);
+
+// -------------------------------------------
+//         Resource  Controller
+// -------------------------------------------
 Route::resource('/view/event', EventAPIController::class);
 Route::resource('/view/inventory', InventoryAPIController::class);
 Route::resource('/view/shipment', ShipmentAPIController::class);
 Route::resource('/view/appointment', AppointmentAPIController::class);
 Route::resource('/view/user', UserAPIController::class);
+Route::resource('/view/rbac', RoleBaseAPIController::class);

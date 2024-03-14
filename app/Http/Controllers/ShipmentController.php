@@ -11,6 +11,9 @@ class ShipmentController extends Controller
 
     public function store(Request $request)
     {
+        if (!$this->verifyPermission()) {
+            return view('BackEnd.JenSien.permissionDenied');
+        }
         $quantity = [
             'aPositive' => $request->aPositive,
             'aNegative' => $request->aNegative,
@@ -31,7 +34,7 @@ class ShipmentController extends Controller
         $shipmentDate = $request->ship_date;
         $description = $request->description;
         $status = 'Pending';
-        
+
         //Status of Shipment: Pending, Delivering, Shipped
         $postData = [
             "Quantity" => $quantity,
@@ -50,7 +53,7 @@ class ShipmentController extends Controller
                 $listInfo[$bKey] = $bValue;
         }
 
-        
+
         $keyStatus = 'Available';
         $infoAP = $this->filterBlood($listInfo, 'aPositive', $keyStatus);
         $infoAN = $this->filterBlood($listInfo, 'aNegative', $keyStatus);
@@ -71,7 +74,7 @@ class ShipmentController extends Controller
         $infoABP = $this->sortBasedOnDate($infoABP);
         $infoABN = $this->sortBasedOnDate($infoABN);
 
-      
+
 
         $bloodAP = array_slice($infoAP, 0, $quantity['aPositive']);
         $bloodAN = array_slice($infoAN, 0, $quantity['aNegative']);
@@ -102,8 +105,11 @@ class ShipmentController extends Controller
 
     public function index(Request $request)
     {
-        $info[] = $this->database->getReference($this->ref_table_shipment)->getValue();
+        if (!$this->verifyPermission()) {
+            return view('BackEnd.JenSien.permissionDenied');
+        }
 
+        $info[] = $this->database->getReference($this->ref_table_shipment)->getValue();
         $info = reset($info);
         return view('BackEnd.JenSien.viewShipment')
             ->with('shipInfo', $info);
@@ -111,33 +117,36 @@ class ShipmentController extends Controller
 
     public function show($id)
     {
+        if (!$this->verifyPermission()) {
+            return view('BackEnd.JenSien.permissionDenied');
+        }
+
         //Retreive Shipment Infomation
         $shipmentInfo = $this->database->getReference($this->ref_table_shipment)->getChild($id)->getValue();
         $inventoryInfo = $this->database->getReference($this->ref_table_inventories)->getValue();
-        
+
         //select the inventory bloodinfo that belong to this shipment
         $bloodList = [];
 
         foreach ($inventoryInfo as $info => $details) {
             foreach ($details['bloodInfo'] as $key => $value) {
-                if($value['ShipmentID']== $id){
+                if ($value['ShipmentID'] == $id) {
                     $bloodList[$key] = $value;
-                    $inventoryID = ['inventoryID'=>$info];
+                    $inventoryID = ['inventoryID' => $info];
                     $eventName = ['eventName' => $details['eventID']];
                     $bloodList[$key] = array_merge($bloodList[$key], $inventoryID);
                     $bloodList[$key] = array_merge($bloodList[$key], $eventName);
-                   
                 }
             }
         }
-   
-        foreach($bloodList as $key => $value){
-         
+
+        foreach ($bloodList as $key => $value) {
+
             $eventName = $this->database->getReference($this->ref_table_event)->getChild($value['eventName'])->getChild('eventName')->getValue();
             $bloodList[$key]['eventName'] = $eventName;
         }
         ksort($bloodList);
-      
+
         return view('BackEnd.JenSien.viewShipmentDetails')
             ->with('shipmentID', $id)
             ->with('shipInfo', $shipmentInfo)
@@ -146,11 +155,14 @@ class ShipmentController extends Controller
 
     public function editStatus(Request $request)
     {
+        if(!$this->verifyPermission()){
+            return view('BackEnd.JenSien.permissionDenied');
+        }
         $childKey = 'Status';
         $id = $request->shipID;
         $status = $request->status;
-        $this->database->getReference($this->ref_table_shipment)->getChild($id)->update([$childKey=>$status]);
-     
+        $this->database->getReference($this->ref_table_shipment)->getChild($id)->update([$childKey => $status]);
+
 
         $url = 'shipment-view-detials/' . $id;
         $session_Status = 'Status has been modified to ' . $status;
@@ -181,6 +193,9 @@ class ShipmentController extends Controller
 
     public function updateList($list, $shipmentID)
     {
+        if(!$this->verifyPermission()){
+            return view('BackEnd.JenSien.permissionDenied');
+        }
         $updateKey = 'status';
         $updateValue = 'Shipment';
 
@@ -188,8 +203,5 @@ class ShipmentController extends Controller
             $inventoryID = substr($key, 0, 8);
             $this->database->getReference($this->ref_table_inventories)->getChild($inventoryID)->getChild('bloodInfo')->getChild($key)->update([$updateKey => $updateValue, 'ShipmentID' => $shipmentID]);
         }
-
-       
-
     }
 }

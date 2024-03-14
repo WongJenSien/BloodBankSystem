@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 
 class InventoryAPIController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $data = $this->database->getReference($this->ref_table_inventories)->getValue();
         //SHOW NO RECORD PAGE --- TODO
         if ($data == null) {
-            return view('BackEnd.JenSien.viewStock');
+            return null;
         }
+        
         foreach ($data as $key => $value) {
             foreach ($value['bloodInfo'] as $bKey => $bValue)
                 $listInfo[$bKey] = $bValue;
@@ -114,11 +115,8 @@ class InventoryAPIController extends Controller
         $postRef = $this->database->getReference($this->ref_table_inventories . '/' . $inventoryID)->set($postData);
         return [$eventID];
     }
-    public function show($id)
-    {
-    }
 
-    public function shipOut()
+    public function shipOut(Request $request)
     {
         $returnData = [
             'shipmentID' => $this->idGenerator('S', 'Shipment'),

@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoleBaseController;
 use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,11 @@ Route::get('appointment-list',[AppointmentController::class,'index']);
 Route::post('insert-bloodtest-result',[AppointmentController::class,'editResult']);
 Route::get('download-result',[AppointmentController::class,'downloadResult']);
 Route::get('cancel-appointment/{id}',[AppointmentController::class,'destroy']);
+
+
+Route::post('edit-permission',[RoleBaseController::class,'editPermission']);
+Route::resource('role-base-control',RoleBaseController::class);
+
 
 // Route::get('add-event', [EventController::class,'create']);
 

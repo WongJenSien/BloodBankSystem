@@ -39,7 +39,6 @@
                 </div>
             </div>
         </div>
-
         {{-- VIEW -- ROW 2 --}}
         <div class="row">
             <div class="container text-center mx-auto mt-3">

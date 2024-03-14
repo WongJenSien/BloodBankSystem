@@ -65,7 +65,8 @@ class AppointmentAPIController extends Controller
             $userInfo = $this->database->getReference($this->ref_table_user)->getChild($record['userID'])->getValue();
             $record['userName'] = $userInfo['name'];
             $record['userIc'] = $userInfo['identityCard'];
-            $record['image'] = $this->getImage($record['fileName']);
+            // $record['image'] = $this->getImage($record['fileName']);
+            $record['qrCode'] = $this->generateQrCode($record);
         }
         $returnData = [
             'record' => $record,
@@ -105,7 +106,7 @@ class AppointmentAPIController extends Controller
         $status = 'Done';
         $appointmentID = $req->appID;
         $bloodType = $req->bloodType;
-        $bloodResult = $req->input('result' . $appointmentID);;
+        $bloodResult = $req->result;
 
         $result = [
             'bloodType' => $bloodType,
@@ -113,7 +114,6 @@ class AppointmentAPIController extends Controller
             'testDate' => date('d-M-Y')
         ];
         $this->database->getReference($this->ref_table_appointment)->getChild($appointmentID)->update([$childKey => $result, $chilKey2 => $status]);
-        return redirect('appointment-list');
     }
 
     public function create()
@@ -125,6 +125,18 @@ class AppointmentAPIController extends Controller
 
     public function store(Request $req)
     {
+        //VALIDATION
+        // $req->validate([
+        //     'id' => 'required|size:5|regex:/^[C]\d{4}$/',
+        //     'Club_Name' => 'required|min:3|max:100',
+        //     'Club_Type' => 'required|size:2',
+        //     'Goal_And_Objective' => 'required|min:3|max:150',
+        //     'Day' => 'required|size:3',
+        //     'Start_Time' => 'required|lt:End_Time',
+        //     'End_Time' => 'required',
+        //     'Location' => 'required|min:3|max:20'
+        // ]);
+        
         $status = 'Pending';
         $result = [
             'bloodType' => '',
@@ -263,6 +275,7 @@ class AppointmentAPIController extends Controller
         return $data;
     }
 
+    
     // ----------------------------------
     //        QR CODE GENERATOR
     // ----------------------------------
@@ -270,13 +283,14 @@ class AppointmentAPIController extends Controller
     {
         // Generate the  data
         $data = $this->generateData($validatedData);
-
         // Generate QR code with UTF-8 character set
         $qrCode = QrCode::size(300)->generate($data);
 
+        return $qrCode;
+    }
 
-        //dd($qrCode);
-
+    public function saveFile($qrCode)
+    {
         // Define the directory where QR code images will be stored
         $qrCodeDirectory = public_path('appQR/');
 
@@ -291,17 +305,27 @@ class AppointmentAPIController extends Controller
         // Save the QR code image to the file system
         $qrCodePath = $qrCodeDirectory . $filename;
         file_put_contents($qrCodePath, $qrCode);
-
         return $filename;
     }
 
-    protected function generateData(array $validatedData): string
+    protected function generateData($array): string
     {
-        // Serialize the validated data
-        $data = serialize($validatedData);
-        return $data;
-    }
+ 
+        $formattedString = '';
 
+        // Iterate through the array and format each key-value pair
+        foreach ($array as $key => $value) {
+            // Check if $value is an array
+            if (is_array($value)) {
+                // If it's an array, convert it to JSON format
+                $value = json_encode($value);
+            }
+            // Append the key and value to the formatted string
+            $formattedString .= ucfirst($key) . ': ' . $value . "\n &emsp;"; // Capitalize the key
+        }
+        return $formattedString;
+    }
+    
     // ----------------------------------
     //        Validation Data
     // ----------------------------------

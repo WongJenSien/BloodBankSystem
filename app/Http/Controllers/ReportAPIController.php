@@ -12,23 +12,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ReportAPIController extends Controller
 {
-
-
-    protected $ref_table_shipment;
-    protected $ref_table_inventories;
-    protected $ref_table_event;
-    protected $getMonthCode;
-
-    public function __construct(Database $database)
-    {
-        $this->ref_table_shipment = "Shipment";
-        $this->ref_table_inventories = "Inventories";
-        $this->ref_table_event = 'Events';
-
-        $today = Carbon::now();
-        $this->getMonthCode = substr($today->year, -2) . sprintf("%02s", $today->month);
-
-    }
     public function showInventoryReport()
     {
         return $this->getInventoryReport();
@@ -38,6 +21,12 @@ class ReportAPIController extends Controller
     {
         $letter = 'I';
         $inventoryInfo = $this->database->getReference($this->ref_table_inventories)->getValue();
+
+        if($inventoryInfo == null){
+            
+        }
+
+
         $inventoryInfo = $this->filterMonth($inventoryInfo, $letter);
         $key = 'quantity';
         return $this->getLargest($inventoryInfo, $this->ref_table_inventories, $key, $numOfRecord);
@@ -55,8 +44,10 @@ class ReportAPIController extends Controller
     public function filterMonth($list, $letter)
     {
         $returnList = [];
+        $today = Carbon::now();
+        $getMonthCode = substr($today->year, -2) . sprintf("%02s", $today->month);
         foreach ($list as $key => $value) {
-            if (substr($key, strlen($letter), 4) == $this->getMonthCode) {
+            if (substr($key, strlen($letter), 4) == $getMonthCode) {
                 $returnList[$key] = $value;
             }
         }
@@ -153,7 +144,7 @@ class ReportAPIController extends Controller
 
         //ADD EVENT NAME INTO THE ARRAY
         foreach ($stockInList as $key => $item) {
-            $data = $this->database->getReference($this->ref_table_event)->getChild($item['eventID'])->getChild('Name')->getValue();
+            $data = $this->database->getReference($this->ref_table_event)->getChild($item['eventID'])->getChild('eventName')->getValue();
             $stockInList[$key]['EventName'] = $data;
         }
 

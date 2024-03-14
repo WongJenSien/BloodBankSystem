@@ -5,13 +5,17 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
-use Kreait\Firebase\Contract\Database;
+
 
 class InventoryController extends Controller
 {
 
     public function shipOut()
     {
+        if(!$this->verifyPermission()){
+            return view('BackEnd.JenSien.permissionDenied');
+        }
+
         $shipmentID = $this->idGenerator('S', 'Shipment');
         $hospitalList = $this->database->getReference($this->ref_table_hospital)->getValue();
         return view('BackEnd.JenSien.stockOut')->with('shipmentID', $shipmentID)->with('hospitalList', $hospitalList);
@@ -19,6 +23,9 @@ class InventoryController extends Controller
 
     public function create()
     {
+        if(!$this->verifyPermission()){
+            return view('BackEnd.JenSien.permissionDenied');
+        }
         $newID = $this->idGenerator('I', $this->ref_table_inventories);
         $eventInfo = $this->database->getReference('Events')->getValue();
         return view("BackEnd.JenSien.stockIn")->with("newID", $newID)->with("eventInfo", $eventInfo);
@@ -26,7 +33,9 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
-
+        if(!$this->verifyPermission()){
+            return view('BackEnd.JenSien.permissionDenied');
+        }
         $inventoryID = $request->inventoryID;
         $expirationDate = [
             'aPositive' => $request->expiredDate_A_P,
@@ -58,7 +67,7 @@ class InventoryController extends Controller
         ];
 
         $err = $this->getErrMessage($quantity, $expirationDate);
-        if(!empty($err)){
+        if (!empty($err)) {
             return redirect('add-inventory')->with('err', $err);
         }
 
@@ -113,11 +122,15 @@ class InventoryController extends Controller
 
     public function index(Request $request)
     {
-        $data = $this->database->getReference($this->ref_table_inventories)->getValue();
+        if(!$this->verifyPermission()){
+            return view('BackEnd.JenSien.permissionDenied');
+        }
 
+        $data = $this->database->getReference($this->ref_table_inventories)->getValue();
+        $info = null;
         //SHOW NO RECORD PAGE --- TODO
         if ($data == null) {
-            return view('BackEnd.JenSien.viewStock');
+            return view('BackEnd.JenSien.viewStock')->with('info', $info);
         }
 
         foreach ($data as $key => $value) {
@@ -126,7 +139,6 @@ class InventoryController extends Controller
         }
 
         //FILTER BLOOD TYPE
-        $info = [];
         $infoA = $this->filterBlood($listInfo, 'aPositive', 'aNegative');
         $infoB = $this->filterBlood($listInfo, 'bPositive', 'bNegative');
         $infoO = $this->filterBlood($listInfo, 'oPositive', 'oNegative');

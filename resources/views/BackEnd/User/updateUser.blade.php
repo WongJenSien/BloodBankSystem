@@ -81,7 +81,7 @@
                         <td>
                             <select name="gender" class="form-control" required>
                                 @foreach ($gender as $key => $value)
-                                    <option value="{{ $key }}" @if ($key == $user['gender']) selected @endif>
+                                    <option value="{{ $key }}" @if ($key == $record['gender']) selected @endif>
                                         {{ $value }}
                                     </option>
                                 @endforeach
