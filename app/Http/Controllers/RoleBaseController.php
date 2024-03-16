@@ -11,6 +11,11 @@ class RoleBaseController extends Controller
 
     public function index()
     {
+
+        if(!$this->isRootUser()){
+            return view('BackEnd.JenSien.permissionDenied');
+        }
+
         $userList = $this->database->getReference($this->ref_table_user)->getValue();
 
         //REMOVE THE NORMAL USER FROM THE LIST
@@ -120,4 +125,17 @@ class RoleBaseController extends Controller
         }
         return $list;
     }
+
+    public function isRootUser(){
+        // Root User Email: wjsadmin@gmail.com
+        // Root User Name : ADMIN;
+        
+        if(session('user.key') == $this->rootUser){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    
 }

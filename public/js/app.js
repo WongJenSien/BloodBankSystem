@@ -4,19 +4,19 @@ toogleBTN.addEventListener("click", function () {
     document.querySelector("#sidebar").classList.toggle("expand");
 });
 
-function toastBtn() {
-    const toastTrigger = document.getElementById('liveToastBtn')
-    const toastLiveExample = document.getElementById('liveToast')
+// function toastBtn() {
+//     const toastTrigger = document.getElementById('liveToastBtn')
+//     const toastLiveExample = document.getElementById('liveToast')
 
-    if (toastTrigger) {
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-        toastTrigger.addEventListener('click', () => {
-            toastBootstrap.show()
-        })
+//     if (toastTrigger) {
+//         const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+//         toastTrigger.addEventListener('click', () => {
+//             toastBootstrap.show()
+//         })
 
-    }
+//     }
 
-}
+// }
 
 
 function dateRange() {

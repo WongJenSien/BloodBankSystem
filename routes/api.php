@@ -56,7 +56,7 @@ Route::get('/view/result/{id}',[AppointmentAPIController::class,'downloadResult'
 // -------------------------------------------
 Route::post('/view/login', [UserAPIController::class, 'login']);
 
-
+Route::get('/view/rbac/index',[RoleBaseAPIController::class, 'index']);
 Route::post('/view/rbac/editPermission',[RoleBaseAPIController::class,'editPermission']);
 Route::get('/view/rbac/validatePermission',[RoleBaseAPIController::class,'validatePermission']);
 

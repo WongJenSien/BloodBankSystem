@@ -48,7 +48,7 @@
                         <label for="ship-description"
                             class="col-sm-4 col-form-label">Description:</label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" id="description" name="description" rows="7" placeholder="Type here..."></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="7" placeholder="Type here..." required></textarea>
                         </div>
                     </div>
 
@@ -68,36 +68,36 @@
                                         <td rowspan="2">A</td>
                                         <td>A+</td>
                                         <td><input class="form-control" type="number" name="aPositive" id="aPositive"
-                                                min="0" max="10000" value="0" onchange="countBlood()" /></td>
+                                                min="0" max="{{$max['bloodTypeA']['Available_P']}}" value="0" onchange="countBlood()" /></td>
                                     </tr>
                                     <tr>
                                         <td>A-</td>
                                         <td><input class="form-control" type="number" name="aNegative" id="aNegative"
-                                                min="0" max="10000" value="0" onchange="countBlood()" /></td>
+                                                min="0" max="{{$max['bloodTypeA']['Available_N']}}" value="0" onchange="countBlood()" /></td>
                                     </tr>
 
                                     <tr>
                                         <td rowspan="2">B</td>
                                         <td>B+</td>
                                         <td><input class="form-control" type="number" name="bPositive" id="bPositive"
-                                                min="0" max="10000" value="0" onchange="countBlood()" /></td>
+                                                min="0"  max="{{$max['bloodTypeB']['Available_P']}}" value="0" onchange="countBlood()" /></td>
                                     </tr>
                                     <tr>
                                         <td>B-</td>
                                         <td><input class="form-control" type="number" name="bNegative" id="bNegative"
-                                                min="0" max="10000" value="0" onchange="countBlood()" /></td>
+                                                min="0" max="{{$max['bloodTypeB']['Available_N']}}" value="0" onchange="countBlood()" /></td>
                                     </tr>
 
                                     <tr>
                                         <td rowspan="2">O</td>
                                         <td>O+</td>
                                         <td><input class="form-control" type="number" name="oPositive" id="oPositive"
-                                                min="0" max="10000" value="0" onchange="countBlood()" /></td>
+                                                min="0" max="{{$max['bloodTypeO']['Available_P']}}" value="0" onchange="countBlood()" /></td>
                                     </tr>
                                     <tr>
                                         <td>O-</td>
                                         <td><input class="form-control" type="number" name="oNegative" id="oNegative"
-                                                min="0" max="10000" value="0" onchange="countBlood()" />
+                                                min="0" max="{{$max['bloodTypeO']['Available_N']}}" value="0" onchange="countBlood()" />
                                         </td>
                                     </tr>
 
@@ -105,13 +105,13 @@
                                         <td rowspan="2">AB</td>
                                         <td>AB+</td>
                                         <td><input class="form-control" type="number" name="abPositive" id="abPositive"
-                                                min="0" max="10000" value="0" onchange="countBlood()" />
+                                                min="0" max="{{$max['bloodTypeAB']['Available_P']}}" value="0" onchange="countBlood()" />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>AB-</td>
                                         <td><input class="form-control" type="number" name="abNegative" id="abNegative"
-                                                min="0" max="10000" value="0" onchange="countBlood()" />
+                                                min="0" max="{{$max['bloodTypeAB']['Available_N']}}" value="0" onchange="countBlood()" />
                                         </td>
                                     </tr>
                                 </tbody>

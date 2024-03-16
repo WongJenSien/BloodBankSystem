@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use App\Events\RentalActivityOccurred;
+use Illuminate\Support\Facades\Log;
+
 
 
 class InventoryController extends Controller
@@ -12,18 +15,41 @@ class InventoryController extends Controller
 
     public function shipOut()
     {
-        if(!$this->verifyPermission()){
+        if (!$this->verifyPermission()) {
             return view('BackEnd.JenSien.permissionDenied');
         }
+        $data = $this->database->getReference($this->ref_table_inventories)->getValue();
+        $info = null;
+        //SHOW NO RECORD PAGE --- TODO
+        if ($data == null) {
+            return view('BackEnd.JenSien.viewStock')->with('info', $info);
+        }
+
+        foreach ($data as $key => $value) {
+            foreach ($value['bloodInfo'] as $bKey => $bValue)
+                $listInfo[$bKey] = $bValue;
+        }
+        $status_info = [];
+        $status_info_A = $this->countBlood($listInfo, 'aPositive', 'aNegative');
+        $status_info_B = $this->countBlood($listInfo, 'bPositive', 'bNegative');
+        $status_info_O = $this->countBlood($listInfo, 'oPositive', 'oNegative');
+        $status_info_AB = $this->countBlood($listInfo, 'abPositive', 'abNegative');
+
+        $status_info = [
+            'bloodTypeA' => $status_info_A,
+            'bloodTypeB' => $status_info_B,
+            'bloodTypeO' => $status_info_O,
+            'bloodTypeAB' => $status_info_AB
+        ];
 
         $shipmentID = $this->idGenerator('S', 'Shipment');
         $hospitalList = $this->database->getReference($this->ref_table_hospital)->getValue();
-        return view('BackEnd.JenSien.stockOut')->with('shipmentID', $shipmentID)->with('hospitalList', $hospitalList);
+        return view('BackEnd.JenSien.stockOut')->with('shipmentID', $shipmentID)->with('hospitalList', $hospitalList)->with('max', $status_info);
     }
 
     public function create()
     {
-        if(!$this->verifyPermission()){
+        if (!$this->verifyPermission()) {
             return view('BackEnd.JenSien.permissionDenied');
         }
         $newID = $this->idGenerator('I', $this->ref_table_inventories);
@@ -33,7 +59,7 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
-        if(!$this->verifyPermission()){
+        if (!$this->verifyPermission()) {
             return view('BackEnd.JenSien.permissionDenied');
         }
         $inventoryID = $request->inventoryID;
@@ -122,10 +148,9 @@ class InventoryController extends Controller
 
     public function index(Request $request)
     {
-        if(!$this->verifyPermission()){
+        if ($this->verifyPermission() != true) {
             return view('BackEnd.JenSien.permissionDenied');
         }
-
         $data = $this->database->getReference($this->ref_table_inventories)->getValue();
         $info = null;
         //SHOW NO RECORD PAGE --- TODO
@@ -162,12 +187,13 @@ class InventoryController extends Controller
             'bloodTypeA' => $status_info_A,
             'bloodTypeB' => $status_info_B,
             'bloodTypeO' => $status_info_O,
-            'bloodTypeAB' => $status_info_AB
+            'bloodTypeAB' => $status_info_AB,
+            'MIN_QUANTITY' => $this->MIN_QUANTITY
         ];
 
         $numOfBlood = $this->getNumOfBlood($info);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
-
+        
         return view('BackEnd.JenSien.viewStock')
             ->with('numOfBlood', $numOfBlood)
             ->with('totalNumOfBlood', $totalNumOfBlood)

@@ -166,6 +166,7 @@ class HomeController extends Controller
     public function logout()
     {
         session()->flush();
+        
         return redirect()->route('loginForm');
     }
 

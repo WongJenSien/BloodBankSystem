@@ -40,7 +40,6 @@
                     <span class="h5 font-weight-bold text-center text-dark">{{session('status')}}</span>
                 @endif
             </div>
-
             @yield('content')
         </div>
     </div>

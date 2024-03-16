@@ -23,9 +23,12 @@ class Controller extends BaseController
     protected $ref_table_appointment;
     protected $ref_table_rbac;
     protected $defaultPermission;
+    protected $rootUser;
+    protected $MIN_QUANTITY;
 
     public function __construct(Database $database)
     {
+        
         $this->ref_table_shipment = "Shipment";
         $this->ref_table_inventories = "Inventories";
         $this->ref_table_event = 'Events';
@@ -33,6 +36,7 @@ class Controller extends BaseController
         $this->ref_table_user = 'Users';
         $this->ref_table_appointment = "Appointment";
         $this->ref_table_rbac = 'RBAC';
+        $this->rootUser = '-NsXQSWtBI70olEQRvQ-';
 
         $inventoryControl = [
             'read' => 'on',
@@ -116,9 +120,12 @@ class Controller extends BaseController
     {
         $url = $this->getURL();
         $userKey = session('user.key');
+        
+        if($userKey == null){
+            return false;
+        }
         $url = $this->removeUrlProtocol($url);
         $permission = $this->database->getReference($this->ref_table_rbac)->orderByChild('userID')->equalTo($userKey)->getValue();
-
         foreach ($permission as $key => $value) {
             $inventoryControl = $value['inventoryControl'];
             $shipmentControl = $value['shipmentControl'];
@@ -149,6 +156,9 @@ class Controller extends BaseController
                 return $eventControl['edit_event'] == 'on';
             case 'deleteEvent':
                 return $eventControl['delete_event'] == 'on';
+
+                case 'role-base-control':
+                    return $this->rootUser();
         }
     }
 
@@ -196,6 +206,23 @@ class Controller extends BaseController
         $segments = explode('/', $path);
         $route = reset($segments); // Get the first segment
         return $route;
+    }
+
+    public function getURLParameter($url){
+        $currentUrl = $url;
+        // Parse the URL
+        $parsedUrl = parse_url($currentUrl);
+
+        // Extract the path
+        $path = $parsedUrl['path'];
+
+        // Remove leading and trailing slashes
+        $path = trim($path, '/');
+
+        // Extract the route
+        $segments = explode('/', $path);
+        $parameters = array_slice($segments, 1);
+        return $parameters;
     }
 
     public function getURL()

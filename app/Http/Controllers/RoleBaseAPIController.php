@@ -7,8 +7,13 @@ use Illuminate\Http\Request;
 class RoleBaseAPIController extends Controller
 {
 
-    public function index()
+    public function index(Request $req)
     {
+        if ($req->userKey == $this->rootUser) {
+            return [false];
+        }
+
+
         $userList = $this->database->getReference($this->ref_table_user)->getValue();
 
         //REMOVE THE NORMAL USER FROM THE LIST
@@ -109,8 +114,9 @@ class RoleBaseAPIController extends Controller
         return $list;
     }
 
-    public function validatePermission(Request $req){
-        if(!$this->verifyAPIPermission($req->currentURL, $req->userKey)){
+    public function validatePermission(Request $req)
+    {
+        if (!$this->verifyAPIPermission($req->currentURL, $req->userKey)) {
             return [false];
         }
         return [true];

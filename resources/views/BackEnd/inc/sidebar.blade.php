@@ -1,3 +1,4 @@
+{{-- NAV BAR --}}
 <nav class="navbar navbar-expand-lg bg-body-tertiary custom-nav">
     <div class="container-fluid custom-nav">
         <a class="navbar-brand navTitle" href="{{ route('landing') }}"> <img src="{{ url('/Image/Icon.png') }}"
@@ -11,16 +12,33 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
             </ul>
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <form class="d-flex" id="searchForm" method="GET" action="{{ url('/search') }}">
+                @csrf
+                <input type="hidden" name="currentUrl" id="currentUrl">
+                <input class="form-control me-2" name="search" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
+            <script>
+                // Wait for the DOM to be fully loaded
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Get the current URL
+                    var currentUrl = window.location.href;
+
+                    // Set the value of the hidden input field to the current URL
+                    document.getElementById('currentUrl').value = currentUrl;
+                });
+            </script>
         </div>
     </div>
 </nav>
 
-@if(!session()->has('user'))
-<a href="{{ route('loginForm') }}" style="display: inline-block;color:black;font-weight:bold;">Click Here</a>
+
+
+
+
+{{-- SIDE BAR --}}
+@if (!session()->has('user'))
+    <a href="{{ route('loginForm') }}" style="display: inline-block;color:black;font-weight:bold;">Click Here</a>
 @endif
 <div class="wrapper">
     <aside id="sidebar">
@@ -33,6 +51,7 @@
                     {{ session('user.name') }}</a>
             </div>
         </div>
+
         <ul class="sidebar-nav">
             <li class="sidebar-item">
                 <a href="{{ route('profileForm') }}" class="sidebar-link">
@@ -85,7 +104,7 @@
             </li>
 
             <li class="sidebar-item">
-                <a href="{{url('role-base-control')}}" class="sidebar-link">
+                <a href="{{ url('role-base-control') }}" class="sidebar-link">
                     <i class="lni lni-shield"></i>
                     <span>RBAC</span>
                 </a>
@@ -106,11 +125,12 @@
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="{{ route('logout') }}" class="sidebar-link"> <i class="lni lni-exit"></i><span>Logout</span></a>
+            <a href="{{ route('logout') }}" class="sidebar-link"> <i
+                    class="lni lni-exit"></i><span>Logout</span></a>
         </div>
     </aside>
 
-   
+
 
 
     {{-- <div class="main p-3">

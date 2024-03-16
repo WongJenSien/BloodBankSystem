@@ -7,6 +7,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleBaseController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,9 +23,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/index-backend', function () {
-    return view('BackEnd.Home.index');
-});
+// Route::get('/index-backend', function () {
+//     return view('BackEnd.Home.index');
+// });
+
+
+Route::get('/search',[SearchController::class,'search']);
 
 // ------------------------------------------
 //            INVENTORY CONTROLLER
@@ -42,6 +46,7 @@ Route::get('view-shipment',[ShipmentController::class, 'index']);
 Route::post('remove-inventory', [ShipmentController::class, 'store']);
 Route::get('shipment-view-detials/{id}',[ShipmentController::class, 'show']);
 Route::post('shipment-edit-status',[ShipmentController::class, 'editStatus']);
+Route::post('delete-shipment',[ShipmentController::class,'destory']);
 
 // ------------------------------------------
 //            REPORT CONTROLLER
