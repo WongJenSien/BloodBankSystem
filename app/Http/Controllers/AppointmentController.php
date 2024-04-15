@@ -74,7 +74,7 @@ class AppointmentController extends Controller
             'testDate' => date('d-M-Y')
         ];
         $this->database->getReference($this->ref_table_appointment)->getChild($appointmentID)->update([$childKey => $result, $chilKey2 => $status]);
-        return redirect('appointment-list');
+        return redirect('appointment-list')->with('status', 'Appointment Edited Successfully');
     }
 
     public function create()
@@ -120,9 +120,8 @@ class AppointmentController extends Controller
             'result' => $result
         ];
         $data = $this->generateQrCode($postData);
-
         $postData['fileName'] = $this->saveFile($data);
-
+        
         $record = $this->database->getReference($this->ref_table_appointment . '/' . $appID)->set($postData);
 
         return redirect('view-certificate/' . $currentUser);
@@ -137,6 +136,10 @@ class AppointmentController extends Controller
         $user = $this->database->getReference($this->ref_table_user)->getChild($currentUser)->getValue();
 
         return view('FrontEnd.Home.appointmentForm')->with('location', $location)->with('user', $user)->with('hospitalID', $id);
+    }
+
+    public function scanner(){
+        return view('BackEnd.JenSien.qrCodeScanner');
     }
 
     // ----------------------------------
@@ -284,6 +287,14 @@ class AppointmentController extends Controller
     {
         $err = [];
 
+        if (!$this->validHospital($location)) {
+            $err[] = 'Plese select a valid hostpital';
+        }
+
+        if (!$this->validUser($currentUser)) {
+            $err[] = 'Please Login an account';
+        }
+
         if (!$this->validDate($pre_date)) {
             $err[] = 'Date cannot before today and more than 3 month';
         }
@@ -291,17 +302,32 @@ class AppointmentController extends Controller
         if (!$this->validTime($pre_time)) {
             $err[] = 'Please select between 8.00am until 10.00pm';
         }
+
+        if($currentUser == ''){
+            $err[] = 'Please Login an account';
+        }
+
+        if($location == ''){
+            $err[] = 'Please Select a hospital';
+        }
+
         return $err;
     }
     public function validHospital($key)
     {
-        $hospitalList = $this->database->getReference($this->ref_table_hospital)->getValue();
-        return array_key_exists($key, $hospitalList);
+         if ($this->database->getReference($this->ref_table_hospital)->getChild($key)->getValue() != null)
+            return $this->database->getReference($this->ref_table_hospital)->getChild($key)->getValue();
+
+        return false;
     }
     public function validUser($key)
     {
-        $userList = $this->database->getReference($this->ref_table_user)->getValue();
-        return array_key_exists($key, $userList);
+        // $userList = $this->database->getReference($this->ref_table_user)->getValue();
+        // return array_key_exists($key, $userList);
+        if ($this->database->getReference($this->ref_table_user)->getChild($key)->getValue() != null)
+            return true;
+
+        return false;
     }
 
     public function validDate($value)

@@ -1,0 +1,198 @@
+<div class="row">
+    @if ($edit_InventoryID != null)
+        <div class="container">
+            <div class="row m-2">
+                <span class="h4 text-center">
+                    Result
+                </span>
+            </div>
+            @foreach ($edit_InventoryID as $inventoryID => $item)
+                <form action="{{ url('edit-inventory') }}" method="POST">
+                    @csrf
+                    @method('put')
+                    <input type="hidden" id="invoiceDate" name="invoiceDate" onclick="dateRange(true)"
+                        value="{{ $item['date'] }}">
+                    <div class="container">
+                        <div class="row">
+                            {{-- EventID COL --}}
+                            <div class="col">
+                                <div class="mb-3 row">
+                                    <label for="eventID" class="col-sm-2 col-form-label">Event: </label>
+                                    <div class="col-sm-10 text-start">
+                                        <select name="eventID" id="eventID" class="form-select"
+                                            style="width: fit-content" data-width="fit"
+                                            aria-label="Default select example">
+                                            <option value="default" selected>Select an Event</option>
+                                            @foreach ($eventInfo as $key => $value)
+                                                <option value="{{ $key }}"
+                                                    {{ $item['eventID'] == $key ? 'selected' : '' }}>
+                                                    {{ $value['eventName'] }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- InventoryID COL --}}
+                            <div class="col">
+                                <div class="mb-3 row">
+                                    <label for="inventoryID" class="col-sm-2 col-form-label"> ID: </label>
+                                    <div class="col-sm-10 text-start">
+                                        <input type="text" readonly class="form-control-plaintext fw-bold"
+                                            name="inventoryID" id="inventoryID" value="{{ $inventoryID }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="mb-3 row">
+                                    <label for="inventoryID" class="col-sm-2 col-form-label"> Date: </label>
+                                    <div class="col-sm-10 text-start">
+                                        <input type="text" readonly class="form-control-plaintext fw-bold"
+                                            name="inventoryDate" id="inventoryDate" value="{{ $item['date'] }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <table class="table table-bordered align-item-middle">
+                                    <thead>
+                                        <th colspan="2">Category</th>
+                                        <th>Quantity</th>
+                                        <th>Expired Date</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td rowspan="2"><b>A</b></td>
+                                            <td>A+</td>
+                                            <td><input type="number" name="aPositive" id="aPositive" min="0"
+                                                    max="10000" value="{{ $item['quantity']['aPositive'] }}"
+                                                    onchange="countBlood()" /></td>
+                                            <td><input type="date" name="expiredDate_A_P" id="expiredDate_A_P"
+                                                    onclick="dateRange(true)"
+                                                    value="{{ $item['expirationDate']['aPositive'] }}" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>A-</td>
+                                            <td><input type="number" name="aNegative" id="aNegative" min="0"
+                                                    max="10000" value="{{ $item['quantity']['aNegative'] }}"
+                                                    onchange="countBlood()" /></td>
+                                            <td><input type="date" name="expiredDate_A_N" id="expiredDate_A_N"
+                                                    onclick="dateRange(true)"
+                                                    value="{{ $item['expirationDate']['aNegative'] }}" /></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td rowspan="2"><b>B</b></td>
+                                            <td>B+</td>
+                                            <td><input type="number" name="bPositive" id="bPositive"
+                                                    min="0" max="10000"
+                                                    value="{{ $item['quantity']['bPositive'] }}"
+                                                    onchange="countBlood()" /></td>
+                                            <td><input type="date" name="expiredDate_B_P" id="expiredDate_B_P"
+                                                    onclick="dateRange(true)"
+                                                    value="{{ $item['expirationDate']['bPositive'] }}" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>B-</td>
+                                            <td><input type="number" name="bNegative" id="bNegative"
+                                                    min="0" max="10000"
+                                                    value="{{ $item['quantity']['bNegative'] }}"
+                                                    onchange="countBlood()" /></td>
+                                            <td><input type="date" name="expiredDate_B_N" id="expiredDate_B_N"
+                                                    onclick="dateRange(true)"
+                                                    value="{{ $item['expirationDate']['bNegative'] }}" /></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td rowspan="2"><b>O</b></td>
+                                            <td>O+</td>
+                                            <td><input type="number" name="oPositive" id="oPositive"
+                                                    min="0" max="10000"
+                                                    value="{{ $item['quantity']['oPositive'] }}"
+                                                    onchange="countBlood()" /></td>
+                                            <td><input type="date" name="expiredDate_O_P" id="expiredDate_O_P"
+                                                    onclick="dateRange(true)"
+                                                    value="{{ $item['expirationDate']['oPositive'] }}" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>O-</td>
+                                            <td><input type="number" name="oNegative" id="oNegative"
+                                                    min="0" max="10000"
+                                                    value="{{ $item['quantity']['oNegative'] }}"
+                                                    onchange="countBlood()" /></td>
+                                            <td><input type="date" name="expiredDate_O_N" id="expiredDate_O_N"
+                                                    onclick="dateRange(true)"
+                                                    value="{{ $item['expirationDate']['oNegative'] }}" /></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td rowspan="2"><b>AB</b></td>
+                                            <td>AB+</td>
+                                            <td><input type="number" name="abPositive" id="abPositive"
+                                                    min="0" max="10000"
+                                                    value="{{ $item['quantity']['abPositive'] }}"
+                                                    onchange="countBlood()" /></td>
+                                            <td><input type="date" name="expiredDate_AB_P"
+                                                    id="expiredDate_AB_P" onclick="dateRange(true)"
+                                                    value="{{ $item['expirationDate']['abPositive'] }}" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>AB-</td>
+                                            <td><input type="number" name="abNegative" id="abNegative"
+                                                    min="0" max="10000"
+                                                    value="{{ $item['quantity']['abNegative'] }}"
+                                                    onchange="countBlood()" /></td>
+                                            <td><input type="date" name="expiredDate_AB_N"
+                                                    id="expiredDate_AB_N" onclick="dateRange(true)"
+                                                    value="{{ $item['expirationDate']['abNegative'] }}" /></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col col-lg-2">
+                            <table class="table table-bordered mx-auto table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Blood Type</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>A</td>
+                                        <td><label id="labelA">0</label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>B</td>
+                                        <td><label id="labelB">0</label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>O</td>
+                                        <td><label id="labelO">0</label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>AB</td>
+                                        <td><label id="labelAB">0</label></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+                {{-- @endforeach --}}
+            @endforeach
+        </div>
+    @else
+        <div class="row p-2 m-2">
+            <span class="h5 text-dark text-center">
+                No Record Found
+            </span>
+        </div>
+    @endif
+</div>

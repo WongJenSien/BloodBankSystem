@@ -14,31 +14,31 @@
         <div class="container text-center mx-auto">
             <div class="row align-items-start">
                 <div class="col px-md-3 m-1">
-                    <div class="col border border-dark cat-blood-color">
+                    <div class="col border border-dark {{$status_info['bloodTypeA']['Available_P'] +  $status_info['bloodTypeA']['Available_N'] < $status_info['MIN_QUANTITY'] ? 'min-quantity-danger' : 'min-quantity-normal' }}">
                         <img class="img-bloodType" src="{{ url('/Image/imgA.png') }}" alt="BloodType-A" />
                         {{-- Total Number of Blood Type For A --}}
-                        <h4 class="text-black">{{ $totalNumOfBlood['Blood_A'] }}</h4>
+                        <h4  class="font-weight-bold {{$status_info['bloodTypeA']['Available_P'] +  $status_info['bloodTypeA']['Available_N'] < $status_info['MIN_QUANTITY'] ? 'text-danger' : 'text-dark' }} ">{{ $status_info['bloodTypeA']['Available_P'] +  $status_info['bloodTypeA']['Available_N']}}</h4>                        
                     </div>
                 </div>
                 <div class="col px-md-3 m-1">
-                    <div class="col border border-dark cat-blood-color">
+                    <div class="col border border-dark {{$status_info['bloodTypeB']['Available_P'] +  $status_info['bloodTypeB']['Available_N'] < $status_info['MIN_QUANTITY'] ? 'min-quantity-danger' : 'min-quantity-normal' }}">
                         <img class="img-bloodType" src="{{ url('/Image/imgB.png') }}" alt="BloodType-B" />
                         {{-- Total Number of Blood Type For B --}}
-                        <h4 class="text-black">{{ $totalNumOfBlood['Blood_B'] }}</h4>
+                        <h4  class="font-weight-bold {{$status_info['bloodTypeB']['Available_P'] +  $status_info['bloodTypeB']['Available_N'] < $status_info['MIN_QUANTITY'] ? 'text-danger' : 'text-dark' }} ">{{ $status_info['bloodTypeB']['Available_P'] +  $status_info['bloodTypeB']['Available_N']}}</h4>
                     </div>
                 </div>
                 <div class="col px-md-3 m-1">
-                    <div class="col border border-dark cat-blood-color">
+                    <div class="col border border-dark {{$status_info['bloodTypeO']['Available_P'] +  $status_info['bloodTypeO']['Available_N'] < $status_info['MIN_QUANTITY'] ? 'min-quantity-danger' : 'min-quantity-normal' }}">
                         <img class="img-bloodType" src="{{ url('/Image/imgO.png') }}" alt="BloodType-O" />
                         {{-- Total Number of Blood Type For O --}}
-                        <h4 class="text-black">{{ $totalNumOfBlood['Blood_O'] }}</h4>
+                        <h4  class="font-weight-bold {{$status_info['bloodTypeO']['Available_P'] +  $status_info['bloodTypeO']['Available_N'] < $status_info['MIN_QUANTITY'] ? 'text-danger' : 'text-dark' }} ">{{ $status_info['bloodTypeO']['Available_P'] +  $status_info['bloodTypeO']['Available_N']}}</h4>
                     </div>
                 </div>
                 <div class="col px-md-3 m-1">
-                    <div class="col border border-dark cat-blood-color">
+                    <div class="col border border-dark {{$status_info['bloodTypeAB']['Available_P'] +  $status_info['bloodTypeAB']['Available_N'] < $status_info['MIN_QUANTITY'] ? 'min-quantity-danger' : 'min-quantity-normal' }}">
                         <img class="img-bloodType" src="{{ url('/Image/imgAB.png') }}" alt="BloodType-AB" />
                         {{-- Total Number of Blood Type For AB --}}
-                        <h4 class="text-black">{{ $totalNumOfBlood['Blood_AB'] }}</h4>
+                        <h4  class="font-weight-bold {{$status_info['bloodTypeAB']['Available_P'] +  $status_info['bloodTypeAB']['Available_N'] < $status_info['MIN_QUANTITY'] ? 'text-danger' : 'text-dark' }} ">{{ $status_info['bloodTypeAB']['Available_P'] +  $status_info['bloodTypeAB']['Available_N']}}</h4>
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                                     <h3>Blood Type : A</h3>
                                 </div>
                                 {{-- COL-2 --}}
-                                <div class="row p-1 m-1">
+                                {{-- <div class="row p-1 m-1">
                                     <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
@@ -125,7 +125,7 @@
                                             </tr>
                                         </tfoot>
                                     </table>
-                                </div>
+                                </div> --}}
                                 {{-- COL-3 --}}
                                 <div class="row  p-1 m-1">
                                     <h5 class="text-start"><u>Summary</u></h5>
@@ -174,8 +174,8 @@
                     {{-- RIGHT-SIDE --}}
                     <div class="col ml-2 ">
                         <div class="row">
-                            <div class="container inv-activity-container">
-                                <div class="row inv-activity-fixed">
+                            <div class="container inv-activity-container m-3">
+                                <div class="row inv-activity-fixed m-2">
                                     <table class="table table-bordered table-hover header-stick-top">
                                         <thead>
                                             <tr>
@@ -184,7 +184,7 @@
                                                 <th>Blood Type</th>
                                                 <th>Expired Date</th>
                                                 <th>Status</th>
-                                                <th>View Details</th>
+                                                {{-- <th>View Details</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -195,7 +195,7 @@
                                                     <td>{{ $item['bloodType'] === 'aPositive' ? 'A+' : 'A-' }}</td>
                                                     <td>{{ $item['expirationDate'] }}</td>
                                                     <td>{{ $item['status'] }}</td>
-                                                    <td><a href="{{ $key }}">View Details</a></td>
+                                                    {{-- <td><a href="{{ $key }}">View Details</a></td> --}}
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -222,7 +222,7 @@
                                     <h3>Blood Type : B</h3>
                                 </div>
                                 {{-- COL-2 --}}
-                                <div class="row p-1 m-1">
+                                {{-- <div class="row p-1 m-1">
                                     <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
@@ -253,7 +253,7 @@
                                             </tr>
                                         </tfoot>
                                     </table>
-                                </div>
+                                </div> --}}
                                 {{-- COL-3 --}}
                                 <div class="row p-1 m-1">
                                     <h5 class="text-start"><u>Summary</u></h5>
@@ -302,8 +302,8 @@
                     {{-- RIGHT-SIDE --}}
                     <div class="col ml-2 ">
                         <div class="row">
-                            <div class="container inv-activity-container">
-                                <div class="row inv-activity-fixed">
+                            <div class="container inv-activity-container m-2">
+                                <div class="row inv-activity-fixed m-2">
                                     <table class="table table-bordered table-hover header-stick-top">
                                         <thead>
                                             <tr>
@@ -312,7 +312,7 @@
                                                 <th>Blood Type</th>
                                                 <th>Expired Date</th>
                                                 <th>Status</th>
-                                                <th>View Details</th>
+                                                {{-- <th>View Details</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -323,7 +323,7 @@
                                                     <td>{{ $item['bloodType'] === 'bPositive' ? 'B+' : 'B-' }}</td>
                                                     <td>{{ $item['expirationDate'] }}</td>
                                                     <td>{{ $item['status'] }}</td>
-                                                    <td><a href="{{ $key }}">View Details</a></td>
+                                                    {{-- <td><a href="{{ $key }}">View Details</a></td> --}}
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -350,7 +350,7 @@
                                     <h3>Blood Type : O</h3>
                                 </div>
                                 {{-- COL-2 --}}
-                                <div class="row p-1 m-1">
+                                {{-- <div class="row p-1 m-1">
                                     <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
@@ -381,7 +381,7 @@
                                             </tr>
                                         </tfoot>
                                     </table>
-                                </div>
+                                </div> --}}
                                 {{-- COL-3 --}}
                                 <div class="row p-1 m-1">
                                     <h5 class="text-start"><u>Summary</u></h5>
@@ -430,8 +430,8 @@
                     {{-- RIGHT-SIDE --}}
                     <div class="col ml-2 ">
                         <div class="row">
-                            <div class="container inv-activity-container">
-                                <div class="row inv-activity-fixed">
+                            <div class="container inv-activity-container m-2">
+                                <div class="row inv-activity-fixed m-2">
                                     <table class="table table-bordered table-hover header-stick-top">
                                         <thead>
                                             <tr>
@@ -440,7 +440,7 @@
                                                 <th>Blood Type</th>
                                                 <th>Expired Date</th>
                                                 <th>Status</th>
-                                                <th>View Details</th>
+                                                {{-- <th>View Details</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -451,7 +451,7 @@
                                                     <td>{{ $item['bloodType'] === 'oPositive' ? 'O+' : 'O-' }}</td>
                                                     <td>{{ $item['expirationDate'] }}</td>
                                                     <td>{{ $item['status'] }}</td>
-                                                    <td><a href="{{ $key }}">View Details</a></td>
+                                                    {{-- <td><a href="{{ $key }}">View Details</a></td> --}}
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -479,7 +479,7 @@
                                     <h3>Blood Type : AB</h3>
                                 </div>
                                 {{-- COL-2 --}}
-                                <div class="row p-1 m-1">
+                                {{-- <div class="row p-1 m-1">
                                     <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
@@ -510,7 +510,7 @@
                                             </tr>
                                         </tfoot>
                                     </table>
-                                </div>
+                                </div> --}}
                                 {{-- COL-3 --}}
                                 <div class="row p-1 m-1">
                                     <h5 class="text-start"><u>Summary</u></h5>
@@ -559,8 +559,8 @@
                     {{-- RIGHT-SIDE --}}
                     <div class="col ml-2 ">
                         <div class="row">
-                            <div class="container inv-activity-container">
-                                <div class="row inv-activity-fixed">
+                            <div class="container inv-activity-container m-2">
+                                <div class="row inv-activity-fixed m-2">
                                     <table class="table table-bordered table-hover header-stick-top">
                                         <thead>
                                             <tr>
@@ -569,7 +569,7 @@
                                                 <th>Blood Type</th>
                                                 <th>Expired Date</th>
                                                 <th>Status</th>
-                                                <th>View Details</th>
+                                                {{-- <th>View Details</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -580,7 +580,7 @@
                                                     <td>{{ $item['bloodType'] === 'abPositive' ? 'AB+' : 'AB-' }}</td>
                                                     <td>{{ $item['expirationDate'] }}</td>
                                                     <td>{{ $item['status'] }}</td>
-                                                    <td><a href="{{ $key }}">View Details</a></td>
+                                                    {{-- <td><a href="{{ $key }}">View Details</a></td> --}}
                                                 </tr>
                                             @endforeach
                                         </tbody>

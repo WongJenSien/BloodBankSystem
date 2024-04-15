@@ -1,3 +1,4 @@
+
 const toogleBTN = document.querySelector("#toggle-btn");
 
 toogleBTN.addEventListener("click", function () {
@@ -17,45 +18,45 @@ toogleBTN.addEventListener("click", function () {
 //     }
 
 // }
+var routeName = document.getElementById('dateRangeConfig').getAttribute('data-route');
 
-
-function dateRange() {
+function dateRange(useInvoiceDate) {
     var today = new Date();
+    var minDate;
 
-    // Set the minimum date to today
-    var minDate = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    if (useInvoiceDate) {
+        // Get the invoice date from the input field
+        var invoiceDate = new Date(document.getElementById("invoiceDate").value);
+        minDate = invoiceDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    } else {
+        // Set the minimum date to today
+        minDate = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    }
 
     // Set the maximum date to one week from today
     var nextWeek = new Date(today);
     nextWeek.setDate(nextWeek.getDate() + 365);
     var maxDate = nextWeek.toISOString().split('T')[0]; // Format: YYYY-MM-DD
 
-    // Set the min 
+    // Set the min date for the input fields
     document.getElementById("expiredDate_A_P").setAttribute('min', minDate);
     document.getElementById("expiredDate_A_N").setAttribute('min', minDate);
-
     document.getElementById("expiredDate_B_P").setAttribute('min', minDate);
     document.getElementById("expiredDate_B_N").setAttribute('min', minDate);
-
     document.getElementById("expiredDate_O_P").setAttribute('min', minDate);
     document.getElementById("expiredDate_O_N").setAttribute('min', minDate);
-
     document.getElementById("expiredDate_AB_P").setAttribute('min', minDate);
     document.getElementById("expiredDate_AB_N").setAttribute('min', minDate);
 
-    // Set the max
+    // Set the max date for the input fields
     document.getElementById("expiredDate_A_P").setAttribute('max', maxDate);
     document.getElementById("expiredDate_A_N").setAttribute('max', maxDate);
-
     document.getElementById("expiredDate_B_P").setAttribute('max', maxDate);
     document.getElementById("expiredDate_B_N").setAttribute('max', maxDate);
-
     document.getElementById("expiredDate_O_P").setAttribute('max', maxDate);
     document.getElementById("expiredDate_O_N").setAttribute('max', maxDate);
-
     document.getElementById("expiredDate_AB_P").setAttribute('max', maxDate);
     document.getElementById("expiredDate_AB_N").setAttribute('max', maxDate);
-
 }
 
 function countBlood() {
@@ -103,34 +104,36 @@ function getShipDate() {
 
 
 // RBAC JAVA SCRIPT
-document.addEventListener('DOMContentLoaded', function () {
-    initializePermissionCheckboxes();
-});
+// document.addEventListener('DOMContentLoaded', function () {
+//     initializePermissionCheckboxes();
+// });
 
-function initializePermissionCheckboxes() {
-    const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+// function initializePermissionCheckboxes() {
+//     const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
 
-    allCheckboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('change', function () {
-            const parentContainer = this.closest('.container');
+//     allCheckboxes.forEach(function (checkbox) {
+//         checkbox.addEventListener('change', function () {
+//             const parentContainer = this.closest('.container');
 
-            // Check if the checkbox is one of the "all_" checkboxes
-            if (this.name.startsWith("all_")) {
-                const controlCheckboxes = parentContainer.querySelectorAll('input[type="checkbox"]:not([name^="all_"])');
+//             // Check if the checkbox is one of the "all_" checkboxes
+//             if (this.name.startsWith("all_")) {
+//                 const controlCheckboxes = parentContainer.querySelectorAll('input[type="checkbox"]:not([name^="all_"])');
 
-                // Set all control checkboxes based on the state of the "all_" checkbox
-                controlCheckboxes.forEach(function(controlCheckbox) {
-                    controlCheckbox.checked = checkbox.checked;
-                });
-            } else {
-                // If one of the control checkboxes is unchecked, uncheck the corresponding "all_" checkbox
-                const allCheckbox = parentContainer.querySelector('input[type="checkbox"][name^="all_"]');
-                if (!this.checked && allCheckbox) {
-                    allCheckbox.checked = false;
-                }
-            }
+//                 // Set all control checkboxes based on the state of the "all_" checkbox
+//                 controlCheckboxes.forEach(function(controlCheckbox) {
+//                     controlCheckbox.checked = checkbox.checked;
+//                 });
+//             } else {
+//                 // If one of the control checkboxes is unchecked, uncheck the corresponding "all_" checkbox
+//                 const allCheckbox = parentContainer.querySelector('input[type="checkbox"][name^="all_"]');
+//                 if (!this.checked && allCheckbox) {
+//                     allCheckbox.checked = false;
+//                 }
+//             }
 
-            
-        });
-    });
-}
+
+//         });
+//     });
+// }
+
+

@@ -296,3 +296,11 @@ td.custom-event{
 td.permission-on{
     background-color: #28B463 ;
 }
+
+.min-quantity-danger{
+    background-color: #f9e154;
+}
+
+.min-quantity-normal{
+    background-color: #F9DCDC;
+}

@@ -127,6 +127,7 @@
                         <div class="col m-3 p-2">
                             <table class="table table-bordered mx-auto table-hover">
                                 <thead>
+                                    <tr><th colspan="2">Current Stock</th></tr>
                                     <tr>
                                         <th>Blood Type</th>
                                         <th>Quantity</th>
@@ -134,20 +135,36 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>A</td>
-                                        <td><label id="labelA">0</label></td>
+                                        <td>A+</td>
+                                        <td><label>{{$max['bloodTypeA']['Available_P']}}</label></td>
                                     </tr>
                                     <tr>
-                                        <td>B</td>
-                                        <td><label id="labelB">0</label></td>
+                                        <td>A-</td>
+                                        <td><label>{{$max['bloodTypeA']['Available_N']}}</label></td>
                                     </tr>
                                     <tr>
-                                        <td>O</td>
-                                        <td><label id="labelO">0</label></td>
+                                        <td>B+</td>
+                                        <td><label>{{$max['bloodTypeB']['Available_P']}}</label></td>
                                     </tr>
                                     <tr>
-                                        <td>AB</td>
-                                        <td><label id="labelAB">0</label></td>
+                                        <td>B-</td>
+                                        <td><label>{{$max['bloodTypeB']['Available_N']}}</label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>O+</td>
+                                        <td><label>{{$max['bloodTypeO']['Available_P']}}</label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>O-</td>
+                                        <td><label>{{$max['bloodTypeO']['Available_N']}}</label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>AB+</td>
+                                        <td><label>{{$max['bloodTypeAB']['Available_P']}}</label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>AB-</td>
+                                        <td><label>{{$max['bloodTypeAB']['Available_N']}}</label></td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -11,9 +11,6 @@
 
     <link rel="stylesheet" type="text/css" href="/css/app.css">
 
-
-
-
     {{-- ICON CSS --}}
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
@@ -28,16 +25,26 @@
     {{-- Admin ROLE --}}
     @if (session('user.roleID') == '1')
         @include('backend.inc.sidebar')
-    @else{{-- Customer ROLE --}}
+        @else{{-- Customer ROLE --}}
         @include('FrontEnd.inc.navbar')
     @endif
-
 
     <div class="main p-3">
         <div class="text-center">
             <div class="py-3">
-                @if (session('status')) 
-                    <span class="h5 font-weight-bold text-center text-dark">{{session('status')}}</span>
+                @if (session('status'))
+                    <div class="alert alert-success">
+                        <span class="h5 text-center text-dark">{{ session('status') }}</span>
+                    </div>
+                @endif
+                @if (session('err'))
+                    <div class="alert alert-danger">
+                        @foreach (session('err') as $item)
+                            <span class="h5 text-dark p-2">
+                                {{ $item }} <br />
+                            </span>
+                        @endforeach
+                    </div>
                 @endif
             </div>
             @yield('content')

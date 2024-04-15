@@ -35,6 +35,7 @@ class AppointmentAPIController extends Controller
     {
         $record = null;
         $record = $this->database->getReference($this->ref_table_appointment)->getValue();
+        return $record;
         if ($record != null) {
             foreach ($record as $key => $item) {
                 $record[$key]['userName'] = $this->database->getReference($this->ref_table_user)->getChild($item['userID'])->getChild('name')->getValue();
@@ -65,8 +66,8 @@ class AppointmentAPIController extends Controller
             $userInfo = $this->database->getReference($this->ref_table_user)->getChild($record['userID'])->getValue();
             $record['userName'] = $userInfo['name'];
             $record['userIc'] = $userInfo['identityCard'];
-            // $record['image'] = $this->getImage($record['fileName']);
-            $record['qrCode'] = $this->generateQrCode($record);
+            $record['image'] = $this->getImage($record['fileName']);
+            // $record['qrCode'] = $this->generateQrCode($record);
         }
         $returnData = [
             'record' => $record,
@@ -83,7 +84,7 @@ class AppointmentAPIController extends Controller
     public function getImage($imageName)
     {
         // Get the path to the image file
-        $path = public_path('appQR/' . $imageName);
+        $path = public_path('Image/' . 'H001.jpg');
 
         // Check if the file exists
         if (file_exists($path)) {
@@ -136,7 +137,7 @@ class AppointmentAPIController extends Controller
         //     'End_Time' => 'required',
         //     'Location' => 'required|min:3|max:20'
         // ]);
-        
+
         $status = 'Pending';
         $result = [
             'bloodType' => '',
@@ -150,14 +151,8 @@ class AppointmentAPIController extends Controller
 
         // Validate All information
         $err = $this->getErrMessage($location, $currentUser, $pre_date, $pre_time);
-        if (!empty($err)) {
-            if (!$this->validHospital($location))
-                return redirect('make-appointment')->with('err', 'Please Select A Hospital Again.');
-
-            if (!$this->validUser($currentUser))
-                return redirect('login')->with('err', 'Plese Login into an account.');
-
-            return redirect('appointment-selected-hospital/' . $location)->with('err', $err);
+        if ($err != null) {
+            return $err;
         }
 
         $appID = $this->idGenerator('A', $this->ref_table_appointment);
@@ -170,7 +165,7 @@ class AppointmentAPIController extends Controller
             'result' => $result
         ];
         $filename = $this->generateQrCode($postData);
-        $postData['fileName'] = $filename;
+        $postData['fileName'] = $this->saveFile($filename);
 
         $record = $this->database->getReference($this->ref_table_appointment . '/' . $appID)->set($postData);
 
@@ -178,36 +173,6 @@ class AppointmentAPIController extends Controller
         // return view('FrontEnd.Home.viewCertificate')->with('filename', $filename)->with('record', $record)->with('status', $status);
     }
 
-
-
-    // public function idGenerator($letter, $ref_collection)
-    // {
-
-    //     $today = Carbon::now();
-    //     $year = $today->year;
-    //     $month = $today->month;
-
-    //     $lastID = $this->database->getReference($ref_collection)->orderByKey()->limitToLast(1)->getValue();
-    //     if ($lastID != null) {
-    //         $lastID = array_keys($lastID)[0];
-    //     }
-
-    //     //if no last record
-    //     if ($lastID === null || substr($lastID, strlen($letter), 4) != substr($year, -2) . sprintf("%02s", $month)) {
-    //         $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . "001";
-    //     } else {
-    //         $newID = $lastID;
-    //         $last = substr($newID, -3);
-    //         $newNum = intval($last) + 1;
-
-    //         $newID = $letter . substr($year, -2) . sprintf("%02s", $month) . sprintf("%03d", $newNum);
-    //     }
-    //     return $newID;
-    // }
-
-    // ----------------------------------
-    //        REPORT GENERATOR
-    // ----------------------------------
     public function downloadResult($id)
     {
         $userKey = $id;
@@ -218,7 +183,7 @@ class AppointmentAPIController extends Controller
         $pdf = PDF::loadView('FrontEnd.Report.report', $data);
 
         // Output the generated PDF (download)
-        return $pdf->download($fileName.'.pdf');
+        return $pdf->download($fileName . '.pdf');
     }
 
     public function getResult($userKey)
@@ -275,7 +240,7 @@ class AppointmentAPIController extends Controller
         return $data;
     }
 
-    
+
     // ----------------------------------
     //        QR CODE GENERATOR
     // ----------------------------------
@@ -285,7 +250,6 @@ class AppointmentAPIController extends Controller
         $data = $this->generateData($validatedData);
         // Generate QR code with UTF-8 character set
         $qrCode = QrCode::size(300)->generate($data);
-
         return $qrCode;
     }
 
@@ -310,7 +274,7 @@ class AppointmentAPIController extends Controller
 
     protected function generateData($array): string
     {
- 
+
         $formattedString = '';
 
         // Iterate through the array and format each key-value pair
@@ -325,7 +289,7 @@ class AppointmentAPIController extends Controller
         }
         return $formattedString;
     }
-    
+
     // ----------------------------------
     //        Validation Data
     // ----------------------------------
@@ -334,6 +298,10 @@ class AppointmentAPIController extends Controller
     {
         $err = [];
 
+        if (!$this->validHospital($location)) {
+            $err[] = 'Plese select a valid hostpital';
+        }
+
         if (!$this->validDate($pre_date)) {
             $err[] = 'Date cannot before today and more than 3 month';
         }
@@ -341,17 +309,34 @@ class AppointmentAPIController extends Controller
         if (!$this->validTime($pre_time)) {
             $err[] = 'Please select between 8.00am until 10.00pm';
         }
+
+        if (!$this->validUser($currentUser)) {
+            $err[] = 'Please Login an account';
+        }
+
+        if($currentUser == ''){
+            $err[] = 'Please Login an account';
+        }
+
+        if($location == ''){
+            $err[] = 'Please Select a hospital Empty';
+        }
+        
         return $err;
     }
     public function validHospital($key)
     {
-        $hospitalList = $this->database->getReference($this->ref_table_hospital)->getValue();
-        return array_key_exists($key, $hospitalList);
+        if ($this->database->getReference($this->ref_table_hospital)->getChild($key)->getValue() != null)
+            return true;
+
+        return false;
     }
     public function validUser($key)
     {
-        $userList = $this->database->getReference($this->ref_table_user)->getValue();
-        return array_key_exists($key, $userList);
+        if ($this->database->getReference($this->ref_table_user)->getChild($key)->getValue() != null)
+            return true;
+
+        return false;
     }
 
     public function validDate($value)

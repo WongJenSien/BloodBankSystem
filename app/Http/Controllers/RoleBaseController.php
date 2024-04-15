@@ -6,13 +6,11 @@ use Illuminate\Http\Request;
 
 class RoleBaseController extends Controller
 {
-    //ROLE 0 == FULLY ACCESS ALL THE SYSTEM 
-    //ROLE 1 == FULLY ACCESS ALL THE SYSTEM EXPECT RBAC MODULE
 
     public function index()
     {
 
-        if(!$this->isRootUser()){
+        if (!$this->isRootUser()) {
             return view('BackEnd.JenSien.permissionDenied');
         }
 
@@ -38,6 +36,7 @@ class RoleBaseController extends Controller
         $inventoryControl = [
             'read' => 'off',
             'stockIn' => 'off',
+            'stockEdit' => 'off',
             'stockOut' => 'off'
         ];
         $shipmentControl = [
@@ -84,6 +83,7 @@ class RoleBaseController extends Controller
         $inventoryControl = [
             'read' => $req->read_inventory,
             'stockIn' => $req->stockIn_inventory,
+            'stockEdit' => $req->stockEdit_inventory,
             'stockOut' => $req->stockOut_inventory,
         ];
         $shipmentControl = [
@@ -100,7 +100,7 @@ class RoleBaseController extends Controller
         $inventoryControl = $this->nullToOff($inventoryControl);
         $shipmentControl = $this->nullToOff($shipmentControl);
         $eventControl = $this->nullToOff($eventControl);
-
+        
         $postData = [
             'userID' => $userKey,
             'inventoryControl' => $inventoryControl,
@@ -126,16 +126,15 @@ class RoleBaseController extends Controller
         return $list;
     }
 
-    public function isRootUser(){
+    public function isRootUser()
+    {
         // Root User Email: wjsadmin@gmail.com
         // Root User Name : ADMIN;
-        
-        if(session('user.key') == $this->rootUser){
+
+        if (session('user.key') == $this->rootUser) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-
-    
 }

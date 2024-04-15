@@ -2,9 +2,9 @@
 
 @section('content')
     @if (session('status'))
-    <div class="alert alert-success">
-        {{session('status')}}
-    </div>
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
     @endif
 
     <div class="container">
@@ -95,7 +95,7 @@
             <div class="col p-2 border text-start">
                 <span class="m-2">{{ $shipInfo['Status'] }}</span>
                 <a data-toggle="modal" data-target="#updateShipment"
-                    style="text-decoration: underline; cursor:pointer">Update</a>
+                    style="text-decoration: underline; cursor:pointer; color:blue">Update</a>
             </div>
         </div>
     </div>
@@ -111,7 +111,7 @@
                     <th>Blood Type</th>
                     <th>Expirated Date</th>
                     <th>Inventory ID</th>
-                    <th>Event Name</th> 
+                    <th>Event Name</th>
                 </thead>
                 <tbody>
                     @foreach ($bloodList as $key => $item)
@@ -146,6 +146,8 @@
                     @endforeach
                 </tbody>
             </table>
+            <a data-toggle="modal" data-target="#deleteShipment" role="button"
+                class="btn btn-primary text-white">Delete</a>
         </div>
     </div>
 
@@ -186,6 +188,47 @@
                                         {{ $shipInfo['Status'] == 'Shipped' ? 'checked' : '' }}>
                                     <label class="btn btn-secondary shipment-status-model" for="shiped">shiped</label>
 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="Submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- DELETE MODEL --}}
+    <div class="modal fade" id="deleteShipment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Delete Shipment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ url('delete-shipment') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="row  m-2">
+                                <span class="text-danger font-weight-bold text-start fs-5">To delete the shipment please
+                                    enter the "{{ $shipmentID }}/{{ $shipInfo['location'] }}"</span>
+                                <input type="text" class="form-control" id="delete_message" name="delete_message"
+                                    placeholder="{{ $shipmentID }}/{{ $shipInfo['location'] }}" required>
+                            </div>
+                            <div class="row">
+                                <div class="col d-flex flex-row">
+                                    <input type="hidden" name="shipmentID" value="{{ $shipmentID }}">
+                                    <input type="checkbox" class="form-check-input" name="checkbox-delete-message"
+                                        id="checkbox-delete-message" required>
+                                    <label class="form-check-label" for="checkbox-delete-message">Delete the
+                                        Shipment</label>
                                 </div>
                             </div>
                         </div>

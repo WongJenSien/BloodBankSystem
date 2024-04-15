@@ -8,11 +8,11 @@
                     {{-- EventID COL --}}
                     <div class="col">
                         <div class="mb-3 row">
-                            <label for="eventID" class="col-sm-2 col-form-label">Event ID: </label>
+                            <label for="eventID" class="col-sm-2 col-form-label">Event: </label>
                             <div class="col-sm-10 text-start">
                                 <select name="eventID" id="eventID" class="form-select" style="width: fit-content" data-width="fit"
                                     aria-label="Default select example">
-                                    <option selected>Select an Event</option>
+                                    <option value="default" selected>Select an Event</option>
                                     @foreach ($eventInfo as $key => $value)
                                         <option value="{{ $key }}">{{ $value['eventName'] }}</option>
                                     @endforeach
@@ -20,7 +20,6 @@
                             </div>
                         </div>
                     </div>
-
                     {{-- InventoryID COL --}}
                     <div class="col">
                         <div class="mb-3 row">
@@ -28,6 +27,16 @@
                             <div class="col-sm-10 text-start">
                                 <input type="text" readonly class="form-control-plaintext fw-bold" name="inventoryID"
                                     id="inventoryID" value="{{ $newID }}">
+                            </div>
+                        </div>
+                    </div>
+                     {{-- Inventory Date COL --}}
+                    <div class="col">
+                        <div class="mb-3 row">
+                            <label for="inventoryID" class="col-sm-2 col-form-label"> Date: </label>
+                            <div class="col-sm-10 text-start">
+                                <input type="text" readonly class="form-control-plaintext fw-bold" name="inventoryDate"
+                                    id="inventoryDate" value="{{ $todayDate }}">
                             </div>
                         </div>
                     </div>
@@ -139,7 +148,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button type="submit">Submit</button>
+                <button class="btn btn-primary" type="submit">Submit</button>
             </div>
         </form>
     </div>

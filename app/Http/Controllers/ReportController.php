@@ -21,6 +21,7 @@ class ReportController extends Controller
         // $numOfBlood_available = $data['numOfBlood_available'];
         // $stockOutList = $data['stockOutList'];
         // $numOfBlood_Shipped = $data['numOfBlood_Shipped'];
+        // dd($data);
         return view('BackEnd.JenSien.reportInventory')->with('data', $data);
             // ->with('month', $month)
             // ->with('stockInList', $stockInList)
@@ -29,15 +30,15 @@ class ReportController extends Controller
             // ->with('stockOutList', $stockOutList)
             // ->with('numOfBlood_Shipped', $numOfBlood_Shipped);
     }
-    public function shipmentReport()
-    {
-        $numOfRecord = 3;
-        $stockInList = $this->getLargestStockIn($numOfRecord);
-        $stockOutList = $this->getLargestStockOut($numOfRecord);
-        return view('BackEnd.JenSien.reportShipment')
-            ->with('stockInList', $stockInList)
-            ->with('stockOutList', $stockOutList);
-    }
+    // public function shipmentReport()
+    // {
+    //     $numOfRecord = 3;
+    //     $stockInList = $this->getLargestStockIn($numOfRecord);
+    //     $stockOutList = $this->getLargestStockOut($numOfRecord);
+    //     return view('BackEnd.JenSien.reportShipment')
+    //         ->with('stockInList', $stockInList)
+    //         ->with('stockOutList', $stockOutList);
+    // }
 
     public function getLargestStockIn($numOfRecord)
     {
@@ -335,7 +336,8 @@ class ReportController extends Controller
             'numOfBlood' => $numOfBlood,
             'numOfBlood_available' => $numOfBlood_available,
             'stockOutList' => $stockOutList,
-            'numOfBlood_Shipped' => $numOfBlood_Shipped
+            'numOfBlood_Shipped' => $numOfBlood_Shipped,
+            'todayDate' => Carbon::now()->format('d-F-Y')
         ];
         return $data;
     }

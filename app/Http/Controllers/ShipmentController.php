@@ -35,6 +35,12 @@ class ShipmentController extends Controller
         $description = $request->description;
         $status = 'Pending';
 
+
+        $err = $this->getErrMessage($location, $description, $quantity);
+        if ($err != null) {
+            return redirect('remove-inventory')->with('err', $err);
+        }
+
         //Status of Shipment: Pending, Delivering, Shipped
         $postData = [
             "Quantity" => $quantity,
@@ -155,7 +161,7 @@ class ShipmentController extends Controller
 
     public function editStatus(Request $request)
     {
-        if(!$this->verifyPermission()){
+        if (!$this->verifyPermission()) {
             return view('BackEnd.JenSien.permissionDenied');
         }
         $childKey = 'Status';
@@ -193,7 +199,7 @@ class ShipmentController extends Controller
 
     public function updateList($list, $shipmentID)
     {
-        if(!$this->verifyPermission()){
+        if (!$this->verifyPermission()) {
             return view('BackEnd.JenSien.permissionDenied');
         }
         $updateKey = 'status';
@@ -204,4 +210,66 @@ class ShipmentController extends Controller
             $this->database->getReference($this->ref_table_inventories)->getChild($inventoryID)->getChild('bloodInfo')->getChild($key)->update([$updateKey => $updateValue, 'ShipmentID' => $shipmentID]);
         }
     }
+
+    public function destroy(Request $request)
+    {
+        $editStatus = 'Available';
+        $editShipId = '';
+        $keyStatus = 'status';
+        $keyShipId = 'ShipmentID';
+
+        $id = $request->shipmentID;
+        $inputText = $request->delete_message;
+
+        $shipmentInfo = $this->database->getReference($this->ref_table_shipment)->getChild($id)->getValue();
+        $delete_message = $id . '/' . $shipmentInfo['location'];
+
+        if ($inputText != $delete_message) {
+            return redirect('shipment-view-detials/' . $id)->with('err', 'Delete Failed');
+        }
+
+        // Change the belonging blood product to status Available
+        //Change Status from 'Shipment' to 'Available' and ShipmentID to = ''
+        $data = $this->database->getReference($this->ref_table_inventories)->getValue();
+        foreach ($data as $key => $bloodInfo) {
+            foreach ($bloodInfo['bloodInfo'] as $productID => $shipID) {
+                if ($shipID['ShipmentID'] == $id) {
+                    //$this->database->getReference($this->ref_table_inventories)->getChild($key)->getChild('bloodInfo')->getChild($productID)->getValue();
+                    $this->database->getReference($this->ref_table_inventories)->getChild($key)->getChild('bloodInfo')->getChild($productID)->update([$keyStatus => $editStatus, $keyShipId => $editShipId]);
+                }
+            }
+        }
+
+        $this->database->getReference($this->ref_table_shipment)->getChild($id)->remove();
+
+        return redirect('view-shipment')->with('status', 'Shipment ID (\'' . $id . '\') Has Been Removed Successfully');
+    }
+
+
+
+    //VALIDATION
+    public function getErrMessage($location, $description, $quantity)
+    {
+        $err = [];
+        if(!$this->isLocation($location)){
+            $err[] = 'Please select a location';
+        }
+
+        if(!$this->validDescription($description)){
+            $err[] = 'Description cannot be empty';
+        }
+
+        if(!$this->isAllNotZero($quantity)){
+            $err[] = 'Please select quantity of blood product';
+        }
+
+        if(!$this->validQuantity($quantity)){
+            $err[] = 'Quantity cannot be Negative Value and only can be number';
+        }
+
+        return $err;
+        
+    }
+
+   
 }

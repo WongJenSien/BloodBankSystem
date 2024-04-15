@@ -9,10 +9,9 @@ class RoleBaseAPIController extends Controller
 
     public function index(Request $req)
     {
-        if ($req->userKey == $this->rootUser) {
+        if ($req->userKey != $this->rootUser) {
             return [false];
         }
-
 
         $userList = $this->database->getReference($this->ref_table_user)->getValue();
 
@@ -22,7 +21,6 @@ class RoleBaseAPIController extends Controller
                 unset($userList[$key]);
             }
         }
-
 
         foreach ($userList as $key => $item) {
             $userList[$key]['permission'] = $this->getPermission($key);
@@ -36,7 +34,8 @@ class RoleBaseAPIController extends Controller
         $inventoryControl = [
             'read' => 'off',
             'stockIn' => 'off',
-            'stockOut' => 'off'
+            'stockEdit' => 'off',
+            'stockOut' => 'off',
         ];
         $shipmentControl = [
             'update_shipment' => 'off',
@@ -116,9 +115,57 @@ class RoleBaseAPIController extends Controller
 
     public function validatePermission(Request $req)
     {
+        if($req->userKey == null){
+            return ['index'];
+        }
+
         if (!$this->verifyAPIPermission($req->currentURL, $req->userKey)) {
             return [false];
         }
         return [true];
+    }
+    
+    public function verifyAPIPermission($url, $userKey)
+    {
+        $url = basename($url);
+
+        $permission = $this->database->getReference($this->ref_table_rbac)->orderByChild('userID')->equalTo($userKey)->getValue();
+
+        foreach ($permission as $key => $value) {
+            $inventoryControl = $value['inventoryControl'];
+            $shipmentControl = $value['shipmentControl'];
+            $eventControl = $value['eventControl'];
+        }
+
+        switch ($url) {
+                //INVENTORY CONTROL
+            case 'stockView.php':
+                return $inventoryControl['read'] == 'on';
+            case 'stockIn.php':
+                return $inventoryControl['stockIn'] == 'on';
+            case 'stockEdit.php':
+                return $inventoryControl['stockEdit'] == 'on';
+            case 'stockOut.php':
+                return $inventoryControl['stockOut'] == 'on';
+                
+                //SHIPMENT CONTROL
+            case 'shipmentView.php':
+                return $shipmentControl['view_shipment'] == 'on';
+            case 'shipmentViewDetails.php':
+                return $shipmentControl['update_shipment'] == 'on';
+            default:
+                return 'on';
+        }
+    }
+
+    public function isRootUser(){
+        // Root User Email: wjsadmin@gmail.com
+        // Root User Name : ADMIN;
+        
+        if(session('user.key') == $this->rootUser){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

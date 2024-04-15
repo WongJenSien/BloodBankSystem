@@ -9,17 +9,18 @@
                             <th rowspan="3">No</th>
                             <th rowspan="3">User ID</th>
                             <th rowspan="3">User Name</th>
-                            <th colspan="8">Permission</th>
+                            <th colspan="9">Permission</th>
                             <th rowspan="3">Action</th>
                         </tr>
                         <tr>
-                            <td colspan="3" class="custom-inventory font-weight-bold">Inventory</td>
+                            <td colspan="4" class="custom-inventory font-weight-bold">Inventory</td>
                             <td colspan="2" class="custom-shipment font-weight-bold">Shipment</td>
                             <td colspan="3" class="custom-event font-weight-bold">Event</td>
                         </tr>
                         <tr>
                             <td class="custom-inventory font-weight-bold">View</td>
                             <td class="custom-inventory font-weight-bold">Stock-In</td>
+                            <td class="custom-inventory font-weight-bold">Stock-Edit</td>
                             <td class="custom-inventory font-weight-bold">Stock-Out</td>
 
                             <td class="custom-shipment font-weight-bold">View</td>
@@ -44,6 +45,9 @@
                                 <td
                                     class="custom-inventory {{ $item['permission']['inventoryControl']['stockIn'] == 'on' ? 'permission-on' : '' }}">
                                     {{ $item['permission']['inventoryControl']['stockIn'] }}</td>
+                                <td
+                                    class="custom-inventory {{ $item['permission']['inventoryControl']['stockEdit'] == 'on' ? 'permission-on' : '' }}">
+                                    {{ $item['permission']['inventoryControl']['stockEdit'] }}</td>
                                 <td
                                     class="custom-inventory {{ $item['permission']['inventoryControl']['stockOut'] == 'on' ? 'permission-on' : '' }}">
                                     {{ $item['permission']['inventoryControl']['stockOut'] }}</td>
@@ -126,17 +130,10 @@
                                                                 <div class="container">
                                                                     <div class="row text-start align-item-left">
                                                                         <div class="form-check form-switch">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                name="all_inventory{{ $key }}"
-                                                                                id="all_inventory{{ $key }}">
-                                                                            <label class="form-check-label"
-                                                                                for="all_inventory{{ $key }}">Full
-                                                                                Control</label>
-                                                                        </div>
-                                                                        <div class="form-check form-switch">
                                                                             <input
                                                                                 class="form-check-input inventory-checkbox"
-                                                                                type="checkbox" name="read_inventory"
+                                                                                type="checkbox"
+                                                                                name="read_inventory"
                                                                                 id="read_inventory{{ $key }}"
                                                                                 {{ $item['permission']['inventoryControl']['read'] == 'on' ? 'checked' : '' }}>
                                                                             <label class="form-check-label"
@@ -146,7 +143,8 @@
                                                                         <div class="form-check form-switch">
                                                                             <input
                                                                                 class="form-check-input inventory-checkbox"
-                                                                                type="checkbox" name="stockIn_inventory"
+                                                                                type="checkbox"
+                                                                                name="stockIn_inventory"
                                                                                 id="stockIn_inventory{{ $key }}"
                                                                                 {{ $item['permission']['inventoryControl']['stockIn'] == 'on' ? 'checked' : '' }}>
                                                                             <label class="form-check-label"
@@ -156,7 +154,19 @@
                                                                         <div class="form-check form-switch">
                                                                             <input
                                                                                 class="form-check-input inventory-checkbox"
-                                                                                type="checkbox" name="stockOut_inventory"
+                                                                                type="checkbox"
+                                                                                name="stockEdit_inventory"
+                                                                                id="stockEdit_inventory{{ $key }}"
+                                                                                {{ $item['permission']['inventoryControl']['stockEdit'] == 'on' ? 'checked' : '' }}>
+                                                                            <label class="form-check-label"
+                                                                                for="stockEdit_inventory{{ $key }}">Stock
+                                                                                Edit</label>
+                                                                        </div>
+                                                                        <div class="form-check form-switch">
+                                                                            <input
+                                                                                class="form-check-input inventory-checkbox"
+                                                                                type="checkbox"
+                                                                                name="stockOut_inventory"
                                                                                 id="stockOut_inventory{{ $key }}"
                                                                                 {{ $item['permission']['inventoryControl']['stockOut'] == 'on' ? 'checked' : '' }}>
                                                                             <label class="form-check-label"
@@ -180,14 +190,6 @@
                                                             <div class="row">
                                                                 <div class="container">
                                                                     <div class="row text-start align-item-left">
-                                                                        <div class="form-check form-switch">
-                                                                            <input class="form-check-input"
-                                                                                type="checkbox" name="all_shipment"
-                                                                                id="all_shipment{{ $key }}">
-                                                                            <label class="form-check-label"
-                                                                                for="all_shipment{{ $key }}">Full
-                                                                                Control</label>
-                                                                        </div>
                                                                         <div class="form-check form-switch">
                                                                             <input
                                                                                 class="form-check-input shipment-checkbox"
@@ -225,14 +227,6 @@
                                                             <div class="row">
                                                                 <div class="container">
                                                                     <div class="row text-start align-item-left">
-                                                                        <div class="form-check form-switch">
-                                                                            <input class="form-check-input"
-                                                                                type="checkbox" name="all_event"
-                                                                                id="all_event{{ $key }}">
-                                                                            <label class="form-check-label"
-                                                                                for="all_event{{ $key }}">Full
-                                                                                Control</label>
-                                                                        </div>
                                                                         <div class="form-check form-switch">
                                                                             <input class="form-check-input event-checkbox"
                                                                                 type="checkbox" name="add_event"

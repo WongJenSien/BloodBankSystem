@@ -88,6 +88,8 @@
                             Stock In</a>
                         <a href="{{ url('remove-inventory') }}" class="sidebar-link">
                             Stock Out</a>
+                        <a href="{{ url('edit-form-display') }}" class="sidebar-link">
+                            Modify Stock Inventory</a>
                         <a href="{{ url('view-inventory') }}" class="sidebar-link">
                             Stock Monitoring</a>
                     </li>
@@ -125,8 +127,7 @@
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="{{ route('logout') }}" class="sidebar-link"> <i
-                    class="lni lni-exit"></i><span>Logout</span></a>
+            <a href="{{ route('logout') }}" class="sidebar-link"> <i class="lni lni-exit"></i><span>Logout</span></a>
         </div>
     </aside>
 

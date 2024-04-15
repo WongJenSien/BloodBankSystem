@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Route;
 // -------------------------------------------
 Route::get('/view/inventory/getNewId', [InventoryAPIController::class, 'getNewId']);
 Route::get('/view/inventory/getShipmentID', [InventoryAPIController::class, 'shipOut']);
+Route::get('/view/inventory/displayInventoryForm', [InventoryAPIController::class, 'displayInventoryForm']);
+Route::post('/view/inventory/editInventory', [InventoryAPIController::class, 'edit']);
 
 // -------------------------------------------
 //         Shipment API Controller
@@ -56,6 +58,10 @@ Route::get('/view/result/{id}',[AppointmentAPIController::class,'downloadResult'
 // -------------------------------------------
 Route::post('/view/login', [UserAPIController::class, 'login']);
 
+
+// -------------------------------------------
+//         Role Base Access Control (RBAC) API Controller
+// -------------------------------------------
 Route::get('/view/rbac/index',[RoleBaseAPIController::class, 'index']);
 Route::post('/view/rbac/editPermission',[RoleBaseAPIController::class,'editPermission']);
 Route::get('/view/rbac/validatePermission',[RoleBaseAPIController::class,'validatePermission']);

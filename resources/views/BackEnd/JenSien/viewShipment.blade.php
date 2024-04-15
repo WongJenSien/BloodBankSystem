@@ -1,9 +1,9 @@
 @extends('BackEnd.app')
 
 @section('content')
-    @if (session('status'))
-        <h4 class="alert alert-warning mb-2">{{ session('status') }}</h4>
-    @endif
+
+    @if ($shipInfo != null)
+        
 
 
     <div class="container">
@@ -81,4 +81,9 @@
             </div>
         </div>
     </div>
+    @else
+    <span class="h4 text-danger m-3 p-3">
+        No record found.
+    </span>
+@endif
 @endsection

@@ -121,384 +121,392 @@
             <div class="column right-column">
                 <div class="info">
                     <span class="label">Date:</span>
-                    <span class="value">24-03-2024</span>
+                    <span class="value">{{ $todayDate }}</span>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <div>
-            <div class="row">
-                <h3 class="text-dark">TOP 5 STOCK IN - {{ $month }}</h3>
-            </div>
-            <div class="row">
-                <table class="table table-bordered border-black text-center">
-                    <thead>
-                        <tr>
-                            <th class="align-middle" rowspan="2">No</th>
-                            <th class="align-middle" rowspan="2">Inventory ID</th>
-                            <th class="align-middle" rowspan="2">Event ID</th>
-                            <th class="align-middle" rowspan="2">Event Name</th>
-                            <th class="align-middle" colspan="4">Quantity</th>
-                            <th class="align-middle" colspan="2">Status</th>
-                        </tr>
-                        <tr>
-                            <th>A</th>
-                            <th>B</th>
-                            <th>O</th>
-                            <th>AB</th>
-                            <th>Available</th>
-                            <th>Not Available</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($stockInList as $key => $item)
+        {{-- STOCK IN REPORT --}}
+        @if ($stockInList != null)
+            <div>
+                <div class="row">
+                    <h3 class="text-dark">TOP 5 STOCK IN - {{ $month }}</h3>
+                </div>
+                <div class="row">
+                    <table class="table table-bordered border-black text-center">
+                        <thead>
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $key }}</td>
-                                <td>{{ $item['eventID'] }}</td>
-                                <td>{{ $item['EventName'] }}</td>
-                                <td>{{ $item['quantity']['BloodTypeA'] }}</td>
-                                <td>{{ $item['quantity']['BloodTypeB'] }}</td>
-                                <td>{{ $item['quantity']['BloodTypeO'] }}</td>
-                                <td>{{ $item['quantity']['BloodTypeAB'] }}</td>
-                                <td>{{ $item['StatusQuantity']['Available'] }}</td>
-                                <td>{{ $item['StatusQuantity']['Shipment'] }}</td>
+                                <th class="align-middle" rowspan="2">No</th>
+                                <th class="align-middle" rowspan="2">Inventory ID</th>
+                                <th class="align-middle" rowspan="2">Event ID</th>
+                                <th class="align-middle" rowspan="2">Event Name</th>
+                                <th class="align-middle" colspan="4">Quantity</th>
+                                <th class="align-middle" colspan="2">Status</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                            <tr>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>O</th>
+                                <th>AB</th>
+                                <th>Available</th>
+                                <th>Not Available</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($stockInList as $key => $item)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $key }}</td>
+                                    <td>{{ $item['eventID'] }}</td>
+                                    <td>{{ $item['EventName'] }}</td>
+                                    <td>{{ $item['quantity']['BloodTypeA'] }}</td>
+                                    <td>{{ $item['quantity']['BloodTypeB'] }}</td>
+                                    <td>{{ $item['quantity']['BloodTypeO'] }}</td>
+                                    <td>{{ $item['quantity']['BloodTypeAB'] }}</td>
+                                    <td>{{ $item['StatusQuantity']['Available'] }}</td>
+                                    <td>{{ $item['StatusQuantity']['Shipment'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-                <h4 style="color: #dc3545; text-decoration: underline;">Summary</h4>
-                {{-- TOTAL NUMBER OF BLOOD RECEIVE --}}
-                <h5 class="text-dark text-decoration-underline">Total Number of Blood Receive</h5>
-                <div class="row">
+                    <h4 style="color: #dc3545; text-decoration: underline;">Summary</h4>
+                    {{-- TOTAL NUMBER OF BLOOD RECEIVE --}}
+                    <h5 class="text-dark text-decoration-underline">Total Number of Blood Receive</h5>
                     <div class="row">
-                        <!-- VIEW BLOOD - A - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <!-- TITLE -->
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type A
-                                </span>
+                        <div class="row">
+                            <!-- VIEW BLOOD - A - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <!-- TITLE -->
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type A
+                                    </span>
+                                </div>
+                                <!-- QUANTITY -->
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood['aPositive'] }}
+                                        </span>
+                                    </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood['aNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
-                            <!-- QUANTITY -->
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood['aPositive'] }}
+                            <!-- VIEW BLOOD - B - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type B
                                     </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood['aNegative'] }}
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood['bPositive'] }}
+                                        </span>
                                     </span>
-                                </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood['bNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <!-- VIEW BLOOD - B - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type B
-                                </span>
+                        <div class="row">
+                            <!-- VIEW BLOOD - O - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type O
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood['oPositive'] }}
+                                        </span>
+                                    </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood['oNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood['bPositive'] }}
+                            <!-- VIEW BLOOD - AB - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type AB
                                     </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood['bNegative'] }}
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood['abPositive'] }}
+                                        </span>
                                     </span>
-                                </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood['abNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {{-- TOTAL NUMBER OF BLOOD Available --}}
+                    <h5 class="text-dark text-decoration-underline">Total Number of Blood Available</h5>
                     <div class="row">
-                        <!-- VIEW BLOOD - O - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type O
-                                </span>
+                        <div class="row">
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type A
+                                    </span>
+                                </div>
+                                <!-- QUANTITY -->
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_available['aPositive'] }}
+                                        </span>
+                                    </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_available['aNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood['oPositive'] }}
+                            <!-- VIEW BLOOD - B - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type B
                                     </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood['oNegative'] }}
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_available['bPositive'] }}
+                                        </span>
                                     </span>
-                                </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_available['bNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <!-- VIEW BLOOD - AB - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type AB
-                                </span>
+                        <div class="row">
+                            <!-- VIEW BLOOD - O - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type O
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_available['oPositive'] }}
+                                        </span>
+                                    </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_available['oNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood['abPositive'] }}
+                            <!-- VIEW BLOOD - AB - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type AB
                                     </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood['abNegative'] }}
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_available['abPositive'] }}
+                                        </span>
                                     </span>
-                                </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_available['abNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                {{-- TOTAL NUMBER OF BLOOD Available --}}
-                <h5 class="text-dark text-decoration-underline">Total Number of Blood Available</h5>
-                <div class="row">
-                    <div class="row">
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type A
-                                </span>
-                            </div>
-                            <!-- QUANTITY -->
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_available['aPositive'] }}
-                                    </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_available['aNegative'] }}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                        <!-- VIEW BLOOD - B - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type B
-                                </span>
-                            </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_available['bPositive'] }}
-                                    </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_available['bNegative'] }}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <!-- VIEW BLOOD - O - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type O
-                                </span>
-                            </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_available['oPositive'] }}
-                                    </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_available['oNegative'] }}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                        <!-- VIEW BLOOD - AB - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type AB
-                                </span>
-                            </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_available['abPositive'] }}
-                                    </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_available['abNegative'] }}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
+                </div>
             </div>
-        </div>
+        @endif
+
         <hr>
-        <div>
-            <div class="row">
-                <h3 class="text-dark">TOP 5 STOCK OUT - {{ $month }}</h3>
-            </div>
-            <div class="row">
-                <table class="table table-bordered border-black text-center">
-                    <thead>
-                        <tr>
-                            <th class="align-middle" rowspan="2">No</th>
-                            <th class="align-middle" rowspan="2">Shipment ID</th>
-                            <th class="align-middle" rowspan="2">Request Date</th>
-                            <th class="align-middle" rowspan="2">Location</th>
-                            <th class="align-middle" rowspan="2">Shipment Date</th>
-                            <th class="align-middle" rowspan="2">Status</th>
-                            <th class="align-middle" colspan="4">Quantity</th>
-                        </tr>
-                        <tr>
-                            <th>A</th>
-                            <th>B</th>
-                            <th>O</th>
-                            <th>AB</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($stockOutList as $key => $item)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $key }}</td>
-                                <td>{{ $item['RequestDate'] }}</td>
-                                <td>{{ $item['location'] }}</td>
-                                <td>{{ $item['ShipDate'] }}</td>
-                                <td>{{ $item['Status'] }}</td>
-                                <td>{{ $item['Quantity']['BloodTypeA'] }}</td>
-                                <td>{{ $item['Quantity']['BloodTypeB'] }}</td>
-                                <td>{{ $item['Quantity']['BloodTypeO'] }}</td>
-                                <td>{{ $item['Quantity']['BloodTypeAB'] }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <h4 style="color: #dc3545; text-decoration: underline;">Summary</h4>
-                {{-- TOTAL NUMBER OF BLOOD RECEIVE --}}
-                <h5 class="text-dark text-decoration-underline">Total Number of Blood Shipped</h5>
+        {{-- STOCK OUT REPORT --}}
+        @if ($stockOutList != null)
+            <div>
                 <div class="row">
+                    <h3 class="text-dark">TOP 5 STOCK OUT - {{ $month }}</h3>
+                </div>
+                <div class="row">
+                    <table class="table table-bordered border-black text-center">
+                        <thead>
+                            <tr>
+                                <th class="align-middle" rowspan="2">No</th>
+                                <th class="align-middle" rowspan="2">Shipment ID</th>
+                                <th class="align-middle" rowspan="2">Request Date</th>
+                                <th class="align-middle" rowspan="2">Location</th>
+                                <th class="align-middle" rowspan="2">Shipment Date</th>
+                                <th class="align-middle" rowspan="2">Status</th>
+                                <th class="align-middle" colspan="4">Quantity</th>
+                            </tr>
+                            <tr>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>O</th>
+                                <th>AB</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($stockOutList as $key => $item)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $key }}</td>
+                                    <td>{{ $item['RequestDate'] }}</td>
+                                    <td>{{ $item['location'] }}</td>
+                                    <td>{{ $item['ShipDate'] }}</td>
+                                    <td>{{ $item['Status'] }}</td>
+                                    <td>{{ $item['Quantity']['BloodTypeA'] }}</td>
+                                    <td>{{ $item['Quantity']['BloodTypeB'] }}</td>
+                                    <td>{{ $item['Quantity']['BloodTypeO'] }}</td>
+                                    <td>{{ $item['Quantity']['BloodTypeAB'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+
+                    <h4 style="color: #dc3545; text-decoration: underline;">Summary</h4>
+                    {{-- TOTAL NUMBER OF BLOOD RECEIVE --}}
+                    <h5 class="text-dark text-decoration-underline">Total Number of Blood Shipped</h5>
                     <div class="row">
-                        <!-- VIEW BLOOD - A - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <!-- TITLE -->
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type A
-                                </span>
+                        <div class="row">
+                            <!-- VIEW BLOOD - A - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <!-- TITLE -->
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type A
+                                    </span>
+                                </div>
+                                <!-- QUANTITY -->
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_Shipped['aPositive'] }}
+                                        </span>
+                                    </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_Shipped['aNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
-                            <!-- QUANTITY -->
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_Shipped['aPositive'] }}
+                            <!-- VIEW BLOOD - B - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type B
                                     </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_Shipped['aNegative'] }}
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_Shipped['bPositive'] }}
+                                        </span>
                                     </span>
-                                </span>
-                            </div>
-                        </div>
-                        <!-- VIEW BLOOD - B - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type B
-                                </span>
-                            </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_Shipped['bPositive'] }}
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_Shipped['bNegative'] }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_Shipped['bNegative'] }}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <!-- VIEW BLOOD - O - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type O
-                                </span>
-                            </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_Shipped['oPositive'] }}
-                                    </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_Shipped['oNegative'] }}
-                                    </span>
-                                </span>
+                                </div>
                             </div>
                         </div>
-                        <!-- VIEW BLOOD - AB - TOTAL NUMBER OF RECEIVE -->
-                        <div class="column">
-                            <div class="row">
-                                <span
-                                    style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
-                                    Blood Type AB
-                                </span>
+                        <div class="row">
+                            <!-- VIEW BLOOD - O - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type O
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_Shipped['oPositive'] }}
+                                        </span>
+                                    </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_Shipped['oNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
-                            <div class="row">
-                                <span style="color: #343a40; font-weight: bold;"> Positive:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_Shipped['abPositive'] }}
+                            <!-- VIEW BLOOD - AB - TOTAL NUMBER OF RECEIVE -->
+                            <div class="column">
+                                <div class="row">
+                                    <span
+                                        style="text-decoration: underline; color: #dc3545; font-weight: bold; text-align: center;">
+                                        Blood Type AB
                                     </span>
-                                </span>
-                                <span style="color: #343a40; font-weight: bold;"> Negative:
-                                    <span style="color: #343a40; font-weight: normal;">
-                                        {{ $numOfBlood_Shipped['abNegative'] }}
+                                </div>
+                                <div class="row">
+                                    <span style="color: #343a40; font-weight: bold;"> Positive:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_Shipped['abPositive'] }}
+                                        </span>
                                     </span>
-                                </span>
+                                    <span style="color: #343a40; font-weight: bold;"> Negative:
+                                        <span style="color: #343a40; font-weight: normal;">
+                                            {{ $numOfBlood_Shipped['abNegative'] }}
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
+
     </div>
 
 

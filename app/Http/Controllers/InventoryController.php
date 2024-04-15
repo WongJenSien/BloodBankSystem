@@ -2,17 +2,258 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use DateTime;
+
 use Illuminate\Http\Request;
 use App\Events\RentalActivityOccurred;
 use Illuminate\Support\Facades\Log;
-
+use Carbon\Carbon;
 
 
 class InventoryController extends Controller
 {
+    public function showInventoryList()
+    {
+        $inventoryList = $this->getAllInventory();
 
+        if ($this->getAllInventory() == null) {
+            return null;
+        }
+
+        $quantity = [
+            'BloodType_A' => 0,
+            'BloodType_B' => 0,
+            'BloodType_O' => 0,
+            'BloodType_AB' => 0
+        ];
+
+
+
+        foreach ($inventoryList as $id => $info) {
+            // Count Quantity
+            $quantity = [
+                'BloodType_A' => 0,
+                'BloodType_B' => 0,
+                'BloodType_O' => 0,
+                'BloodType_AB' => 0
+            ];
+
+            foreach ($info['quantity'] as $key => $numbers) {
+                if ($key == 'aNegative' || $key == 'aPositive') {
+                    $quantity['BloodType_A'] += $numbers;
+                }
+                if ($key == 'bNegative' || $key == 'bPositive') {
+                    $quantity['BloodType_B'] += $numbers;
+                }
+                if ($key == 'oNegative' || $key == 'oPositive') {
+                    $quantity['BloodType_O'] += $numbers;
+                }
+                if ($key == 'abNegative' || $key == 'abPositive') {
+                    $quantity['BloodType_AB'] += $numbers;
+                }
+            }
+            $inventoryList[$id]['shipQuantity'] = $this->getShipQuantity($id);
+            $inventoryList[$id]['eventName'] =  $this->database->getReference($this->ref_table_event)->getChild($info['eventID'])->getChild('eventName')->getValue();
+            $inventoryList[$id]['bloodType'] = $quantity;
+            $inventoryList[$id]['expirationDate'] = $this->getExpDate($id);
+        }
+
+        return $inventoryList;
+        // return $inventoryList;
+    }
+
+    public function getShipQuantity($id)
+    {
+        $shipQuantity = [
+            'aPositive' => 0,
+            'aNegative' => 0,
+            'bPositive' => 0,
+            'bNegative' => 0,
+            'oPositive' => 0,
+            'oNegative' => 0,
+            'abPositive' => 0,
+            'abNegative' => 0,
+        ];
+        if ($this->database->getReference($this->ref_table_inventories)->getChild($id)->getValue() != null) {
+            $list = $this->database->getReference($this->ref_table_inventories)->getChild($id)->getValue();
+            foreach ($list['bloodInfo'] as $key => $value) {
+                if ($value['status'] != 'Available') {
+                    foreach ($shipQuantity as $bloodType => $quantity) {
+                        if ($value['bloodType'] == $bloodType) {
+                            $shipQuantity[$bloodType]++;
+                        }
+                    }
+                }
+            }
+        }
+        return $shipQuantity;
+    }
+    public function edit(Request $request)
+    {
+
+        $id = $request->inventoryID;
+        $eventID = $request->eventID;
+        $expirationDate = [
+            'aPositive' => $request->expiredDate_A_P,
+            'aNegative' => $request->expiredDate_A_N,
+
+            'bPositive' => $request->expiredDate_B_P,
+            'bNegative' => $request->expiredDate_B_N,
+
+            'oPositive' => $request->expiredDate_O_P,
+            'oNegative' => $request->expiredDate_O_N,
+
+            'abPositive' => $request->expiredDate_AB_P,
+            'abNegative' => $request->expiredDate_AB_N
+        ];
+        $quantity = [
+            'aPositive' => $request->aPositive,
+            'aNegative' => $request->aNegative,
+
+            'bPositive' => $request->bPositive,
+            'bNegative' => $request->bNegative,
+
+            'oPositive' => $request->oPositive,
+            'oNegative' => $request->oNegative,
+
+            'abPositive' => $request->abPositive,
+            'abNegative' => $request->abNegative
+        ];
+
+        //Generate New Blood ID List
+        foreach ($quantity as $bloodType => $number) {
+            if (strtolower(substr($bloodType, 0, 2)) === 'ab') {
+                $bloodElement = strtoupper(substr($bloodType, 0, 3));
+            } else {
+                $bloodElement = strtoupper(substr($bloodType, 0, 2));
+            }
+            //Regenerate Blood Info
+            $bloodList[$bloodType] = $this->bloodTypeID($quantity[$bloodType], $id, $bloodElement);
+        }
+
+
+        //Assign Blood Info
+        // If the Blood ID is exist Assign Original Blood Info into the new Blood List
+        // If the Blood ID doesn't exist Assign default Data into the new Blood List
+        foreach ($bloodList as $bloodType => $values) {
+            $defaultData = [
+                'bloodType' => $bloodType,
+                'status' => 'Available',
+                'expirationDate' => $expirationDate[$bloodType],
+                'ShipmentID' => ''
+            ];
+            foreach ($values as $bloodID) {
+                // dd($this->database->getReference($this->ref_table_inventories)->getChild($id)->getChild('bloodInfo')->getChild($bloodID)->getValue());
+                $data = $this->database->getReference($this->ref_table_inventories)->getChild($id)->getChild('bloodInfo')->getChild($bloodID)->getValue();
+                if ($data != null) {
+                    $data['expirationDate'] = $expirationDate[$bloodType];
+                    $bloodInfo[$bloodID] = $data;
+                } else {
+                    $bloodInfo[$bloodID] = $defaultData;
+                }
+            }
+        }
+        $editKey1 = 'bloodInfo';
+        $editKey2 = 'eventID';
+        $editKey3 = 'quantity';
+        $postRef = $this->database->getReference($this->ref_table_inventories)->getChild($id)->update([$editKey1 => $bloodInfo, $editKey2 => $eventID, $editKey3 => $quantity]);
+
+        if ($postRef) {
+            return redirect('edit-form-display')->with('status', 'Editted Successfully');
+        } else {
+            return redirect('edit-form-display')->with('status', 'Editted Failed');
+        }
+        // return redirect('getInventoryID')->with('inventoryID', $id);
+    }
+
+    //When the user access to the page
+    public function displayInventoryForm()
+    {
+        if (!$this->verifyPermission()) {
+            return view('BackEnd.JenSien.permissionDenied');
+        }
+
+        return view('BackEnd.JenSien.editStock')
+            ->with('inventoryInfo', $this->getAllInventory())
+            ->with('eventInfo', $this->getEventInfo())
+            ->with('edit_InventoryID', null)
+            ->with('inventoryList', $this->showInventoryList())
+            ->with('reqInventoryID', 'default');
+    }
+
+    // When the user selected the inventory id
+    // public function show(Request $request)
+    // {
+    //     $inventoryID = $request->inventoryID;
+    //     $expirationDate = [
+    //         'aPositive' => null,
+    //         'aNegative' => null,
+    //         'bPositive' => null,
+    //         'bNegative' => null,
+    //         'oPositive' => null,
+    //         'oNegative' => null,
+    //         'abPositive' => null,
+    //         'abNegative' => null
+    //     ];
+    //     $returnData = null;
+    //     if ($this->database->getReference($this->ref_table_inventories)->getChild($inventoryID)->getValue() != null) {
+    //         $returnData[$inventoryID] = $this->database->getReference($this->ref_table_inventories)->getChild($inventoryID)->getValue();
+    //     }
+
+    //     if ($returnData != null) {
+    //         foreach ($expirationDate as $bloodType => $expDate) {
+    //             foreach ($returnData as $id => $item) {
+    //                 foreach ($item['bloodInfo'] as $bloodID => $value) {
+    //                     if ($bloodType == $value['bloodType']) {
+    //                         $expirationDate[$bloodType] = $value['expirationDate'];
+    //                     }
+    //                 }
+    //                 $returnData[$id]['expirationDate'] = $expirationDate;
+    //             }
+    //         }
+    //     }
+
+    //     return view('BackEnd.JenSien.editStock')->with('inventoryInfo', $this->getAllInventory())->with('eventInfo', $this->getEventInfo())->with('edit_InventoryID', $returnData)->with('reqInventoryID', $inventoryID);
+    // }
+
+    public function getExpDate($id)
+    {
+        $expirationDate = [
+            'aPositive' => null,
+            'aNegative' => null,
+            'bPositive' => null,
+            'bNegative' => null,
+            'oPositive' => null,
+            'oNegative' => null,
+            'abPositive' => null,
+            'abNegative' => null
+        ];
+        $inventoryInfo = null;
+        if ($this->database->getReference($this->ref_table_inventories)->getChild($id)->getValue() != null) {
+            $inventoryInfo[$id] = $this->database->getReference($this->ref_table_inventories)->getChild($id)->getValue();
+        }
+
+        if ($inventoryInfo != null) {
+            foreach ($expirationDate as $bloodType => $expDate) {
+                foreach ($inventoryInfo as $id => $item) {
+                    foreach ($item['bloodInfo'] as $bloodID => $value) {
+                        if ($bloodType == $value['bloodType']) {
+                            $expirationDate[$bloodType] = $value['expirationDate'];
+                        }
+                    }
+                }
+            }
+        }
+
+        return $expirationDate;
+    }
+
+    public function getAllInventory()
+    {
+        if ($this->database->getReference($this->ref_table_inventories)->getValue() == null)
+            return null;
+
+        return array_reverse($this->database->getReference($this->ref_table_inventories)->getValue(), true);
+    }
     public function shipOut()
     {
         if (!$this->verifyPermission()) {
@@ -53,8 +294,14 @@ class InventoryController extends Controller
             return view('BackEnd.JenSien.permissionDenied');
         }
         $newID = $this->idGenerator('I', $this->ref_table_inventories);
-        $eventInfo = $this->database->getReference('Events')->getValue();
-        return view("BackEnd.JenSien.stockIn")->with("newID", $newID)->with("eventInfo", $eventInfo);
+        $date = Carbon::now();
+        $date = $date->format('Y-m-d');
+        return view("BackEnd.JenSien.stockIn")->with("newID", $newID)->with("eventInfo", $this->getEventInfo())->with('todayDate', $date);
+    }
+
+    public function getEventInfo()
+    {
+        return $this->database->getReference('Events')->getValue();
     }
 
     public function store(Request $request)
@@ -63,6 +310,8 @@ class InventoryController extends Controller
             return view('BackEnd.JenSien.permissionDenied');
         }
         $inventoryID = $request->inventoryID;
+        $eventID = $request->eventID;
+        $date = $request->inventoryDate;
         $expirationDate = [
             'aPositive' => $request->expiredDate_A_P,
             'aNegative' => $request->expiredDate_A_N,
@@ -92,11 +341,10 @@ class InventoryController extends Controller
             'abNegative' => $request->abNegative
         ];
 
-        $err = $this->getErrMessage($quantity, $expirationDate);
+        $err = $this->getErrMessage($quantity, $expirationDate, $eventID);
         if (!empty($err)) {
             return redirect('add-inventory')->with('err', $err);
         }
-
 
         //InventoryList
         // Blood Type ID: I2402001-A001
@@ -127,12 +375,11 @@ class InventoryController extends Controller
             }
         }
 
-        $eventID = $request->eventID;
-
         $postData = [
             'quantity' => $quantity,
             'eventID' => $eventID,
-            'bloodInfo' => $bloodInfo
+            'bloodInfo' => $bloodInfo,
+            'date' => $date
         ];
 
         // $this->ref_table_firestore_inventories->newDocument()->set($postData);
@@ -193,7 +440,7 @@ class InventoryController extends Controller
 
         $numOfBlood = $this->getNumOfBlood($info);
         $totalNumOfBlood = $this->getTotalNumOfBlood($numOfBlood);
-        
+
         return view('BackEnd.JenSien.viewStock')
             ->with('numOfBlood', $numOfBlood)
             ->with('totalNumOfBlood', $totalNumOfBlood)
@@ -319,7 +566,7 @@ class InventoryController extends Controller
     //-----------------------------------------
     //              Validation  
     //-----------------------------------------
-    public function getErrMessage($quantity, $expiredDate)
+    public function getErrMessage($quantity, $expiredDate, $event)
     {
         $err = [];
 
@@ -329,49 +576,13 @@ class InventoryController extends Controller
         if (!$this->validDate($expiredDate))
             $err[] = 'Date range cannot exist 2 weeks';
 
+        if (!$this->isAllNotZero($quantity))
+            $err[] = 'All quantity is zero. Please insert some quantity';
+
+        if (!$this->isEvent($event)) {
+            $err[] = 'Please Select an Event.';
+        }
+
         return $err;
-    }
-
-    public function validQuantity($quantity)
-    {
-        foreach ($quantity as $key => $value) {
-            if (!$this->isDigit($value)) {
-                return false;
-            }
-            if (!$this->isNegative($value)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public function validDate($value)
-    {
-        $today = Carbon::now();
-
-        foreach ($value as $key => $date) {
-
-            $parsedDate = DateTime::createFromFormat('Y-m-d', $date);
-
-            if (!$parsedDate || $parsedDate->format('Y-m-d') !== $date) {
-                return false;
-            }
-
-            $inputDate = Carbon::parse($date)->startOfDay();
-            if (!($inputDate->isCurrentDay() || $inputDate->isAfter($today) && $inputDate->diffInDays($today) <= 14)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public function isDigit($value)
-    {
-        return ctype_digit($value);
-    }
-
-    public function isNegative($value)
-    {
-        return $value >= 0;
     }
 }

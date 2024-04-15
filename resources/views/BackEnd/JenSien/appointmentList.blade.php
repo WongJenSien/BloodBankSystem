@@ -2,9 +2,14 @@
 @section('content')
     <div class="container">
         <div class="row">
-            <span class="h3 text-dark text-decoration-underline text-center">
-                Appointment List
-            </span>
+            <div class="col">
+                <span class="h3 text-dark text-decoration-underline text-center">
+                    Appointment List
+                </span>
+            </div>
+            <div class="col-2 align-self-end">
+                <a class="btn btn-primary p-2 m-2" role="button" target="_blank" href="{{url('qrcode-scanner')}}">Scan</a>
+            </div>
         </div>
         <div class="row">
             <div class="container">

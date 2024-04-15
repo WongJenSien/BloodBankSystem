@@ -26,6 +26,13 @@ class ShipmentAPIController extends Controller
         $quantity = $request->quantity;
         $status = 'Pending';
 
+
+        //VALIDATION
+        $err = $this->getErrMessage($location, $description, $quantity);
+        if ($err != null) {
+            return $err;
+        }
+
         //Status of Shipment: Pending, Arrive
         $postData = [
             "Quantity" => $quantity,
@@ -94,10 +101,14 @@ class ShipmentAPIController extends Controller
         return;
     }
 
-    public function show($id,Request $request)
+    public function show($id, Request $request)
     {
         //Retreive Shipment Infomation
         $shipmentInfo = $this->database->getReference($this->ref_table_shipment)->getChild($id)->getValue();
+
+        if($shipmentInfo == null){
+            return null;
+        }
 
         $inventoryInfo = $this->database->getReference($this->ref_table_inventories)->getValue();
         $bloodList = [];
@@ -136,8 +147,38 @@ class ShipmentAPIController extends Controller
     {
         $status = $request->status;
         $childKey = 'Status';
+
+        if ($status == null) {
+            return 'Status Updated Failed';
+        }
         $this->database->getReference($this->ref_table_shipment)->getChild($id)->update([$childKey => $status]);
+        return null;
     }
+
+    public function destroy($id)
+    {
+        $editStatus = 'Available';
+        $editShipId = '';
+        $keyStatus = 'status';
+        $keyShipId = 'ShipmentID';
+
+        // Change the belonging blood product to status Available
+        //Change Status from 'Shipment' to 'Available' and ShipmentID to = ''
+        $data = $this->database->getReference($this->ref_table_inventories)->getValue();
+        foreach ($data as $key => $bloodInfo) {
+            foreach ($bloodInfo['bloodInfo'] as $productID => $shipID) {
+                if ($shipID['ShipmentID'] == $id) {
+                    $this->database->getReference($this->ref_table_inventories)->getChild($key)->getChild('bloodInfo')->getChild($productID)->getValue();
+                    $this->database->getReference($this->ref_table_inventories)->getChild($key)->getChild('bloodInfo')->getChild($productID)->update([$keyStatus => $editStatus, $keyShipId => $editShipId]);
+                }
+            }
+        }
+
+        $this->database->getReference($this->ref_table_shipment)->getChild($id)->remove();
+
+        return ['Shipment ' . $id . ' remove successfully'];
+    }
+
 
     public function filterBlood($list, $bloodType_1, $status)
     {
@@ -171,5 +212,28 @@ class ShipmentAPIController extends Controller
             $inventoryID = substr($key, 0, 8);
             $this->database->getReference($this->ref_table_inventories)->getChild($inventoryID)->getChild('bloodInfo')->getChild($key)->update([$updateKey => $updateValue, 'ShipmentID' => $shipmentID]);
         }
+    }
+
+    //VALIDATION
+    public function getErrMessage($location, $description, $quantity)
+    {
+        $err = [];
+        if (!$this->isLocation($location)) {
+            $err[] = 'Please select a location';
+        }
+
+        if (!$this->validDescription($description)) {
+            $err[] = 'Description cannot be empty';
+        }
+
+        if (!$this->isAllNotZero($quantity)) {
+            $err[] = 'Please select quantity of blood product';
+        }
+
+        if (!$this->validQuantity($quantity)) {
+            $err[] = 'Quantity cannot be Negative Value and only can be number';
+        }
+
+        return $err;
     }
 }
